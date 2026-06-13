@@ -1,6 +1,11 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 
-const LINKS = ["Shop", "About", "Contact"];
+const LINKS = [
+  { label: "Shop", to: "/shop" },
+  { label: "About", to: "/about" },
+  { label: "Contact", to: "/contact" },
+];
 
 export function HamburgerMenu() {
   const [open, setOpen] = React.useState(false);
@@ -32,13 +37,14 @@ export function HamburgerMenu() {
       {open && (
         <nav className="mt-2 flex flex-col gap-2 bg-white px-4 py-3 rounded-lg shadow-lg">
           {LINKS.map((link) => (
-            <a
-              key={link}
-              href="#"
+            <Link
+              key={link.label}
+              to={link.to}
+              onClick={() => setOpen(false)}
               className="text-zinc-800 text-lg hover:text-zinc-500 transition-colors"
             >
-              {link}
-            </a>
+              {link.label}
+            </Link>
           ))}
         </nav>
       )}
