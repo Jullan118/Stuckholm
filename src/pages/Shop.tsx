@@ -15,7 +15,7 @@ export function Shop() {
   return (
     <div className="relative z-10 w-full max-w-5xl px-6 pt-28 pb-16">
       <h1 className="text-3xl sm:text-4xl font-bold text-zinc-900 mb-10 text-center">
-        Shop
+        Ingång
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
