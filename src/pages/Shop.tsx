@@ -4,11 +4,6 @@ const PRODUCTS = [
     price: "299 kr",
     image: "",
   },
-  {
-    name: "Stuckholm Hoodie",
-    price: "599 kr",
-    image: "",
-  },
 ];
 
 export function Shop() {
