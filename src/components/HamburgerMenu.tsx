@@ -11,7 +11,7 @@ export function HamburgerMenu() {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <div className="absolute top-20 left-4 z-20">
+    <div className="absolute top-4 left-4 z-20">
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Menu"
