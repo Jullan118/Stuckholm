@@ -2,7 +2,12 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        skarp: ['"Skarp Regular"', "sans-serif"],
+        "skarp-italic": ['"Skarp Italic"', "sans-serif"],
+      },
+    },
   },
   plugins: [],
 };

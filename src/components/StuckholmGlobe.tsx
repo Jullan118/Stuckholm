@@ -72,10 +72,10 @@ function ClayGlobe() {
   );
 }
 
-const GLOBE_WORDS = ["stuck", "in", "stuckholm"];
+const GLOBE_WORDS = ["STUCK", "IN", "STUCKHOLM"];
 
 function buildLayout(words: string[]) {
-  const letterUnit = 1;
+  const letterUnit = 0.85;
   const wordGap = 2.2;
 
   let totalUnits = 0;
@@ -100,7 +100,7 @@ function buildLayout(words: string[]) {
 
 function GlobeText() {
   const items = React.useMemo(() => buildLayout(GLOBE_WORDS), []);
-  const radius = 1.58;
+  const radius = 1.68;
 
   return (
     <group>
@@ -112,16 +112,16 @@ function GlobeText() {
           <group key={i} position={[x, 0, z]} rotation={[0, angle, 0]}>
             <Center>
               <Text3D
-                font="/fonts/helvetiker_bold.typeface.json"
-                size={0.24}
-                height={0.07}
+                font="/fonts/Skarp-Italic.typeface.json"
+                size={0.32}
+                height={0.09}
                 curveSegments={8}
                 bevelEnabled
-                bevelThickness={0.01}
-                bevelSize={0.01}
+                bevelThickness={0.013}
+                bevelSize={0.013}
               >
                 {char}
-                <meshStandardMaterial color="#d51f26" roughness={0.4} />
+                <meshStandardMaterial color="#e2c3d3" roughness={0.4} />
               </Text3D>
             </Center>
           </group>
@@ -135,10 +135,10 @@ export function StuckholmGlobe() {
   return (
     <div className="w-full h-full">
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <color attach="background" args={["#ffffff"]} />
+        <color attach="background" args={["#801332"]} />
         <ambientLight intensity={1} />
-        <directionalLight position={[5, 5, 5]} intensity={0.8} />
-        <directionalLight position={[-5, -3, -5]} intensity={0.4} />
+        <directionalLight position={[0, 2, 8]} intensity={0.9} />
+        <directionalLight position={[0, -2, -6]} intensity={0.25} />
         <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
           <ClayGlobe />
           <GlobeText />

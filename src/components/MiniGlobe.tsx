@@ -1,7 +1,34 @@
 import * as React from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { Text3D, Center } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
 import * as THREE from "three";
+
+const GLOBE_WORDS = ["STUCK", "IN", "STUCKHOLM"];
+
+function buildLayout(words: string[]) {
+  const letterUnit = 0.85;
+  const wordGap = 2.2;
+
+  let totalUnits = 0;
+  words.forEach((word) => {
+    totalUnits += word.length * letterUnit + wordGap;
+  });
+
+  const angleStep = (Math.PI * 2) / totalUnits;
+
+  const items: { char: string; angle: number }[] = [];
+  let cursor = 0;
+  words.forEach((word) => {
+    for (const char of word) {
+      items.push({ char, angle: cursor * angleStep });
+      cursor += letterUnit;
+    }
+    cursor += wordGap;
+  });
+
+  return items;
+}
 
 function createMiniGeometry() {
   const geometry = new THREE.IcosahedronGeometry(1.4, 12);
@@ -42,17 +69,44 @@ function createMiniGeometry() {
 }
 
 function RotatingGlobe() {
-  const meshRef = React.useRef<THREE.Mesh>(null);
+  const groupRef = React.useRef<THREE.Group>(null);
   const geometry = React.useMemo(() => createMiniGeometry(), []);
+  const items = React.useMemo(() => buildLayout(GLOBE_WORDS), []);
+  const radius = 1.5;
 
   useFrame((_, delta) => {
-    if (meshRef.current) meshRef.current.rotation.y += delta * 0.5;
+    if (groupRef.current) groupRef.current.rotation.y += delta * 0.5;
   });
 
   return (
-    <mesh ref={meshRef} geometry={geometry}>
-      <meshStandardMaterial vertexColors roughness={1} metalness={0} flatShading />
-    </mesh>
+    <group ref={groupRef}>
+      <mesh geometry={geometry}>
+        <meshStandardMaterial vertexColors roughness={1} metalness={0} flatShading />
+      </mesh>
+      {items.map(({ char, angle }, i) => {
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius;
+
+        return (
+          <group key={i} position={[x, 0, z]} rotation={[0, angle, 0]}>
+            <Center>
+              <Text3D
+                font="/fonts/Skarp-Italic.typeface.json"
+                size={0.22}
+                height={0.05}
+                curveSegments={4}
+                bevelEnabled
+                bevelThickness={0.008}
+                bevelSize={0.008}
+              >
+                {char}
+                <meshStandardMaterial color="#e2c3d3" roughness={0.4} />
+              </Text3D>
+            </Center>
+          </group>
+        );
+      })}
+    </group>
   );
 }
 
@@ -66,10 +120,11 @@ export function MiniGlobe() {
       className="absolute top-4 right-4 z-20 w-12 h-12 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform"
       title="Till startsidan"
     >
-      <Canvas camera={{ position: [0, 0, 4], fov: 45 }} style={{ background: "transparent" }}>
-        <color attach="background" args={["#ffffff"]} />
+      <Canvas camera={{ position: [0, 0, 4.6], fov: 45 }} style={{ background: "transparent" }}>
+        <color attach="background" args={["#801332"]} />
         <ambientLight intensity={1} />
-        <directionalLight position={[5, 5, 5]} intensity={0.8} />
+        <directionalLight position={[0, 2, 8]} intensity={0.9} />
+        <directionalLight position={[0, -2, -6]} intensity={0.25} />
         <RotatingGlobe />
       </Canvas>
     </Link>
