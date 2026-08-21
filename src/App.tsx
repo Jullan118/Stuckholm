@@ -59,6 +59,7 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/trash/upload" element={<TrashUpload />} />
+          <Route path="/trash/edit/:slug" element={<TrashUpload />} />
           <Route path="/trash/:slug" element={<TrashProduct />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

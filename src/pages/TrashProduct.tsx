@@ -9,6 +9,7 @@ export function TrashProduct() {
   const fallback = TRASH_PRODUCTS.find((p) => p.slug === slug) ?? null;
   const [product, setProduct] = React.useState<Garment | null>(fallback);
   const [notFound, setNotFound] = React.useState(false);
+  const [userId, setUserId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase || !slug) return;
@@ -28,8 +29,16 @@ export function TrashProduct() {
         }
       });
 
+    supabase.auth.getSession().then(({ data }) => {
+      if (!cancelled) setUserId(data.session?.user.id ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, s) => {
+      setUserId(s?.user.id ?? null);
+    });
+
     return () => {
       cancelled = true;
+      listener.subscription.unsubscribe();
     };
   }, [slug]);
 
@@ -46,8 +55,10 @@ export function TrashProduct() {
     );
   }
 
+  const images = product.images.length > 0 ? product.images : [product.image].filter(Boolean);
+
   return (
-    <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16">
+    <div className="relative z-10 w-full max-w-5xl px-6 pt-28 pb-16">
       <Link
         to="/trash"
         className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
@@ -55,36 +66,60 @@ export function TrashProduct() {
         ← Gammalt Skräp
       </Link>
 
-      <div className="relative aspect-[3/4] max-w-md mx-auto bg-[#d51f26]/5 border border-[#d51f26]/20 rounded-lg overflow-hidden mb-8">
-        {product.image ? (
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-black/60">
-            Bild
-          </div>
-        )}
-      </div>
+      <div className="flex flex-col md:flex-row gap-10">
+        {/* Image grid: up to 8 images, 4 across x 2 rows */}
+        <div className="w-full md:w-3/5 flex-shrink-0">
+          {images.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {images.map((src, i) => (
+                <div key={i} className="aspect-square overflow-hidden">
+                  <img
+                    src={src}
+                    alt={`${product.name} ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="aspect-square flex items-center justify-center text-black/60">
+              Bild
+            </div>
+          )}
+        </div>
 
-      <div className="max-w-md mx-auto text-center flex flex-col gap-3">
-        <h1 className="text-2xl sm:text-3xl font-skarp-italic text-black">
-          {product.name}
-        </h1>
-        <p className="text-black/80">{product.shortDescription}</p>
-        <p className="text-black/70">{product.details}</p>
-        <p className="text-black font-medium text-lg">{product.price}</p>
+        {/* Text + order info */}
+        <div className="w-full md:w-2/5 flex flex-col gap-3">
+          <h1 className="text-2xl sm:text-3xl font-skarp-italic text-black">
+            {product.name}
+          </h1>
+          <p className="text-black font-medium text-lg">{product.price}</p>
+          {product.shortDescription && (
+            <p className="text-black/80">{product.shortDescription}</p>
+          )}
+          {product.details && <p className="text-black/70">{product.details}</p>}
+          {product.sellerName && (
+            <p className="text-black/60 text-sm">Säljare: {product.sellerName}</p>
+          )}
 
-        <a
-          href={`mailto:hello.stuckholm@gmail.com?subject=Beställning: ${encodeURIComponent(
-            product.name
-          )}`}
-          className="mt-4 inline-block border border-[#d51f26] text-black px-6 py-2 rounded-full hover:bg-[#d51f26] hover:text-white transition-colors"
-        >
-          Beställ via mail
-        </a>
+          <a
+            href={`mailto:hello.stuckholm@gmail.com?subject=Beställning: ${encodeURIComponent(
+              product.name
+            )}`}
+            className="mt-4 inline-block border border-[#d51f26] text-black px-6 py-2 rounded-full hover:bg-[#d51f26] hover:text-white transition-colors text-center"
+          >
+            Beställ via mail
+          </a>
+
+          {userId && (userId === product.ownerId || !product.ownerId) && (
+            <Link
+              to={`/trash/edit/${product.slug}`}
+              className="text-black/50 hover:text-black text-sm underline mt-2"
+            >
+              Redigera plagg
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );

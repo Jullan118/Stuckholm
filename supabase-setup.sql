@@ -8,7 +8,12 @@ create table if not exists garments (
   short_description text not null default '',
   details text not null default '',
   price text not null default '',
+  price_amount numeric,
+  price_currency text not null default 'kr',
   image_url text not null default '',
+  image_urls text[],
+  seller_name text,
+  owner_id uuid references auth.users(id),
   created_at timestamptz not null default now()
 );
 
@@ -25,15 +30,17 @@ create policy "Authenticated users can insert garments"
   to authenticated
   with check (true);
 
-create policy "Authenticated users can update garments"
+-- Bara den som lade upp plagget får ändra eller ta bort det.
+create policy "Owners can update their own garments"
   on garments for update
   to authenticated
-  using (true);
+  using (auth.uid() = owner_id)
+  with check (auth.uid() = owner_id);
 
-create policy "Authenticated users can delete garments"
+create policy "Owners can delete their own garments"
   on garments for delete
   to authenticated
-  using (true);
+  using (auth.uid() = owner_id);
 
 -- OBS: Skapa själva bildlagringen ("bucket") via Storage-fliken i Supabase FÖRST
 -- (namn: "garments", markera den som "Public"), kör sedan raderna nedan.

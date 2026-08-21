@@ -16,12 +16,12 @@ export function Shop() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {PRODUCTS.map((product) => (
           <div key={product.name} className="flex flex-col gap-3">
-            <div className="aspect-square bg-[#d51f26]/5 border border-[#d51f26]/20 rounded-lg flex items-center justify-center text-black/60">
+            <div className="aspect-square flex items-center justify-center text-black/60">
               {product.image ? (
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover"
                 />
               ) : (
                 "Bild"
