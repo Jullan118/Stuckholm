@@ -2,16 +2,17 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 
 const LINKS = [
-  { label: "Spend", to: "/shop" },
-  { label: "About", to: "/about" },
+  { label: "Nytt Skräp", to: "/shop" },
+  { label: "Gammalt Skräp", to: "/trash" },
   { label: "Visit Stuckholm", to: "/contact" },
+  { label: "Contact", to: "/about" },
 ];
 
 export function HamburgerMenu() {
   const [open, setOpen] = React.useState(false);
-  const barColor = "bg-[#e2c3d3]";
-  const navBg = "bg-[#e2c3d3]";
-  const linkColor = "text-[#801332] hover:opacity-70";
+  const barColor = "bg-black";
+  const navBg = "bg-black";
+  const linkColor = "text-white hover:opacity-70";
 
   return (
     <div className="absolute top-4 left-4 z-20">

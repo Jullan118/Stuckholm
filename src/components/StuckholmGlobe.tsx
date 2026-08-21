@@ -121,7 +121,7 @@ function GlobeText() {
                 bevelSize={0.013}
               >
                 {char}
-                <meshStandardMaterial color="#e2c3d3" roughness={0.4} />
+                <meshStandardMaterial color="#d51f26" roughness={0.4} />
               </Text3D>
             </Center>
           </group>
@@ -135,7 +135,7 @@ export function StuckholmGlobe() {
   return (
     <div className="w-full h-full">
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <color attach="background" args={["#801332"]} />
+        <color attach="background" args={["#ffffff"]} />
         <ambientLight intensity={1} />
         <directionalLight position={[0, 2, 8]} intensity={0.9} />
         <directionalLight position={[0, -2, -6]} intensity={0.25} />

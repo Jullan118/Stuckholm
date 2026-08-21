@@ -5,13 +5,16 @@ import { Home } from "@/pages/Home";
 import { Shop } from "@/pages/Shop";
 import { About } from "@/pages/About";
 import { Contact } from "@/pages/Contact";
+import { Trash } from "@/pages/Trash";
+import { TrashProduct } from "@/pages/TrashProduct";
+import { TrashUpload } from "@/pages/TrashUpload";
 
 function SiteFooter() {
   const { pathname } = useLocation();
   if (pathname !== "/about") return null;
 
   return (
-    <footer className="absolute bottom-1 w-full px-6 font-skarp text-[#e2c3d3] text-xl sm:text-2xl leading-none">
+    <footer className="absolute bottom-1 w-full px-6 font-skarp text-black text-xl sm:text-2xl leading-none">
       <div className="max-w-[28rem] mx-auto grid grid-cols-2 gap-y-0 gap-x-4 text-center leading-none">
         <span className="sm:text-left sm:pl-3">Stuck in stuckholm</span>
         <span className="sm:text-right">all rights reserved {new Date().getFullYear()}</span>
@@ -38,7 +41,7 @@ function SiteFooter() {
       </div>
 
       <div className="max-w-2xl mx-auto text-center mt-0">
-        <span>By Skräp</span>
+        <span>By aquam3ss</span>
       </div>
     </footer>
   );
@@ -47,13 +50,16 @@ function SiteFooter() {
 function App() {
   return (
     <BrowserRouter>
-      <main className="min-h-screen w-full bg-[#801332] flex flex-col items-center relative">
+      <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <MiniGlobe />
         <HamburgerMenu />
 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/trash" element={<Trash />} />
+          <Route path="/trash/upload" element={<TrashUpload />} />
+          <Route path="/trash/:slug" element={<TrashProduct />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
