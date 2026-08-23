@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Skarp Regular";
+  src: url("/fonts/Skarp-Regular.woff2") format("woff2"),
+       url("/fonts/Skarp-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Italic";
+  src: url("/fonts/Skarp-Italic.woff2") format("woff2"),
+       url("/fonts/Skarp-Italic.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Thin";
+  src: url("/fonts/Skarp-Thin.woff2") format("woff2"),
+       url("/fonts/Skarp-Thin.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Thin Italic";
+  src: url("/fonts/Skarp-Thin-Italic.woff2") format("woff2"),
+       url("/fonts/Skarp-Thin-Italic.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Medium";
+  src: url("/fonts/Skarp-Medium.woff2") format("woff2"),
+       url("/fonts/Skarp-Medium.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Medium Italic";
+  src: url("/fonts/Skarp-Medium-Italic.woff2") format("woff2"),
+       url("/fonts/Skarp-Medium-Italic.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Bold";
+  src: url("/fonts/Skarp-Bold.woff2") format("woff2"),
+       url("/fonts/Skarp-Bold.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Bold Italic";
+  src: url("/fonts/Skarp-Bold-Italic.woff2") format("woff2"),
+       url("/fonts/Skarp-Bold-Italic.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Superbold";
+  src: url("/fonts/Skarp-Superbold.woff2") format("woff2"),
+       url("/fonts/Skarp-Superbold.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Skarp Superbold Italic";
+  src: url("/fonts/Skarp-Superbold-Italic.woff2") format("woff2"),
+       url("/fonts/Skarp-Superbold-Italic.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #ffffff;
+  font-family: "Skarp Regular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  letter-spacing: -0.04em;
+}
