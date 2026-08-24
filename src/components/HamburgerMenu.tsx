@@ -19,21 +19,21 @@ export function HamburgerMenu() {
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Menu"
-        className="flex flex-col gap-2 p-2"
+        className="flex flex-col gap-1.5 p-2"
       >
         <span
-          className={`block h-2 w-7 rounded-full ${barColor} transition-transform ${
-            open ? "translate-y-4 rotate-45" : ""
+          className={`block h-0.5 w-6 ${barColor} transition-transform ${
+            open ? "translate-y-2 rotate-45" : ""
           }`}
         />
         <span
-          className={`block h-2 w-7 rounded-full ${barColor} transition-opacity ${
+          className={`block h-0.5 w-6 ${barColor} transition-opacity ${
             open ? "opacity-0" : ""
           }`}
         />
         <span
-          className={`block h-2 w-7 rounded-full ${barColor} transition-transform ${
-            open ? "-translate-y-4 -rotate-45" : ""
+          className={`block h-0.5 w-6 ${barColor} transition-transform ${
+            open ? "-translate-y-2 -rotate-45" : ""
           }`}
         />
       </button>
