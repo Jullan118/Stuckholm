@@ -1,13 +1,15 @@
 import * as React from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
-import { garmentFromRow, type Garment } from "@/lib/garments";
-import { TRASH_PRODUCTS } from "@/data/trashProducts";
+import { flameFromRow, formatColorCount, type Flame } from "@/lib/flames";
+import { NEW_FLAMES_PRODUCTS } from "@/data/newFlamesProducts";
 
-export function TrashProduct() {
+// OBS: enkel platshållarversion — byggs ut när Julia beskrivit hur den här
+// sidan ska se ut (nästa steg).
+export function NewFlamesProduct() {
   const { slug } = useParams();
-  const fallback = TRASH_PRODUCTS.find((p) => p.slug === slug) ?? null;
-  const [product, setProduct] = React.useState<Garment | null>(fallback);
+  const fallback = NEW_FLAMES_PRODUCTS.find((p) => p.slug === slug) ?? null;
+  const [product, setProduct] = React.useState<Flame | null>(fallback);
   const [notFound, setNotFound] = React.useState(false);
   const [userId, setUserId] = React.useState<string | null>(null);
 
@@ -16,14 +18,14 @@ export function TrashProduct() {
     let cancelled = false;
 
     supabase
-      .from("garments")
+      .from("flames")
       .select("*")
       .eq("slug", slug)
       .maybeSingle()
       .then(({ data, error }) => {
         if (cancelled) return;
         if (!error && data) {
-          setProduct(garmentFromRow(data));
+          setProduct(flameFromRow(data));
         } else if (!fallback) {
           setNotFound(true);
         }
@@ -48,8 +50,8 @@ export function TrashProduct() {
         <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-6">
           Hittades inte
         </h1>
-        <Link to="/trash" className="text-black underline">
-          Tillbaka till Gammalt Skräp
+        <Link to="/new-flames" className="text-black underline">
+          Tillbaka till New Flames
         </Link>
       </div>
     );
@@ -60,14 +62,13 @@ export function TrashProduct() {
   return (
     <div className="relative z-10 w-full max-w-5xl px-6 pt-28 pb-16">
       <Link
-        to="/trash"
+        to="/new-flames"
         className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
       >
-        ← Gammalt Skräp
+        ← New Flames
       </Link>
 
       <div className="flex flex-col md:flex-row gap-10">
-        {/* Image grid: up to 8 images, 4 across x 2 rows */}
         <div className="w-full md:w-3/5 flex-shrink-0">
           {images.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -88,12 +89,14 @@ export function TrashProduct() {
           )}
         </div>
 
-        {/* Text + order info */}
         <div className="w-full md:w-2/5 flex flex-col gap-3">
           <h1 className="text-2xl sm:text-3xl font-skarp-thin text-black">
             {product.name}
           </h1>
           <p className="text-black font-medium text-lg">{product.price}</p>
+          {product.colorCount !== null && (
+            <p style={{ color: "#d7d7d7" }}>{formatColorCount(product.colorCount)}</p>
+          )}
           {product.shortDescription && (
             <p className="text-black/80">{product.shortDescription}</p>
           )}
@@ -113,10 +116,10 @@ export function TrashProduct() {
 
           {userId && (userId === product.ownerId || !product.ownerId) && (
             <Link
-              to={`/trash/edit/${product.slug}`}
+              to={`/new-flames/edit/${product.slug}`}
               className="text-black/50 hover:text-black text-sm underline mt-2"
             >
-              Redigera plagg
+              Redigera produkt
             </Link>
           )}
         </div>

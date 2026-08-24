@@ -6,9 +6,9 @@ import {
   CURRENCIES,
   MAX_IMAGES,
   SHORT_DESCRIPTION_MAX,
-  garmentFromRow,
+  flameFromRow,
   type Currency,
-} from "@/lib/garments";
+} from "@/lib/flames";
 
 function slugify(name: string) {
   const base = name
@@ -17,13 +17,13 @@ function slugify(name: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-+|-+$)/g, "");
-  return base || "plagg";
+  return base || "produkt";
 }
 
 let imageIdCounter = 0;
 function nextImageId() {
   imageIdCounter += 1;
-  return `img-${imageIdCounter}`;
+  return `flame-img-${imageIdCounter}`;
 }
 
 type ImageSlot = {
@@ -34,7 +34,7 @@ type ImageSlot = {
   preview: string;
 };
 
-export function TrashUpload() {
+export function NewFlamesUpload() {
   const { slug: editSlug } = useParams();
   const isEditMode = Boolean(editSlug);
   const navigate = useNavigate();
@@ -51,12 +51,13 @@ export function TrashUpload() {
   const [details, setDetails] = React.useState("");
   const [sellerName, setSellerName] = React.useState("");
   const [priceAmount, setPriceAmount] = React.useState("");
-  const [priceCurrency, setPriceCurrency] = React.useState<Currency>("kr");
+  const [priceCurrency, setPriceCurrency] = React.useState<Currency>("sek");
+  const [colorCount, setColorCount] = React.useState("");
   const [images, setImages] = React.useState<ImageSlot[]>([]);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState("");
 
-  const [loadingGarment, setLoadingGarment] = React.useState(isEditMode);
+  const [loadingProduct, setLoadingProduct] = React.useState(isEditMode);
   const [confirmDelete, setConfirmDelete] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
   const [notOwner, setNotOwner] = React.useState(false);
@@ -76,38 +77,39 @@ export function TrashUpload() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  // In edit mode, once logged in, load the existing garment and prefill the form.
+  // In edit mode, once logged in, load the existing product and prefill the form.
   React.useEffect(() => {
     if (!isEditMode || !session || !supabase || !editSlug) return;
     let cancelled = false;
 
     supabase
-      .from("garments")
+      .from("flames")
       .select("*")
       .eq("slug", editSlug)
       .maybeSingle()
       .then(({ data, error }) => {
         if (cancelled) return;
         if (!error && data) {
-          const g = garmentFromRow(data);
-          if (g.ownerId && g.ownerId !== session.user.id) {
+          const f = flameFromRow(data);
+          if (f.ownerId && f.ownerId !== session.user.id) {
             setNotOwner(true);
-            setLoadingGarment(false);
+            setLoadingProduct(false);
             return;
           }
-          setName(g.name);
-          setShortDescription(g.shortDescription);
-          setDetails(g.details);
-          setSellerName(g.sellerName);
-          setPriceAmount(g.priceAmount !== null ? String(g.priceAmount) : "");
-          setPriceCurrency(g.priceCurrency);
+          setName(f.name);
+          setShortDescription(f.shortDescription);
+          setDetails(f.details);
+          setSellerName(f.sellerName);
+          setPriceAmount(f.priceAmount !== null ? String(f.priceAmount) : "");
+          setPriceCurrency(f.priceCurrency);
+          setColorCount(f.colorCount !== null ? String(f.colorCount) : "");
           setImages(
-            g.images.map((url) => ({ id: nextImageId(), url, preview: url }))
+            f.images.map((url) => ({ id: nextImageId(), url, preview: url }))
           );
         } else {
-          setMessage("Kunde inte hitta plagget.");
+          setMessage("Kunde inte hitta produkten.");
         }
-        setLoadingGarment(false);
+        setLoadingProduct(false);
       });
 
     return () => {
@@ -162,7 +164,7 @@ export function TrashUpload() {
         }
         if (img.file) {
           const ext = img.file.name.split(".").pop() ?? "jpg";
-          const path = `${Date.now()}-${i}-${slugify(name)}.${ext}`;
+          const path = `flames/${Date.now()}-${i}-${slugify(name)}.${ext}`;
           const { error: uploadError } = await supabase.storage
             .from("garments")
             .upload(path, img.file);
@@ -176,10 +178,11 @@ export function TrashUpload() {
 
       const amount = priceAmount.trim() === "" ? null : Number(priceAmount);
       const priceDisplay = amount !== null ? `${amount} ${priceCurrency}` : "";
+      const colors = colorCount.trim() === "" ? null : Number(colorCount);
 
       if (isEditMode && editSlug) {
         const { error: updateError } = await supabase
-          .from("garments")
+          .from("flames")
           .update({
             name,
             short_description: shortDescription,
@@ -188,6 +191,7 @@ export function TrashUpload() {
             price_amount: amount,
             price_currency: priceCurrency,
             price: priceDisplay,
+            color_count: colors,
             image_url: finalUrls[0] ?? "",
             image_urls: finalUrls,
           })
@@ -196,7 +200,7 @@ export function TrashUpload() {
         setMessage("Ändringarna är sparade!");
       } else {
         const slug = `${slugify(name)}-${Date.now().toString(36)}`;
-        const { error: insertError } = await supabase.from("garments").insert({
+        const { error: insertError } = await supabase.from("flames").insert({
           slug,
           name,
           short_description: shortDescription,
@@ -205,19 +209,21 @@ export function TrashUpload() {
           price_amount: amount,
           price_currency: priceCurrency,
           price: priceDisplay,
+          color_count: colors,
           image_url: finalUrls[0] ?? "",
           image_urls: finalUrls,
           owner_id: session?.user.id,
         });
         if (insertError) throw insertError;
 
-        setMessage("Plagget är uppladdat!");
+        setMessage("Produkten är uppladdad!");
         setName("");
         setShortDescription("");
         setDetails("");
         setSellerName("");
         setPriceAmount("");
-        setPriceCurrency("kr");
+        setPriceCurrency("sek");
+        setColorCount("");
         setImages([]);
       }
     } catch (err) {
@@ -240,25 +246,25 @@ export function TrashUpload() {
       return;
     }
     setDeleting(true);
-    const { error } = await supabase.from("garments").delete().eq("slug", editSlug);
+    const { error } = await supabase.from("flames").delete().eq("slug", editSlug);
     setDeleting(false);
     if (error) {
       setMessage(`Kunde inte ta bort: ${error.message}`);
       return;
     }
-    navigate("/trash");
+    navigate("/new-flames");
   }
 
   if (!supabaseConfigured) {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
         <h1 className="text-2xl font-skarp-thin text-black mb-4">
-          {isEditMode ? "Redigera plagg" : "Ladda upp plagg"}
+          {isEditMode ? "Redigera produkt" : "Ladda upp produkt"}
         </h1>
         <p className="text-black/70">
           Uppladdning är inte ihopkopplad än — Supabase-nycklarna saknas.
         </p>
-        <Link to="/trash" className="block text-black/60 text-sm mt-6 underline">
+        <Link to="/new-flames" className="block text-black/60 text-sm mt-6 underline">
           ← Tillbaka
         </Link>
       </div>
@@ -298,26 +304,26 @@ export function TrashUpload() {
             Logga in
           </button>
         </form>
-        <Link to="/trash" className="block text-center text-black/60 text-sm mt-6">
+        <Link to="/new-flames" className="block text-center text-black/60 text-sm mt-6">
           ← Tillbaka
         </Link>
       </div>
     );
   }
 
-  if (isEditMode && loadingGarment) return null;
+  if (isEditMode && loadingProduct) return null;
 
   if (isEditMode && notOwner) {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
         <h1 className="text-2xl font-skarp-thin text-black mb-4">
-          Redigera plagg
+          Redigera produkt
         </h1>
         <p className="text-black/70">
-          Det här plagget är upplagt av någon annan — du kan bara redigera
-          och ta bort dina egna annonser.
+          Den här produkten är upplagd av någon annan — du kan bara redigera
+          och ta bort dina egna produkter.
         </p>
-        <Link to="/trash" className="block text-black/60 text-sm mt-6 underline">
+        <Link to="/new-flames" className="block text-black/60 text-sm mt-6 underline">
           ← Tillbaka
         </Link>
       </div>
@@ -328,7 +334,7 @@ export function TrashUpload() {
     <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-skarp-thin text-black">
-          {isEditMode ? "Redigera plagg" : "Lägg till plagg"}
+          {isEditMode ? "Redigera produkt" : "Lägg till produkt"}
         </h1>
         <button onClick={handleLogout} className="text-black/60 text-sm underline">
           Logga ut
@@ -402,7 +408,7 @@ export function TrashUpload() {
         </div>
 
         <textarea
-          placeholder="Mer info (material, skick, mått, hur man beställer m.m. — visas på produktsidan)"
+          placeholder="Mer info (material, mått, hur man beställer m.m. — visas på produktsidan)"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
@@ -411,7 +417,7 @@ export function TrashUpload() {
 
         <input
           type="text"
-          placeholder="Säljare (t.ex. ditt namn)"
+          placeholder="Säljare (t.ex. ditt namn eller varumärke)"
           value={sellerName}
           onChange={(e) => setSellerName(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
@@ -440,6 +446,16 @@ export function TrashUpload() {
           </select>
         </div>
 
+        <input
+          type="number"
+          min="1"
+          step="1"
+          placeholder="Antal färger (t.ex. 1)"
+          value={colorCount}
+          onChange={(e) => setColorCount(e.target.value)}
+          className="border border-black/20 rounded-lg px-3 py-2"
+        />
+
         {message && <p className="text-sm text-black">{message}</p>}
 
         <button
@@ -451,7 +467,7 @@ export function TrashUpload() {
             ? "Sparar…"
             : isEditMode
               ? "Spara ändringar"
-              : "Ladda upp plagg"}
+              : "Ladda upp produkt"}
         </button>
 
         {isEditMode && (
@@ -465,13 +481,13 @@ export function TrashUpload() {
               ? "Tar bort…"
               : confirmDelete
                 ? "Klicka igen för att bekräfta borttagning"
-                : "Ta bort plagg"}
+                : "Ta bort produkt"}
           </button>
         )}
       </form>
 
-      <Link to="/trash" className="block text-center text-black/60 text-sm mt-6">
-        ← Se Gammalt Skräp
+      <Link to="/new-flames" className="block text-center text-black/60 text-sm mt-6">
+        ← Se New Flames
       </Link>
     </div>
   );

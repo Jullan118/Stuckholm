@@ -1,25 +1,28 @@
-export const SHORT_DESCRIPTION_MAX = 60;
+import { CURRENCIES, type Currency, formatPrice } from "@/lib/garments";
+
+export { CURRENCIES };
+export type { Currency };
+
 export const MAX_IMAGES = 8;
+export const SHORT_DESCRIPTION_MAX = 60;
 
-export const CURRENCIES = ["kr", "sek", "€", "$", "£"] as const;
-export type Currency = (typeof CURRENCIES)[number];
-
-export type Garment = {
+export type Flame = {
   slug: string;
   name: string;
   image: string; // primary/thumbnail image (first of `images`)
-  images: string[]; // all images for this garment, up to MAX_IMAGES
+  images: string[]; // all images for this item, up to MAX_IMAGES
   shortDescription: string;
   details: string;
   sellerName: string;
-  price: string; // formatted for display, e.g. "299 kr"
+  price: string; // formatted for display, e.g. "400 sek"
   priceAmount: number | null;
   priceCurrency: Currency;
-  ownerId: string | null; // Supabase auth user id of whoever posted this garment
+  colorCount: number | null;
+  ownerId: string | null; // Supabase auth user id of whoever posted this item
 };
 
-// Shape of a row in the Supabase "garments" table.
-export type GarmentRow = {
+// Shape of a row in the Supabase "flames" table.
+export type FlameRow = {
   slug: string;
   name: string;
   image_url: string | null;
@@ -30,18 +33,17 @@ export type GarmentRow = {
   price: string;
   price_amount: number | null;
   price_currency: string | null;
+  color_count: number | null;
   owner_id: string | null;
 };
 
-export function formatPrice(amount: number | null, currency: string): string {
-  if (amount === null || Number.isNaN(amount)) return "";
-  // Trim trailing ".00" for whole numbers, keep decimals otherwise.
-  const amountStr = Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
-  return `${amountStr} ${currency}`;
+export function formatColorCount(count: number | null): string {
+  if (count === null || Number.isNaN(count)) return "";
+  return count === 1 ? "1 color" : `${count} colors`;
 }
 
-export function garmentFromRow(row: GarmentRow): Garment {
-  const priceCurrency = (row.price_currency as Currency) || "kr";
+export function flameFromRow(row: FlameRow): Flame {
+  const priceCurrency = (row.price_currency as Currency) || "sek";
   const price =
     row.price_amount !== null && row.price_amount !== undefined
       ? formatPrice(row.price_amount, priceCurrency)
@@ -65,6 +67,7 @@ export function garmentFromRow(row: GarmentRow): Garment {
     price,
     priceAmount: row.price_amount ?? null,
     priceCurrency,
+    colorCount: row.color_count ?? null,
     ownerId: row.owner_id ?? null,
   };
 }

@@ -42,8 +42,48 @@ create policy "Owners can delete their own garments"
   to authenticated
   using (auth.uid() = owner_id);
 
+create table if not exists flames (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  name text not null,
+  short_description text not null default '',
+  details text not null default '',
+  price text not null default '',
+  price_amount numeric,
+  price_currency text not null default 'sek',
+  color_count integer,
+  image_url text not null default '',
+  image_urls text[],
+  seller_name text,
+  owner_id uuid references auth.users(id),
+  created_at timestamptz not null default now()
+);
+
+alter table flames enable row level security;
+
+create policy "Public can view flames"
+  on flames for select
+  using (true);
+
+create policy "Authenticated users can insert flames"
+  on flames for insert
+  to authenticated
+  with check (true);
+
+create policy "Owners can update their own flames"
+  on flames for update
+  to authenticated
+  using (auth.uid() = owner_id)
+  with check (auth.uid() = owner_id);
+
+create policy "Owners can delete their own flames"
+  on flames for delete
+  to authenticated
+  using (auth.uid() = owner_id);
+
 -- OBS: Skapa själva bildlagringen ("bucket") via Storage-fliken i Supabase FÖRST
 -- (namn: "garments", markera den som "Public"), kör sedan raderna nedan.
+-- Samma bucket används för både Gammalt Skräp och New Flames.
 
 create policy "Public can view garment images"
   on storage.objects for select
