@@ -57,19 +57,18 @@ export function Trash() {
                   </div>
                 )}
 
-                {/* hover overlay: extra info (wear, brand, etc.) + price */}
+                {/* hover overlay: extra info (wear, brand, etc.) */}
                 <div className="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-center px-3 gap-1">
                   <span className="text-black text-sm">{product.details}</span>
-                  <span className="text-black font-medium">{product.price}</span>
                 </div>
               </div>
             </Link>
 
             <div className="flex items-baseline justify-between font-skarp-thin">
-              <span className="text-black">{product.price}</span>
               <Link to={`/trash/${product.slug}`}>
                 <span className="text-black">{product.name}</span>
               </Link>
+              <span className="text-black">{product.price}</span>
             </div>
             {userId && (userId === product.ownerId || !product.ownerId) && (
               <Link

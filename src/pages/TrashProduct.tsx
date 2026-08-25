@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
 import { garmentFromRow, type Garment } from "@/lib/garments";
 import { TRASH_PRODUCTS } from "@/data/trashProducts";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
 export function TrashProduct() {
   const { slug } = useParams();
@@ -10,6 +11,7 @@ export function TrashProduct() {
   const [product, setProduct] = React.useState<Garment | null>(fallback);
   const [notFound, setNotFound] = React.useState(false);
   const [userId, setUserId] = React.useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase || !slug) return;
@@ -72,13 +74,19 @@ export function TrashProduct() {
           {images.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {images.map((src, i) => (
-                <div key={i} className="aspect-square overflow-hidden">
+                <button
+                  type="button"
+                  key={i}
+                  onClick={() => setLightboxIndex(i)}
+                  className="aspect-square overflow-hidden cursor-zoom-in"
+                  aria-label={`View image ${i + 1} larger`}
+                >
                   <img
                     src={src}
                     alt={`${product.name} ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
-                </div>
+                </button>
               ))}
             </div>
           ) : (
@@ -87,6 +95,16 @@ export function TrashProduct() {
             </div>
           )}
         </div>
+
+        {lightboxIndex !== null && (
+          <ImageLightbox
+            images={images}
+            index={lightboxIndex}
+            alt={product.name}
+            onClose={() => setLightboxIndex(null)}
+            onNavigate={setLightboxIndex}
+          />
+        )}
 
         {/* Text + order info */}
         <div className="w-full md:w-2/5 flex flex-col gap-3">

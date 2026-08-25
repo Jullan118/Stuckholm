@@ -3,15 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
 import { flameFromRow, formatColorCount, type Flame } from "@/lib/flames";
 import { NEW_FLAMES_PRODUCTS } from "@/data/newFlamesProducts";
+import { ImageLightbox } from "@/components/ImageLightbox";
 
-// OBS: enkel platshållarversion — byggs ut när Julia beskrivit hur den här
-// sidan ska se ut (nästa steg).
+// NOTE: simple placeholder version — will be built out once Julia has
+// described how this page should look (next step).
 export function NewFlamesProduct() {
   const { slug } = useParams();
   const fallback = NEW_FLAMES_PRODUCTS.find((p) => p.slug === slug) ?? null;
   const [product, setProduct] = React.useState<Flame | null>(fallback);
   const [notFound, setNotFound] = React.useState(false);
   const [userId, setUserId] = React.useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase || !slug) return;
@@ -48,10 +50,10 @@ export function NewFlamesProduct() {
     return (
       <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 text-center">
         <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-6">
-          Hittades inte
+          Not found
         </h1>
         <Link to="/new-flames" className="text-black underline">
-          Tillbaka till New Flames
+          Back to New Flames
         </Link>
       </div>
     );
@@ -73,21 +75,37 @@ export function NewFlamesProduct() {
           {images.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {images.map((src, i) => (
-                <div key={i} className="aspect-square overflow-hidden">
+                <button
+                  type="button"
+                  key={i}
+                  onClick={() => setLightboxIndex(i)}
+                  className="aspect-square overflow-hidden cursor-zoom-in"
+                  aria-label={`View image ${i + 1} larger`}
+                >
                   <img
                     src={src}
                     alt={`${product.name} ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
-                </div>
+                </button>
               ))}
             </div>
           ) : (
             <div className="aspect-square flex items-center justify-center text-black/60">
-              Bild
+              Image
             </div>
           )}
         </div>
+
+        {lightboxIndex !== null && (
+          <ImageLightbox
+            images={images}
+            index={lightboxIndex}
+            alt={product.name}
+            onClose={() => setLightboxIndex(null)}
+            onNavigate={setLightboxIndex}
+          />
+        )}
 
         <div className="w-full md:w-2/5 flex flex-col gap-3">
           <h1 className="text-2xl sm:text-3xl font-skarp-thin text-black">
@@ -102,16 +120,16 @@ export function NewFlamesProduct() {
           )}
           {product.details && <p className="text-black/70">{product.details}</p>}
           {product.sellerName && (
-            <p className="text-black/60 text-sm">Säljare: {product.sellerName}</p>
+            <p className="text-black/60 text-sm">Seller: {product.sellerName}</p>
           )}
 
           <a
-            href={`mailto:hello.stuckholm@gmail.com?subject=Beställning: ${encodeURIComponent(
+            href={`mailto:hello.stuckholm@gmail.com?subject=Order: ${encodeURIComponent(
               product.name
             )}`}
             className="mt-4 inline-block border border-[#d51f26] text-black px-6 py-2 rounded-full hover:bg-[#d51f26] hover:text-white transition-colors text-center"
           >
-            Beställ via mail
+            Order via email
           </a>
 
           {userId && (userId === product.ownerId || !product.ownerId) && (
@@ -119,7 +137,7 @@ export function NewFlamesProduct() {
               to={`/new-flames/edit/${product.slug}`}
               className="text-black/50 hover:text-black text-sm underline mt-2"
             >
-              Redigera produkt
+              Edit product
             </Link>
           )}
         </div>
