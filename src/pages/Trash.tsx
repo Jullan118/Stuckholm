@@ -57,9 +57,17 @@ export function Trash() {
                   </div>
                 )}
 
-                {/* hover overlay: extra info (wear, brand, etc.) */}
+                {/* hover overlay: brand / colour / condition, one per line */}
                 <div className="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-center px-3 gap-1">
-                  <span className="text-black text-sm">{product.details}</span>
+                  {product.brand && (
+                    <span className="text-black text-sm">Brand: {product.brand}</span>
+                  )}
+                  {product.colour && (
+                    <span className="text-black text-sm">Colour: {product.colour}</span>
+                  )}
+                  {product.condition && (
+                    <span className="text-black text-sm">Condition: {product.condition}</span>
+                  )}
                 </div>
               </div>
             </Link>

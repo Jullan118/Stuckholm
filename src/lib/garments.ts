@@ -9,6 +9,9 @@ export type Garment = {
   name: string;
   image: string; // primary/thumbnail image (first of `images`)
   images: string[]; // all images for this garment, up to MAX_IMAGES
+  brand: string;
+  colour: string;
+  condition: string;
   shortDescription: string;
   details: string;
   sellerName: string;
@@ -24,6 +27,9 @@ export type GarmentRow = {
   name: string;
   image_url: string | null;
   image_urls: string[] | null;
+  brand: string | null;
+  colour: string | null;
+  condition: string | null;
   short_description: string;
   details: string;
   seller_name: string | null;
@@ -59,6 +65,9 @@ export function garmentFromRow(row: GarmentRow): Garment {
     name: row.name,
     image: images[0] ?? "",
     images,
+    brand: row.brand ?? "",
+    colour: row.colour ?? "",
+    condition: row.condition ?? "",
     shortDescription: row.short_description,
     details: row.details,
     sellerName: row.seller_name ?? "",

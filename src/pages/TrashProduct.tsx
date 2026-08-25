@@ -112,6 +112,13 @@ export function TrashProduct() {
             {product.name}
           </h1>
           <p className="text-black font-medium text-lg">{product.price}</p>
+          {(product.brand || product.colour || product.condition) && (
+            <div className="flex flex-col text-black/80">
+              {product.brand && <span>Brand: {product.brand}</span>}
+              {product.colour && <span>Colour: {product.colour}</span>}
+              {product.condition && <span>Condition: {product.condition}</span>}
+            </div>
+          )}
           {product.shortDescription && (
             <p className="text-black/80">{product.shortDescription}</p>
           )}

@@ -47,6 +47,9 @@ export function TrashUpload() {
   const [loginError, setLoginError] = React.useState("");
 
   const [name, setName] = React.useState("");
+  const [brand, setBrand] = React.useState("");
+  const [colour, setColour] = React.useState("");
+  const [condition, setCondition] = React.useState("");
   const [shortDescription, setShortDescription] = React.useState("");
   const [details, setDetails] = React.useState("");
   const [sellerName, setSellerName] = React.useState("");
@@ -96,6 +99,9 @@ export function TrashUpload() {
             return;
           }
           setName(g.name);
+          setBrand(g.brand);
+          setColour(g.colour);
+          setCondition(g.condition);
           setShortDescription(g.shortDescription);
           setDetails(g.details);
           setSellerName(g.sellerName);
@@ -189,6 +195,9 @@ export function TrashUpload() {
           .from("garments")
           .update({
             name,
+            brand,
+            colour,
+            condition,
             short_description: shortDescription,
             details,
             seller_name: sellerName,
@@ -206,6 +215,9 @@ export function TrashUpload() {
         const { error: insertError } = await supabase.from("garments").insert({
           slug,
           name,
+          brand,
+          colour,
+          condition,
           short_description: shortDescription,
           details,
           seller_name: sellerName,
@@ -220,6 +232,9 @@ export function TrashUpload() {
 
         setMessage("Item uploaded!");
         setName("");
+        setBrand("");
+        setColour("");
+        setCondition("");
         setShortDescription("");
         setDetails("");
         setSellerName("");
@@ -392,9 +407,51 @@ export function TrashUpload() {
           required
         />
 
+        {/* Brand / Colour / Condition — the label prefix is fixed, only the
+            value is typed in. These three show as a stacked list when
+            hovering the product image on the Exes listing. */}
+        <div className="flex items-center border border-black/20 rounded-lg overflow-hidden">
+          <span className="pl-3 pr-1 py-2 text-black/50 whitespace-nowrap text-sm">
+            Brand:
+          </span>
+          <input
+            type="text"
+            placeholder="e.g. JW PEI"
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            className="flex-1 min-w-0 px-2 py-2 outline-none"
+          />
+        </div>
+
+        <div className="flex items-center border border-black/20 rounded-lg overflow-hidden">
+          <span className="pl-3 pr-1 py-2 text-black/50 whitespace-nowrap text-sm">
+            Colour:
+          </span>
+          <input
+            type="text"
+            placeholder="e.g. brown/cognac"
+            value={colour}
+            onChange={(e) => setColour(e.target.value)}
+            className="flex-1 min-w-0 px-2 py-2 outline-none"
+          />
+        </div>
+
+        <div className="flex items-center border border-black/20 rounded-lg overflow-hidden">
+          <span className="pl-3 pr-1 py-2 text-black/50 whitespace-nowrap text-sm">
+            Condition:
+          </span>
+          <input
+            type="text"
+            placeholder="e.g. good, worn once"
+            value={condition}
+            onChange={(e) => setCondition(e.target.value)}
+            className="flex-1 min-w-0 px-2 py-2 outline-none"
+          />
+        </div>
+
         <div>
           <textarea
-            placeholder="Short description (shown under the image)"
+            placeholder="Short description (shown on the product page)"
             value={shortDescription}
             onChange={(e) =>
               setShortDescription(e.target.value.slice(0, SHORT_DESCRIPTION_MAX))
@@ -409,7 +466,7 @@ export function TrashUpload() {
         </div>
 
         <textarea
-          placeholder="More info (material, condition, measurements, how to order, etc. — shown on the product page)"
+          placeholder="Other info (material, measurements, how to order, etc. — shown on the product page)"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
