@@ -108,6 +108,9 @@ export function TrashProduct() {
 
         {/* Text + order info */}
         <div className="w-full md:w-2/5 flex flex-col gap-3">
+          <span className="text-black/50 text-sm uppercase tracking-wide">
+            {product.category}
+          </span>
           <h1 className="text-2xl sm:text-3xl font-skarp-thin text-black">
             {product.name}
           </h1>
