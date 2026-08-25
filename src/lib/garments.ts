@@ -4,11 +4,15 @@ export const MAX_IMAGES = 8;
 export const CURRENCIES = ["kr", "sek", "€", "$", "£"] as const;
 export type Currency = (typeof CURRENCIES)[number];
 
+export const CATEGORIES = ["Women's", "Men's"] as const;
+export type Category = (typeof CATEGORIES)[number];
+
 export type Garment = {
   slug: string;
   name: string;
   image: string; // primary/thumbnail image (first of `images`)
   images: string[]; // all images for this garment, up to MAX_IMAGES
+  category: Category;
   brand: string;
   colour: string;
   condition: string;
@@ -27,6 +31,7 @@ export type GarmentRow = {
   name: string;
   image_url: string | null;
   image_urls: string[] | null;
+  category: string | null;
   brand: string | null;
   colour: string | null;
   condition: string | null;
@@ -65,6 +70,7 @@ export function garmentFromRow(row: GarmentRow): Garment {
     name: row.name,
     image: images[0] ?? "",
     images,
+    category: (row.category as Category) || "Women's",
     brand: row.brand ?? "",
     colour: row.colour ?? "",
     condition: row.condition ?? "",
