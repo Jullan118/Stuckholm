@@ -6,6 +6,11 @@ import { NEW_FLAMES_PRODUCTS } from "@/data/newFlamesProducts";
 
 export function NewFlames() {
   const [products, setProducts] = React.useState<Flame[]>(NEW_FLAMES_PRODUCTS);
+  // True while `products` is still the built-in example data (not real rows
+  // from Supabase). The example items aren't editable/deletable — there's
+  // nothing in the database to update — so the Edit link only shows once
+  // real products have loaded.
+  const [usingExamples, setUsingExamples] = React.useState(true);
   const [userId, setUserId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -18,7 +23,10 @@ export function NewFlames() {
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         if (cancelled || error || !data) return;
-        if (data.length > 0) setProducts(data.map(flameFromRow));
+        if (data.length > 0) {
+          setProducts(data.map(flameFromRow));
+          setUsingExamples(false);
+        }
       });
 
     supabase.auth.getSession().then(({ data }) => {
@@ -36,9 +44,15 @@ export function NewFlames() {
 
   return (
     <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
-      <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-10 text-center">
+      <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-4 text-center">
         New Flames
       </h1>
+
+      {usingExamples && (
+        <p className="text-center text-black/50 text-sm mb-6">
+          Showing example products — add your own below and these will disappear.
+        </p>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-12">
         {products.map((product) => (
@@ -53,7 +67,7 @@ export function NewFlames() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-black/60">
-                    Bild
+                    Image
                   </div>
                 )}
               </div>
@@ -74,12 +88,12 @@ export function NewFlames() {
               </span>
             )}
 
-            {userId && (userId === product.ownerId || !product.ownerId) && (
+            {!usingExamples && userId && (userId === product.ownerId || !product.ownerId) && (
               <Link
                 to={`/new-flames/edit/${product.slug}`}
                 className="text-black/40 hover:text-black text-xs underline mt-1"
               >
-                Redigera
+                Edit
               </Link>
             )}
           </div>
@@ -91,7 +105,7 @@ export function NewFlames() {
           to="/new-flames/upload"
           className="text-black/50 hover:text-black text-sm underline transition-colors"
         >
-          + Lägg till produkt
+          + Add product
         </Link>
       </div>
     </div>

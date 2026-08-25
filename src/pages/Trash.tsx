@@ -6,6 +6,11 @@ import { TRASH_PRODUCTS } from "@/data/trashProducts";
 
 export function Trash() {
   const [products, setProducts] = React.useState<Garment[]>(TRASH_PRODUCTS);
+  // True while `products` is still the built-in example data (not real rows
+  // from Supabase). The example items aren't editable/deletable — there's
+  // nothing in the database to update — so the Edit link only shows once
+  // real items have loaded.
+  const [usingExamples, setUsingExamples] = React.useState(true);
   const [userId, setUserId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -18,7 +23,10 @@ export function Trash() {
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         if (cancelled || error || !data) return;
-        if (data.length > 0) setProducts(data.map(garmentFromRow));
+        if (data.length > 0) {
+          setProducts(data.map(garmentFromRow));
+          setUsingExamples(false);
+        }
       });
 
     supabase.auth.getSession().then(({ data }) => {
@@ -36,9 +44,15 @@ export function Trash() {
 
   return (
     <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
-      <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-10 text-center">
+      <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-4 text-center">
         Exes
       </h1>
+
+      {usingExamples && (
+        <p className="text-center text-black/50 text-sm mb-6">
+          Showing example items — add your own below and these will disappear.
+        </p>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-10">
         {products.map((product) => (
@@ -78,7 +92,7 @@ export function Trash() {
               </Link>
               <span className="text-black">{product.price}</span>
             </div>
-            {userId && (userId === product.ownerId || !product.ownerId) && (
+            {!usingExamples && userId && (userId === product.ownerId || !product.ownerId) && (
               <Link
                 to={`/trash/edit/${product.slug}`}
                 className="text-black/40 hover:text-black text-xs underline -mt-1"
