@@ -17,7 +17,7 @@ function slugify(name: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-+|-+$)/g, "");
-  return base || "produkt";
+  return base || "product";
 }
 
 let imageIdCounter = 0;
@@ -107,7 +107,7 @@ export function NewFlamesUpload() {
             f.images.map((url) => ({ id: nextImageId(), url, preview: url }))
           );
         } else {
-          setMessage("Kunde inte hitta produkten.");
+          setMessage("Could not find the product.");
         }
         setLoadingProduct(false);
       });
@@ -119,10 +119,17 @@ export function NewFlamesUpload() {
 
   function handleAddFiles(fileList: FileList | null) {
     if (!fileList || fileList.length === 0) return;
+    // Capture the actual File objects right away — fileList is a *live*
+    // reference tied to the <input>, and the caller resets input.value
+    // right after calling this function. Since setImages's updater callback
+    // below can run after that reset (React 18 batches state updates), reading
+    // from `fileList` inside the updater could see an already-emptied list.
+    // Snapshotting to a plain array here avoids that race.
+    const files = Array.from(fileList);
     setImages((prev) => {
       const room = MAX_IMAGES - prev.length;
       if (room <= 0) return prev;
-      const chosen = Array.from(fileList).slice(0, room);
+      const chosen = files.slice(0, room);
       const added: ImageSlot[] = chosen.map((file) => ({
         id: nextImageId(),
         file,
@@ -141,7 +148,7 @@ export function NewFlamesUpload() {
     if (!supabase) return;
     setLoginError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setLoginError("Fel e-post eller lösenord.");
+    if (error) setLoginError("Wrong email or password.");
   }
 
   async function handleLogout() {
@@ -197,7 +204,7 @@ export function NewFlamesUpload() {
           })
           .eq("slug", editSlug);
         if (updateError) throw updateError;
-        setMessage("Ändringarna är sparade!");
+        setMessage("Changes saved!");
       } else {
         const slug = `${slugify(name)}-${Date.now().toString(36)}`;
         const { error: insertError } = await supabase.from("flames").insert({
@@ -216,7 +223,7 @@ export function NewFlamesUpload() {
         });
         if (insertError) throw insertError;
 
-        setMessage("Produkten är uppladdad!");
+        setMessage("Product uploaded!");
         setName("");
         setShortDescription("");
         setDetails("");
@@ -232,8 +239,8 @@ export function NewFlamesUpload() {
           ? String((err as { message: unknown }).message)
           : err instanceof Error
             ? err.message
-            : "okänt fel";
-      setMessage(`Något gick fel: ${msg}`);
+            : "unknown error";
+      setMessage(`Something went wrong: ${msg}`);
     } finally {
       setSaving(false);
     }
@@ -249,7 +256,7 @@ export function NewFlamesUpload() {
     const { error } = await supabase.from("flames").delete().eq("slug", editSlug);
     setDeleting(false);
     if (error) {
-      setMessage(`Kunde inte ta bort: ${error.message}`);
+      setMessage(`Could not delete: ${error.message}`);
       return;
     }
     navigate("/new-flames");
@@ -259,13 +266,13 @@ export function NewFlamesUpload() {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
         <h1 className="text-2xl font-skarp-thin text-black mb-4">
-          {isEditMode ? "Redigera produkt" : "Ladda upp produkt"}
+          {isEditMode ? "Edit product" : "Upload product"}
         </h1>
         <p className="text-black/70">
-          Uppladdning är inte ihopkopplad än — Supabase-nycklarna saknas.
+          Upload isn't connected yet — the Supabase keys are missing.
         </p>
         <Link to="/new-flames" className="block text-black/60 text-sm mt-6 underline">
-          ← Tillbaka
+          ← Back
         </Link>
       </div>
     );
@@ -277,12 +284,12 @@ export function NewFlamesUpload() {
     return (
       <div className="relative z-10 w-full max-w-sm px-6 pt-28 pb-16">
         <h1 className="text-2xl font-skarp-thin text-black mb-6 text-center">
-          Logga in
+          Log in
         </h1>
         <form onSubmit={handleLogin} className="flex flex-col gap-3">
           <input
             type="email"
-            placeholder="E-post"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="border border-black/20 rounded-lg px-3 py-2"
@@ -290,7 +297,7 @@ export function NewFlamesUpload() {
           />
           <input
             type="password"
-            placeholder="Lösenord"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="border border-black/20 rounded-lg px-3 py-2"
@@ -301,11 +308,11 @@ export function NewFlamesUpload() {
             type="submit"
             className="bg-black text-white rounded-full px-6 py-2 mt-2 hover:opacity-80 transition-opacity"
           >
-            Logga in
+            Log in
           </button>
         </form>
         <Link to="/new-flames" className="block text-center text-black/60 text-sm mt-6">
-          ← Tillbaka
+          ← Back
         </Link>
       </div>
     );
@@ -317,14 +324,14 @@ export function NewFlamesUpload() {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
         <h1 className="text-2xl font-skarp-thin text-black mb-4">
-          Redigera produkt
+          Edit product
         </h1>
         <p className="text-black/70">
-          Den här produkten är upplagd av någon annan — du kan bara redigera
-          och ta bort dina egna produkter.
+          This product was posted by someone else — you can only edit
+          and delete your own products.
         </p>
         <Link to="/new-flames" className="block text-black/60 text-sm mt-6 underline">
-          ← Tillbaka
+          ← Back
         </Link>
       </div>
     );
@@ -334,10 +341,10 @@ export function NewFlamesUpload() {
     <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-skarp-thin text-black">
-          {isEditMode ? "Redigera produkt" : "Lägg till produkt"}
+          {isEditMode ? "Edit product" : "Add product"}
         </h1>
         <button onClick={handleLogout} className="text-black/60 text-sm underline">
-          Logga ut
+          Log out
         </button>
       </div>
 
@@ -355,7 +362,7 @@ export function NewFlamesUpload() {
                   type="button"
                   onClick={() => handleRemoveImage(img.id)}
                   className="absolute top-1 right-1 bg-black/70 text-white text-xs w-5 h-5 flex items-center justify-center hover:bg-black"
-                  aria-label="Ta bort bild"
+                  aria-label="Remove image"
                 >
                   ×
                 </button>
@@ -363,7 +370,7 @@ export function NewFlamesUpload() {
             ))}
             {images.length < MAX_IMAGES && (
               <label className="aspect-square border border-dashed border-black/30 flex items-center justify-center text-black/50 text-sm cursor-pointer hover:border-black/60">
-                + Bild
+                + Image
                 <input
                   type="file"
                   accept="image/*"
@@ -378,13 +385,13 @@ export function NewFlamesUpload() {
             )}
           </div>
           <div className="text-right text-xs text-black/40 mt-1">
-            {images.length}/{MAX_IMAGES} bilder
+            {images.length}/{MAX_IMAGES} images
           </div>
         </div>
 
         <input
           type="text"
-          placeholder="Namn"
+          placeholder="Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
@@ -393,7 +400,7 @@ export function NewFlamesUpload() {
 
         <div>
           <textarea
-            placeholder="Kort beskrivning (visas under bilden)"
+            placeholder="Short description (shown under the image)"
             value={shortDescription}
             onChange={(e) =>
               setShortDescription(e.target.value.slice(0, SHORT_DESCRIPTION_MAX))
@@ -408,7 +415,7 @@ export function NewFlamesUpload() {
         </div>
 
         <textarea
-          placeholder="Mer info (material, mått, hur man beställer m.m. — visas på produktsidan)"
+          placeholder="More info (material, measurements, how to order, etc. — shown on the product page)"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
@@ -417,7 +424,7 @@ export function NewFlamesUpload() {
 
         <input
           type="text"
-          placeholder="Säljare (t.ex. ditt namn eller varumärke)"
+          placeholder="Seller (e.g. your name or brand)"
           value={sellerName}
           onChange={(e) => setSellerName(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
@@ -428,7 +435,7 @@ export function NewFlamesUpload() {
             type="number"
             step="0.01"
             min="0"
-            placeholder="Pris"
+            placeholder="Price"
             value={priceAmount}
             onChange={(e) => setPriceAmount(e.target.value)}
             className="border border-black/20 rounded-lg px-3 py-2 flex-1"
@@ -450,7 +457,7 @@ export function NewFlamesUpload() {
           type="number"
           min="1"
           step="1"
-          placeholder="Antal färger (t.ex. 1)"
+          placeholder="Number of colors (e.g. 1)"
           value={colorCount}
           onChange={(e) => setColorCount(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
@@ -464,10 +471,10 @@ export function NewFlamesUpload() {
           className="bg-[#d51f26] text-white rounded-full px-6 py-2 mt-2 hover:opacity-80 transition-opacity disabled:opacity-50"
         >
           {saving
-            ? "Sparar…"
+            ? "Saving…"
             : isEditMode
-              ? "Spara ändringar"
-              : "Ladda upp produkt"}
+              ? "Save changes"
+              : "Upload product"}
         </button>
 
         {isEditMode && (
@@ -478,16 +485,16 @@ export function NewFlamesUpload() {
             className="text-[#d51f26] text-sm mt-1 hover:underline disabled:opacity-50"
           >
             {deleting
-              ? "Tar bort…"
+              ? "Removing…"
               : confirmDelete
-                ? "Klicka igen för att bekräfta borttagning"
-                : "Ta bort produkt"}
+                ? "Click again to confirm deletion"
+                : "Delete product"}
           </button>
         )}
       </form>
 
       <Link to="/new-flames" className="block text-center text-black/60 text-sm mt-6">
-        ← Se New Flames
+        ← See New Flames
       </Link>
     </div>
   );

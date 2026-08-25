@@ -117,10 +117,17 @@ export function TrashUpload() {
 
   function handleAddFiles(fileList: FileList | null) {
     if (!fileList || fileList.length === 0) return;
+    // Capture the actual File objects right away — fileList is a *live*
+    // reference tied to the <input>, and the caller resets input.value
+    // right after calling this function. Since setImages's updater callback
+    // below can run after that reset (React 18 batches state updates), reading
+    // from `fileList` inside the updater could see an already-emptied list.
+    // Snapshotting to a plain array here avoids that race.
+    const files = Array.from(fileList);
     setImages((prev) => {
       const room = MAX_IMAGES - prev.length;
       if (room <= 0) return prev;
-      const chosen = Array.from(fileList).slice(0, room);
+      const chosen = files.slice(0, room);
       const added: ImageSlot[] = chosen.map((file) => ({
         id: nextImageId(),
         file,
