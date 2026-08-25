@@ -35,9 +35,9 @@ export function Trash() {
   }, []);
 
   return (
-    <div className="relative z-10 w-full max-w-6xl px-6 pt-28 pb-16">
+    <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
       <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-10 text-center">
-        Gammalt Skräp
+        Exes
       </h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-10">
@@ -53,11 +53,11 @@ export function Trash() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-black/60">
-                    Bild
+                    Image
                   </div>
                 )}
 
-                {/* hover overlay: extra info + price */}
+                {/* hover overlay: extra info (wear, brand, etc.) + price */}
                 <div className="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-center px-3 gap-1">
                   <span className="text-black text-sm">{product.details}</span>
                   <span className="text-black font-medium">{product.price}</span>
@@ -65,20 +65,20 @@ export function Trash() {
               </div>
             </Link>
 
-            <div className="flex flex-col">
+            <div className="flex items-baseline justify-between font-skarp-thin">
+              <span className="text-black">{product.price}</span>
               <Link to={`/trash/${product.slug}`}>
-                <span className="text-black font-medium text-sm">{product.name}</span>
+                <span className="text-black">{product.name}</span>
               </Link>
-              <span className="text-black/70 text-sm">{product.shortDescription}</span>
-              {userId && (userId === product.ownerId || !product.ownerId) && (
-                <Link
-                  to={`/trash/edit/${product.slug}`}
-                  className="text-black/40 hover:text-black text-xs underline mt-1"
-                >
-                  Redigera
-                </Link>
-              )}
             </div>
+            {userId && (userId === product.ownerId || !product.ownerId) && (
+              <Link
+                to={`/trash/edit/${product.slug}`}
+                className="text-black/40 hover:text-black text-xs underline -mt-1"
+              >
+                Edit
+              </Link>
+            )}
           </div>
         ))}
       </div>
@@ -88,7 +88,7 @@ export function Trash() {
           to="/trash/upload"
           className="text-black/50 hover:text-black text-sm underline transition-colors"
         >
-          + Lägg till plagg
+          + Add item
         </Link>
       </div>
     </div>

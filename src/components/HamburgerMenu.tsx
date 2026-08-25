@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const LINKS = [
   { label: "New Flames", to: "/new-flames" },
-  { label: "Gammalt Skräp", to: "/trash" },
+  { label: "Exes", to: "/trash" },
   { label: "Visit Stuckholm", to: "/contact" },
   { label: "Contact", to: "/about" },
 ];

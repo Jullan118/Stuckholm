@@ -46,10 +46,10 @@ export function TrashProduct() {
     return (
       <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 text-center">
         <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-6">
-          Hittades inte
+          Not found
         </h1>
         <Link to="/trash" className="text-black underline">
-          Tillbaka till Gammalt Skräp
+          Back to Exes
         </Link>
       </div>
     );
@@ -63,7 +63,7 @@ export function TrashProduct() {
         to="/trash"
         className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
       >
-        ← Gammalt Skräp
+        ← Exes
       </Link>
 
       <div className="flex flex-col md:flex-row gap-10">
@@ -83,7 +83,7 @@ export function TrashProduct() {
             </div>
           ) : (
             <div className="aspect-square flex items-center justify-center text-black/60">
-              Bild
+              Image
             </div>
           )}
         </div>
@@ -99,16 +99,16 @@ export function TrashProduct() {
           )}
           {product.details && <p className="text-black/70">{product.details}</p>}
           {product.sellerName && (
-            <p className="text-black/60 text-sm">Säljare: {product.sellerName}</p>
+            <p className="text-black/60 text-sm">Seller: {product.sellerName}</p>
           )}
 
           <a
-            href={`mailto:hello.stuckholm@gmail.com?subject=Beställning: ${encodeURIComponent(
+            href={`mailto:hello.stuckholm@gmail.com?subject=Order: ${encodeURIComponent(
               product.name
             )}`}
             className="mt-4 inline-block border border-[#d51f26] text-black px-6 py-2 rounded-full hover:bg-[#d51f26] hover:text-white transition-colors text-center"
           >
-            Beställ via mail
+            Order via email
           </a>
 
           {userId && (userId === product.ownerId || !product.ownerId) && (
@@ -116,7 +116,7 @@ export function TrashProduct() {
               to={`/trash/edit/${product.slug}`}
               className="text-black/50 hover:text-black text-sm underline mt-2"
             >
-              Redigera plagg
+              Edit item
             </Link>
           )}
         </div>
