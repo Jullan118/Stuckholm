@@ -4,6 +4,7 @@ import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
 import { garmentFromRow, type Garment } from "@/lib/garments";
 import { TRASH_PRODUCTS } from "@/data/trashProducts";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import { JumpyText } from "@/components/JumpyText";
 
 export function TrashProduct() {
   const { slug } = useParams();
@@ -76,15 +77,15 @@ export function TrashProduct() {
   }
 
   return (
-    <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
+    <div className="relative z-10 w-full max-w-5xl px-6 pt-28 pb-16">
       <Link
         to="/trash"
-        className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
+        className="group inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
       >
-        ← Trash
+        ← <JumpyText text="Trash" />
       </Link>
 
-      <div className="flex flex-col md:flex-row gap-10">
+      <div className="flex flex-col md:flex-row gap-5">
         {/* Image carousel: one big image with prev/next arrows, thumbnails below */}
         <div className="w-full md:w-3/5 flex-shrink-0">
           {images.length > 0 ? (
@@ -127,13 +128,13 @@ export function TrashProduct() {
               </div>
 
               {images.length > 1 && (
-                <div className="flex flex-wrap gap-2 mt-4 max-w-md mx-auto">
+                <div className="flex gap-2 mt-4 max-w-md mx-auto">
                   {images.map((src, i) => (
                     <button
                       type="button"
                       key={i}
                       onClick={() => setActiveIndex(i)}
-                      className={`w-16 h-16 overflow-hidden border transition-colors ${
+                      className={`flex-1 min-w-0 aspect-square overflow-hidden border transition-colors ${
                         i === activeIndex
                           ? "border-black"
                           : "border-black/15 hover:border-black/40"
@@ -165,9 +166,6 @@ export function TrashProduct() {
 
         {/* Text + order info */}
         <div className="w-full md:w-2/5 flex flex-col gap-3">
-          <span className="text-black/50 text-sm uppercase tracking-wide">
-            {product.category}
-          </span>
           <h1 className="text-2xl sm:text-3xl font-skarp-thin text-black">
             {product.name}
           </h1>
@@ -191,9 +189,9 @@ export function TrashProduct() {
             href={`mailto:hello.stuckholm@gmail.com?subject=Order: ${encodeURIComponent(
               product.name
             )}`}
-            className="mt-4 inline-block border border-[#d51f26] text-black px-6 py-2 rounded-full hover:bg-[#d51f26] hover:text-white transition-colors text-center"
+            className="mt-4 inline-block border border-black text-black px-6 py-2 w-fit hover:bg-black hover:text-white transition-colors text-center"
           >
-            Order via email
+            Add to cart
           </a>
 
           {userId && (userId === product.ownerId || !product.ownerId) && (
