@@ -49,10 +49,14 @@ export function NewFlamesUpload() {
   const [name, setName] = React.useState("");
   const [shortDescription, setShortDescription] = React.useState("");
   const [details, setDetails] = React.useState("");
-  const [sellerName, setSellerName] = React.useState("");
   const [priceAmount, setPriceAmount] = React.useState("");
   const [priceCurrency, setPriceCurrency] = React.useState<Currency>("sek");
   const [colorCount, setColorCount] = React.useState("");
+  // Comma-separated in the form (e.g. "S, M, L") — parsed into an array on save.
+  const [sizesText, setSizesText] = React.useState("");
+  // One bullet per line in the form — parsed into an array on save.
+  const [productDetailsText, setProductDetailsText] = React.useState("");
+  const [modelInfoText, setModelInfoText] = React.useState("");
   const [images, setImages] = React.useState<ImageSlot[]>([]);
   const [saving, setSaving] = React.useState(false);
   const [message, setMessage] = React.useState("");
@@ -99,10 +103,12 @@ export function NewFlamesUpload() {
           setName(f.name);
           setShortDescription(f.shortDescription);
           setDetails(f.details);
-          setSellerName(f.sellerName);
           setPriceAmount(f.priceAmount !== null ? String(f.priceAmount) : "");
           setPriceCurrency(f.priceCurrency);
           setColorCount(f.colorCount !== null ? String(f.colorCount) : "");
+          setSizesText(f.sizes.join(", "));
+          setProductDetailsText(f.productDetails.join("\n"));
+          setModelInfoText(f.modelInfo.join("\n"));
           setImages(
             f.images.map((url) => ({ id: nextImageId(), url, preview: url }))
           );
@@ -186,6 +192,18 @@ export function NewFlamesUpload() {
       const amount = priceAmount.trim() === "" ? null : Number(priceAmount);
       const priceDisplay = amount !== null ? `${amount} ${priceCurrency}` : "";
       const colors = colorCount.trim() === "" ? null : Number(colorCount);
+      const sizes = sizesText
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const productDetails = productDetailsText
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const modelInfo = modelInfoText
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
 
       if (isEditMode && editSlug) {
         const { error: updateError } = await supabase
@@ -194,11 +212,13 @@ export function NewFlamesUpload() {
             name,
             short_description: shortDescription,
             details,
-            seller_name: sellerName,
             price_amount: amount,
             price_currency: priceCurrency,
             price: priceDisplay,
             color_count: colors,
+            sizes,
+            product_details: productDetails,
+            model_info: modelInfo,
             image_url: finalUrls[0] ?? "",
             image_urls: finalUrls,
           })
@@ -212,11 +232,13 @@ export function NewFlamesUpload() {
           name,
           short_description: shortDescription,
           details,
-          seller_name: sellerName,
           price_amount: amount,
           price_currency: priceCurrency,
           price: priceDisplay,
           color_count: colors,
+          sizes,
+          product_details: productDetails,
+          model_info: modelInfo,
           image_url: finalUrls[0] ?? "",
           image_urls: finalUrls,
           owner_id: session?.user.id,
@@ -227,10 +249,12 @@ export function NewFlamesUpload() {
         setName("");
         setShortDescription("");
         setDetails("");
-        setSellerName("");
         setPriceAmount("");
         setPriceCurrency("sek");
         setColorCount("");
+        setSizesText("");
+        setProductDetailsText("");
+        setModelInfoText("");
         setImages([]);
       }
     } catch (err) {
@@ -422,14 +446,6 @@ export function NewFlamesUpload() {
           rows={3}
         />
 
-        <input
-          type="text"
-          placeholder="Seller (e.g. your name or brand)"
-          value={sellerName}
-          onChange={(e) => setSellerName(e.target.value)}
-          className="border border-black/20 rounded-lg px-3 py-2"
-        />
-
         <div className="flex gap-2">
           <input
             type="number"
@@ -462,6 +478,40 @@ export function NewFlamesUpload() {
           onChange={(e) => setColorCount(e.target.value)}
           className="border border-black/20 rounded-lg px-3 py-2"
         />
+
+        <input
+          type="text"
+          placeholder="Sizes, comma separated (e.g. S, M, L) — leave empty if one size"
+          value={sizesText}
+          onChange={(e) => setSizesText(e.target.value)}
+          className="border border-black/20 rounded-lg px-3 py-2"
+        />
+
+        <div>
+          <label className="text-black/50 text-xs">
+            Product details — one line per bullet point
+          </label>
+          <textarea
+            placeholder={"e.g.\n100% cotton\nRelaxed unisex fit\nMachine washable"}
+            value={productDetailsText}
+            onChange={(e) => setProductDetailsText(e.target.value)}
+            className="border border-black/20 rounded-lg px-3 py-2 w-full mt-1"
+            rows={3}
+          />
+        </div>
+
+        <div>
+          <label className="text-black/50 text-xs">
+            Model info — one line per bullet point
+          </label>
+          <textarea
+            placeholder={"e.g.\nModel is 180 cm\nWearing size M"}
+            value={modelInfoText}
+            onChange={(e) => setModelInfoText(e.target.value)}
+            className="border border-black/20 rounded-lg px-3 py-2 w-full mt-1"
+            rows={2}
+          />
+        </div>
 
         {message && <p className="text-sm text-black">{message}</p>}
 
