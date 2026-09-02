@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
 import { MiniGlobe } from "@/components/MiniGlobe";
 import { Home } from "@/pages/Home";
-import { Shop } from "@/pages/Shop";
+import { NewFlames } from "@/pages/NewFlames";
+import { NewFlamesProduct } from "@/pages/NewFlamesProduct";
+import { NewFlamesUpload } from "@/pages/NewFlamesUpload";
 import { About } from "@/pages/About";
 import { Contact } from "@/pages/Contact";
 import { Trash } from "@/pages/Trash";
@@ -56,7 +58,10 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
+          <Route path="/off-the-shelf" element={<NewFlames />} />
+          <Route path="/off-the-shelf/upload" element={<NewFlamesUpload />} />
+          <Route path="/off-the-shelf/edit/:slug" element={<NewFlamesUpload />} />
+          <Route path="/off-the-shelf/:slug" element={<NewFlamesProduct />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/trash/upload" element={<TrashUpload />} />
           <Route path="/trash/edit/:slug" element={<TrashUpload />} />
