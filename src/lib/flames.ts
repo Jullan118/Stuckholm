@@ -18,6 +18,9 @@ export type Flame = {
   priceAmount: number | null;
   priceCurrency: Currency;
   colorCount: number | null;
+  sizes: string[]; // available sizes, e.g. ["S", "M", "L"] — empty means no size picker shown
+  productDetails: string[]; // bullet list shown under "Product details"
+  modelInfo: string[]; // bullet list shown under "Model info"
   ownerId: string | null; // Supabase auth user id of whoever posted this item
 };
 
@@ -34,6 +37,9 @@ export type FlameRow = {
   price_amount: number | null;
   price_currency: string | null;
   color_count: number | null;
+  sizes: string[] | null;
+  product_details: string[] | null;
+  model_info: string[] | null;
   owner_id: string | null;
 };
 
@@ -68,6 +74,9 @@ export function flameFromRow(row: FlameRow): Flame {
     priceAmount: row.price_amount ?? null,
     priceCurrency,
     colorCount: row.color_count ?? null,
+    sizes: row.sizes ?? [],
+    productDetails: row.product_details ?? [],
+    modelInfo: row.model_info ?? [],
     ownerId: row.owner_id ?? null,
   };
 }
