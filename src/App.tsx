@@ -58,10 +58,10 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/new-flames" element={<NewFlames />} />
-          <Route path="/new-flames/upload" element={<NewFlamesUpload />} />
-          <Route path="/new-flames/edit/:slug" element={<NewFlamesUpload />} />
-          <Route path="/new-flames/:slug" element={<NewFlamesProduct />} />
+          <Route path="/off-the-shelf" element={<NewFlames />} />
+          <Route path="/off-the-shelf/upload" element={<NewFlamesUpload />} />
+          <Route path="/off-the-shelf/edit/:slug" element={<NewFlamesUpload />} />
+          <Route path="/off-the-shelf/:slug" element={<NewFlamesProduct />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/trash/upload" element={<TrashUpload />} />
           <Route path="/trash/edit/:slug" element={<TrashUpload />} />
