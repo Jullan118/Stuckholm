@@ -13,6 +13,9 @@ export function TrashProduct() {
   const [userId, setUserId] = React.useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
 
+  // Which image the big frame + thumbnail strip currently show.
+  const [activeIndex, setActiveIndex] = React.useState(0);
+
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase || !slug) return;
     let cancelled = false;
@@ -44,6 +47,11 @@ export function TrashProduct() {
     };
   }, [slug]);
 
+  // Reset the carousel whenever we land on a different product.
+  React.useEffect(() => {
+    setActiveIndex(0);
+  }, [product?.slug]);
+
   if (notFound || !product) {
     return (
       <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 text-center">
@@ -58,6 +66,14 @@ export function TrashProduct() {
   }
 
   const images = product.images.length > 0 ? product.images : [product.image].filter(Boolean);
+  const current = images[activeIndex] ?? images[0];
+
+  function goPrev() {
+    setActiveIndex((i) => (i - 1 + images.length) % images.length);
+  }
+  function goNext() {
+    setActiveIndex((i) => (i + 1) % images.length);
+  }
 
   return (
     <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
@@ -69,28 +85,69 @@ export function TrashProduct() {
       </Link>
 
       <div className="flex flex-col md:flex-row gap-10">
-        {/* Image grid: up to 8 images, sized to match the thumbnails on the Trash listing page */}
+        {/* Image carousel: one big image with prev/next arrows, thumbnails below */}
         <div className="w-full md:w-3/5 flex-shrink-0">
           {images.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {images.map((src, i) => (
+            <>
+              <div className="flex items-center justify-center gap-3">
+                {images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={goPrev}
+                    aria-label="Previous image"
+                    className="shrink-0 text-black/40 hover:text-black transition-colors text-3xl leading-none px-1"
+                  >
+                    ‹
+                  </button>
+                )}
+
                 <button
                   type="button"
-                  key={i}
-                  onClick={() => setLightboxIndex(i)}
-                  className="overflow-hidden cursor-zoom-in"
-                  aria-label={`View image ${i + 1} larger`}
+                  onClick={() => setLightboxIndex(activeIndex)}
+                  className="w-full max-w-md overflow-hidden cursor-zoom-in"
+                  aria-label="View image larger"
                 >
                   <img
-                    src={src}
-                    alt={`${product.name} ${i + 1}`}
+                    src={current}
+                    alt={`${product.name} ${activeIndex + 1}`}
                     className="w-full h-auto block"
                   />
                 </button>
-              ))}
-            </div>
+
+                {images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={goNext}
+                    aria-label="Next image"
+                    className="shrink-0 text-black/40 hover:text-black transition-colors text-3xl leading-none px-1"
+                  >
+                    ›
+                  </button>
+                )}
+              </div>
+
+              {images.length > 1 && (
+                <div className="flex flex-wrap gap-2 mt-4 max-w-md mx-auto">
+                  {images.map((src, i) => (
+                    <button
+                      type="button"
+                      key={i}
+                      onClick={() => setActiveIndex(i)}
+                      className={`w-16 h-16 overflow-hidden border transition-colors ${
+                        i === activeIndex
+                          ? "border-black"
+                          : "border-black/15 hover:border-black/40"
+                      }`}
+                      aria-label={`View image ${i + 1}`}
+                    >
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
           ) : (
-            <div className="aspect-square flex items-center justify-center text-black/60">
+            <div className="max-w-md aspect-square mx-auto flex items-center justify-center text-black/60 border border-black/15">
               Image
             </div>
           )}
