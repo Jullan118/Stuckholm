@@ -51,7 +51,7 @@ export function TrashProduct() {
           Not found
         </h1>
         <Link to="/trash" className="text-black underline">
-          Back to Exes
+          Back to Trash
         </Link>
       </div>
     );
@@ -60,31 +60,31 @@ export function TrashProduct() {
   const images = product.images.length > 0 ? product.images : [product.image].filter(Boolean);
 
   return (
-    <div className="relative z-10 w-full max-w-5xl px-6 pt-28 pb-16">
+    <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
       <Link
         to="/trash"
         className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
       >
-        ← Exes
+        ← Trash
       </Link>
 
       <div className="flex flex-col md:flex-row gap-10">
-        {/* Image grid: up to 8 images, 4 across x 2 rows */}
+        {/* Image grid: up to 8 images, sized to match the thumbnails on the Trash listing page */}
         <div className="w-full md:w-3/5 flex-shrink-0">
           {images.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {images.map((src, i) => (
                 <button
                   type="button"
                   key={i}
                   onClick={() => setLightboxIndex(i)}
-                  className="aspect-square overflow-hidden cursor-zoom-in"
+                  className="overflow-hidden cursor-zoom-in"
                   aria-label={`View image ${i + 1} larger`}
                 >
                   <img
                     src={src}
                     alt={`${product.name} ${i + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-auto block"
                   />
                 </button>
               ))}

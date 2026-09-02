@@ -2,8 +2,8 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 
 const LINKS = [
-  { label: "New Flames", to: "/new-flames" },
-  { label: "Exes", to: "/trash" },
+  { label: "Off the shelf", to: "/off-the-shelf" },
+  { label: "Trash", to: "/trash" },
   { label: "Visit Stuckholm", to: "/contact" },
   { label: "Contact", to: "/about" },
 ];

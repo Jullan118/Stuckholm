@@ -1,7 +1,7 @@
 import type { Flame } from "@/lib/flames";
 
 // Platshållare — visas bara tills det finns riktiga produkter i Supabase.
-// Byt inte i den här filen; ladda upp riktiga produkter via /new-flames/upload istället.
+// Byt inte i den här filen; ladda upp riktiga produkter via /off-the-shelf/upload istället.
 export const NEW_FLAMES_PRODUCTS: Flame[] = [
   {
     slug: "produkt-1",

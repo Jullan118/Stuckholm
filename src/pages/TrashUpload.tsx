@@ -414,7 +414,7 @@ export function TrashUpload() {
         />
 
         {/* Category — decides which section (Women's / Men's) this item
-            sorts into on the Exes listing page. */}
+            sorts into on the Trash listing page. */}
         <div className="flex items-center border border-black/20 rounded-lg overflow-hidden">
           <span className="pl-3 pr-1 py-2 text-black/50 whitespace-nowrap text-sm">
             Category:
@@ -434,7 +434,7 @@ export function TrashUpload() {
 
         {/* Brand / Colour / Condition — the label prefix is fixed, only the
             value is typed in. These three show as a stacked list when
-            hovering the product image on the Exes listing. */}
+            hovering the product image on the Trash listing. */}
         <div className="flex items-center border border-black/20 rounded-lg overflow-hidden">
           <span className="pl-3 pr-1 py-2 text-black/50 whitespace-nowrap text-sm">
             Brand:
@@ -560,7 +560,7 @@ export function TrashUpload() {
       </form>
 
       <Link to="/trash" className="block text-center text-black/60 text-sm mt-6">
-        ← See Exes
+        ← See Trash
       </Link>
     </div>
   );

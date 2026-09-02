@@ -50,7 +50,7 @@ export function Trash() {
   return (
     <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
       <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-4 text-center">
-        Exes
+        Trash
       </h1>
 
       {usingExamples && (
@@ -148,14 +148,16 @@ export function Trash() {
         );
       })()}
 
-      <div className="mt-4 text-center">
-        <Link
-          to="/trash/upload"
-          className="text-black/50 hover:text-black text-sm underline transition-colors"
-        >
-          + Add item
-        </Link>
-      </div>
+      {userId && (
+        <div className="mt-4 text-center">
+          <Link
+            to="/trash/upload"
+            className="text-black/50 hover:text-black text-sm underline transition-colors"
+          >
+            + Add item
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

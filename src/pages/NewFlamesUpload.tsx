@@ -259,7 +259,7 @@ export function NewFlamesUpload() {
       setMessage(`Could not delete: ${error.message}`);
       return;
     }
-    navigate("/new-flames");
+    navigate("/off-the-shelf");
   }
 
   if (!supabaseConfigured) {
@@ -271,7 +271,7 @@ export function NewFlamesUpload() {
         <p className="text-black/70">
           Upload isn't connected yet — the Supabase keys are missing.
         </p>
-        <Link to="/new-flames" className="block text-black/60 text-sm mt-6 underline">
+        <Link to="/off-the-shelf" className="block text-black/60 text-sm mt-6 underline">
           ← Back
         </Link>
       </div>
@@ -311,7 +311,7 @@ export function NewFlamesUpload() {
             Log in
           </button>
         </form>
-        <Link to="/new-flames" className="block text-center text-black/60 text-sm mt-6">
+        <Link to="/off-the-shelf" className="block text-center text-black/60 text-sm mt-6">
           ← Back
         </Link>
       </div>
@@ -330,7 +330,7 @@ export function NewFlamesUpload() {
           This product was posted by someone else — you can only edit
           and delete your own products.
         </p>
-        <Link to="/new-flames" className="block text-black/60 text-sm mt-6 underline">
+        <Link to="/off-the-shelf" className="block text-black/60 text-sm mt-6 underline">
           ← Back
         </Link>
       </div>
@@ -493,8 +493,8 @@ export function NewFlamesUpload() {
         )}
       </form>
 
-      <Link to="/new-flames" className="block text-center text-black/60 text-sm mt-6">
-        ← See New Flames
+      <Link to="/off-the-shelf" className="block text-center text-black/60 text-sm mt-6">
+        ← See Off the shelf
       </Link>
     </div>
   );

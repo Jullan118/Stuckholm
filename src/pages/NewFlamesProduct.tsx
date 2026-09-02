@@ -52,8 +52,8 @@ export function NewFlamesProduct() {
         <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-6">
           Not found
         </h1>
-        <Link to="/new-flames" className="text-black underline">
-          Back to New Flames
+        <Link to="/off-the-shelf" className="text-black underline">
+          Back to Off the shelf
         </Link>
       </div>
     );
@@ -64,10 +64,10 @@ export function NewFlamesProduct() {
   return (
     <div className="relative z-10 w-full max-w-5xl px-6 pt-28 pb-16">
       <Link
-        to="/new-flames"
+        to="/off-the-shelf"
         className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
       >
-        ← New Flames
+        ← Off the shelf
       </Link>
 
       <div className="flex flex-col md:flex-row gap-10">
@@ -134,7 +134,7 @@ export function NewFlamesProduct() {
 
           {userId && (userId === product.ownerId || !product.ownerId) && (
             <Link
-              to={`/new-flames/edit/${product.slug}`}
+              to={`/off-the-shelf/edit/${product.slug}`}
               className="text-black/50 hover:text-black text-sm underline mt-2"
             >
               Edit product
