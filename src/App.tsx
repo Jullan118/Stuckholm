@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { HamburgerMenu } from "@/components/HamburgerMenu";
+import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
+import { ContactCorner } from "@/components/ContactCorner";
 import { Home } from "@/pages/Home";
 import { NewFlames } from "@/pages/NewFlames";
 import { NewFlamesProduct } from "@/pages/NewFlamesProduct";
@@ -54,7 +55,8 @@ function App() {
     <BrowserRouter>
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <MiniGlobe />
-        <HamburgerMenu />
+        <MainNav />
+        <ContactCorner />
 
         <Routes>
           <Route path="/" element={<Home />} />
