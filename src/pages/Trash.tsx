@@ -17,6 +17,7 @@ export function Trash() {
   const [filter, setFilter] = React.useState<"All" | (typeof CATEGORIES)[number]>(
     "All"
   );
+  const [hoveredSlug, setHoveredSlug] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase) return;
@@ -92,25 +93,37 @@ export function Trash() {
         }
 
         return (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-3 gap-y-8 items-end mb-16">
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 mb-16"
+            onMouseLeave={() => setHoveredSlug(null)}
+          >
             {visible.map((product) => (
-              <div key={product.slug} className="group flex flex-col gap-2">
+              <div
+                key={product.slug}
+                className="border-r border-b transition-opacity duration-300"
+                style={{
+                  borderColor: "rgba(0,0,0,0.08)",
+                  opacity:
+                    hoveredSlug && hoveredSlug !== product.slug ? 0.4 : 1,
+                }}
+                onMouseEnter={() => setHoveredSlug(product.slug)}
+              >
                 <Link to={`/trash/${product.slug}`}>
-                  <div className="relative overflow-hidden">
+                  <div className="relative aspect-[4/5] overflow-hidden">
                     {product.image ? (
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-auto block"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full aspect-[3/4] bg-black/5 flex items-center justify-center text-black/60">
+                      <div className="w-full h-full flex items-center justify-center text-black/60">
                         Image
                       </div>
                     )}
 
                     {/* hover overlay: brand / colour / condition, one per line */}
-                    <div className="absolute inset-0 bg-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-center px-3 gap-1">
+                    <div className="absolute inset-0 bg-white/90 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-center px-3 gap-1">
                       {product.brand && (
                         <span className="text-black text-sm">Brand: {product.brand}</span>
                       )}
@@ -126,18 +139,18 @@ export function Trash() {
                   </div>
                 </Link>
 
-                <div className="flex items-baseline justify-between font-skarp-thin">
+                <div className="flex items-baseline justify-between font-skarp-thin px-4 py-3">
                   <Link to={`/trash/${product.slug}`}>
-                    <span className="text-black">{product.name}</span>
+                    <span className="text-black lowercase">{product.name}</span>
                   </Link>
-                  <span className="text-black">{product.price}</span>
+                  <span style={{ color: "#999999" }}>{product.price}</span>
                 </div>
                 {!usingExamples &&
                   userId &&
                   (userId === product.ownerId || !product.ownerId) && (
                     <Link
                       to={`/trash/edit/${product.slug}`}
-                      className="text-black/40 hover:text-black text-xs underline -mt-1"
+                      className="text-black/40 hover:text-black text-xs underline px-4 pb-3 block"
                     >
                       Edit
                     </Link>
