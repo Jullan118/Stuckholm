@@ -12,6 +12,7 @@ export function NewFlames() {
   // real products have loaded.
   const [usingExamples, setUsingExamples] = React.useState(true);
   const [userId, setUserId] = React.useState<string | null>(null);
+  const [hoveredSlug, setHoveredSlug] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase) return;
@@ -43,7 +44,7 @@ export function NewFlames() {
   }, []);
 
   return (
-    <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
+    <div className="relative z-10 w-full pt-28 pb-16">
       <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-4 text-center">
         Off the shelf
       </h1>
@@ -54,11 +55,23 @@ export function NewFlames() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-12">
+      <div
+        className="grid grid-cols-2 sm:grid-cols-4"
+        onMouseLeave={() => setHoveredSlug(null)}
+      >
         {products.map((product) => (
-          <div key={product.slug} className="flex flex-col gap-2">
+          <div
+            key={product.slug}
+            className="border-r border-b transition-opacity duration-300"
+            style={{
+              borderColor: "rgba(0,0,0,0.08)",
+              opacity:
+                hoveredSlug && hoveredSlug !== product.slug ? 0.4 : 1,
+            }}
+            onMouseEnter={() => setHoveredSlug(product.slug)}
+          >
             <Link to={`/off-the-shelf/${product.slug}`}>
-              <div className="aspect-square overflow-hidden">
+              <div className="aspect-[4/5] overflow-hidden">
                 {product.image ? (
                   <img
                     src={product.image}
@@ -73,15 +86,15 @@ export function NewFlames() {
               </div>
             </Link>
 
-            <div className="flex items-baseline justify-between font-skarp-thin">
+            <div className="flex items-baseline justify-between font-skarp-thin px-4 py-3">
               <Link to={`/off-the-shelf/${product.slug}`}>
-                <span className="text-black">{product.name}</span>
+                <span className="text-black lowercase">{product.name}</span>
               </Link>
-              <span className="text-black">{product.price}</span>
+              <span style={{ color: "#999999" }}>{product.price}</span>
             </div>
             {product.colorCount !== null && (
               <span
-                className="font-skarp-thin -mt-1"
+                className="font-skarp-thin -mt-2 px-4 pb-3 block"
                 style={{ color: "#d7d7d7" }}
               >
                 {formatColorCount(product.colorCount)}
@@ -91,7 +104,7 @@ export function NewFlames() {
             {!usingExamples && userId && (userId === product.ownerId || !product.ownerId) && (
               <Link
                 to={`/off-the-shelf/edit/${product.slug}`}
-                className="text-black/40 hover:text-black text-xs underline mt-1"
+                className="text-black/40 hover:text-black text-xs underline px-4 pb-3 block"
               >
                 Edit
               </Link>
