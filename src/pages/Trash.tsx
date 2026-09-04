@@ -49,7 +49,7 @@ export function Trash() {
   }, []);
 
   return (
-    <div className="relative z-10 w-full px-4 sm:px-8 pt-28 pb-16">
+    <div className="relative z-10 w-full pt-28 pb-16">
       <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-4 text-center">
         Trash
       </h1>
