@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Canvas } from "@react-three/fiber";
-import { Text3D, Center, Float, OrbitControls } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Text3D, Center, Float, OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
 
 function hashNoise(x: number, y: number, z: number) {
@@ -131,23 +131,73 @@ function GlobeText() {
   );
 }
 
-export function StuckholmGlobe() {
+// Wraps the globe + its orbiting wordmark in one animated group: a gentle
+// idle spin at rest, ramping into a fast spin-away that shrinks and pushes
+// the whole thing back into the starfield as `scrollProgress` goes 0 -> 1.
+function DriftingGlobe({ scrollProgress }: { scrollProgress: number }) {
+  const groupRef = React.useRef<THREE.Group>(null);
+  const progressRef = React.useRef(0);
+
+  React.useEffect(() => {
+    progressRef.current = scrollProgress;
+  }, [scrollProgress]);
+
+  useFrame((_, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    const p = progressRef.current;
+
+    // idle spin at p = 0, ramping sharply into a fast spin-away
+    const spinSpeed = 0.18 + p * p * 5.5;
+    group.rotation.y += delta * spinSpeed;
+
+    const targetScale = THREE.MathUtils.lerp(1, 0.06, p);
+    const targetZ = THREE.MathUtils.lerp(0, -22, p);
+    const targetY = THREE.MathUtils.lerp(0, 3.2, p);
+
+    const dampLambda = 4;
+    const nextScale = THREE.MathUtils.damp(group.scale.x, targetScale, dampLambda, delta);
+    group.scale.setScalar(nextScale);
+    group.position.z = THREE.MathUtils.damp(group.position.z, targetZ, dampLambda, delta);
+    group.position.y = THREE.MathUtils.damp(group.position.y, targetY, dampLambda, delta);
+  });
+
+  return (
+    <group ref={groupRef}>
+      <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
+        <ClayGlobe />
+        <GlobeText />
+      </Float>
+    </group>
+  );
+}
+
+export function StuckholmGlobe({
+  scrollProgress = 0,
+}: {
+  scrollProgress?: number;
+}) {
   return (
     <div className="w-full h-full">
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <color attach="background" args={["#ffffff"]} />
-        <ambientLight intensity={1} />
+        <color attach="background" args={["#04050c"]} />
+        <Stars
+          radius={90}
+          depth={55}
+          count={3200}
+          factor={3.2}
+          saturation={0}
+          fade
+          speed={0.6}
+        />
+        <ambientLight intensity={0.9} />
         <directionalLight position={[0, 2, 8]} intensity={0.9} />
         <directionalLight position={[0, -2, -6]} intensity={0.25} />
-        <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
-          <ClayGlobe />
-          <GlobeText />
-        </Float>
+        <DriftingGlobe scrollProgress={scrollProgress} />
         <OrbitControls
           enableZoom={false}
           enablePan={false}
-          autoRotate
-          autoRotateSpeed={2.4}
           enableDamping
           dampingFactor={0.08}
         />
