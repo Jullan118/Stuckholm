@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
 import { ContactCorner } from "@/components/ContactCorner";
+import { CartCorner } from "@/components/CartCorner";
 import { Home } from "@/pages/Home";
 import { NewFlames } from "@/pages/NewFlames";
 import { NewFlamesProduct } from "@/pages/NewFlamesProduct";
@@ -56,6 +57,7 @@ function App() {
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <MiniGlobe />
         <MainNav />
+        <CartCorner />
         <ContactCorner />
 
         <Routes>
