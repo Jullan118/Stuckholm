@@ -134,13 +134,15 @@ function GlobeText() {
 // Drag state shared between the plain-HTML pointer handlers (in
 // StuckholmGlobe below, outside the R3F tree) and the per-frame rotation
 // logic here — a ref so dragging never triggers a React re-render.
-type DragState = { dragging: boolean; deltaX: number };
+type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
 // Wraps the globe + its orbiting wordmark in one animated group: a gentle
-// idle spin at rest that picks up a little pace as you scroll (no more
-// shrinking/flying off into the distance — the globe stays put, only the
-// sky around it changes, see SceneBackground/Starfield below). Grabbing it
-// with the mouse overrides the auto-spin and rotates it directly.
+// idle spin at rest that picks up a little pace as you scroll, and fades
+// out (opacity -> 0) as the sky behind it goes white — the globe stays put
+// in its fixed spot the whole time, it never shrinks or flies away, it
+// just disappears in place to make room for whatever comes next on scroll.
+// Grabbing it with the mouse overrides the auto-spin and free-rotates it
+// in whatever direction you drag, on both axes at once.
 function DriftingGlobe({
   scrollProgress,
   dragRef,
@@ -161,14 +163,31 @@ function DriftingGlobe({
 
     const drag = dragRef.current;
     if (drag.dragging) {
-      // Direct manipulation: one radian of spin per ~320px of mouse travel.
+      // Direct manipulation: one radian of spin per ~320px of mouse travel,
+      // on both axes — drag sideways to spin it, drag up/down to tip it.
       group.rotation.y += drag.deltaX * 0.0032;
+      group.rotation.x += drag.deltaY * 0.0032;
       drag.deltaX = 0;
+      drag.deltaY = 0;
     } else {
       const p = progressRef.current;
       const spinSpeed = 0.18 + p * 0.5;
       group.rotation.y += delta * spinSpeed;
     }
+
+    const opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    group.traverse((child) => {
+      const mat = (child as THREE.Mesh).material as
+        | THREE.Material
+        | THREE.Material[]
+        | undefined;
+      if (!mat) return;
+      const mats = Array.isArray(mat) ? mat : [mat];
+      for (const m of mats) {
+        m.transparent = true;
+        m.opacity = opacity;
+      }
+    });
   });
 
   return (
@@ -268,12 +287,17 @@ export function StuckholmGlobe({
 }: {
   scrollProgress?: number;
 }) {
-  const dragRef = React.useRef<DragState>({ dragging: false, deltaX: 0 });
+  const dragRef = React.useRef<DragState>({
+    dragging: false,
+    deltaX: 0,
+    deltaY: 0,
+  });
   const [isDragging, setIsDragging] = React.useState(false);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     dragRef.current.dragging = true;
     dragRef.current.deltaX = 0;
+    dragRef.current.deltaY = 0;
     e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
   };
@@ -281,6 +305,7 @@ export function StuckholmGlobe({
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!dragRef.current.dragging) return;
     dragRef.current.deltaX += e.movementX;
+    dragRef.current.deltaY += e.movementY;
   };
 
   const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
