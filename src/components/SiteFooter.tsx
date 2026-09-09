@@ -14,13 +14,13 @@ export function SiteFooter() {
     // without this gap the "Contact" link would sit right on top of the
     // copyright bar. This reserves clear space below the footer for it.
     <footer className="w-full font-skarp text-black mt-20 mb-14">
-      <div className="max-w-5xl mx-auto px-6 sm:px-8 py-12 grid grid-cols-2 sm:grid-cols-3 gap-10 text-sm sm:text-base">
+      <div className="w-full px-6 sm:px-8 py-12 grid grid-cols-2 sm:grid-cols-3 gap-10 text-sm sm:text-base">
         <div className="flex flex-col gap-2">
           <span className="text-black/40 uppercase tracking-wide text-xs mb-1">
             About
           </span>
-          <span>Stuck in Stuckholm</span>
-          <span className="text-black/60">By aquam3ss</span>
+          <span>Stuckholm</span>
+          <span className="text-black/60">by 2 Stuckholm Kids</span>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -28,10 +28,10 @@ export function SiteFooter() {
             Contact
           </span>
           <a
-            href="mailto:hello.stuckholm@gmail.com"
+            href="mailto:stuck@stuckholm.se"
             className="hover:opacity-70 transition-opacity"
           >
-            hello.stuckholm@gmail.com
+            stuck@stuckholm.se
           </a>
           <a
             href="tel:+46011771123"
@@ -56,7 +56,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-black/10 px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-black/50 max-w-5xl mx-auto">
+      <div className="border-t border-black/10 px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-black/50 w-full">
         <span>© {year} Stuck in Stuckholm — all rights reserved</span>
         <span>Stockholm, Sweden</span>
       </div>
