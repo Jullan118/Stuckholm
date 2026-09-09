@@ -34,10 +34,10 @@ export function SiteFooter() {
             stuck@stuckholm.se
           </a>
           <a
-            href="tel:+46011771123"
+            href="tel:+46768771123"
             className="hover:opacity-70 transition-opacity"
           >
-            +46 011 77 11 23
+            +46 76 877 11 23
           </a>
         </div>
 
@@ -46,7 +46,7 @@ export function SiteFooter() {
             Follow
           </span>
           <a
-            href="https://instagram.com/stuckholm.se"
+            href="https://instagram.com/skraqp"
             target="_blank"
             rel="noreferrer"
             className="hover:opacity-70 transition-opacity"
@@ -56,7 +56,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-black/10 px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-black/50 w-full">
+      <div className="px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-black/50 w-full">
         <span>© {year} Stuck in Stuckholm — all rights reserved</span>
         <span>Stockholm, Sweden</span>
       </div>
