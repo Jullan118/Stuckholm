@@ -76,12 +76,12 @@ function ClayGlobe() {
 // (letterUnit/wordGap below) makes room for both passes without the
 // letters overlapping.
 const GLOBE_WORDS = [
-  "STUCK",
-  "IN",
-  "STUCKHOLM",
-  "STUCK",
-  "IN",
-  "STUCKHOLM",
+  "stuck",
+  "in",
+  "stuckholm",
+  "stuck",
+  "in",
+  "stuckholm",
 ];
 
 function buildLayout(words: string[]) {
@@ -108,18 +108,31 @@ function buildLayout(words: string[]) {
   return items;
 }
 
+// A true oval, not a circle — wider along X than deep along Z, so the path
+// itself reads as an elliptical orbit (like an orbit diagram) rather than a
+// tilted circle. It also sits further out from the globe's surface than
+// before, like a real orbit path instead of a ring hugging the surface.
+const ORBIT_RADIUS_X = 2.35;
+const ORBIT_RADIUS_Z = 1.55;
+
 function GlobeText() {
   const items = React.useMemo(() => buildLayout(GLOBE_WORDS), []);
-  const radius = 1.68;
 
   return (
     <group>
       {items.map(({ char, angle }, i) => {
-        const x = Math.sin(angle) * radius;
-        const z = Math.cos(angle) * radius;
+        const x = Math.sin(angle) * ORBIT_RADIUS_X;
+        const z = Math.cos(angle) * ORBIT_RADIUS_Z;
+
+        // Face along the ellipse's tangent (not the radial angle, which
+        // would look wrong on an oval) so each letter sits flush with the
+        // curve it's traveling along.
+        const tangentX = Math.cos(angle) * ORBIT_RADIUS_X;
+        const tangentZ = -Math.sin(angle) * ORBIT_RADIUS_Z;
+        const facing = Math.atan2(tangentX, tangentZ);
 
         return (
-          <group key={i} position={[x, 0, z]} rotation={[0, angle, 0]}>
+          <group key={i} position={[x, 0, z]} rotation={[0, facing, 0]}>
             <Center>
               <Text3D
                 font="/fonts/Skarp-Italic.typeface.json"
@@ -149,8 +162,15 @@ type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 // Independent orbit speed for the wordmark ring, in radians/sec — it never
 // stops or syncs with the globe's own spin below, so the text visibly
 // slides around the globe's surface at its own pace (a "moon" orbiting the
-// "planet") rather than being glued to it like a texture.
-const TEXT_ORBIT_SPEED = 0.42;
+// "planet") rather than being glued to it like a texture. Slow and steady.
+const TEXT_ORBIT_SPEED = 0.08;
+
+// Fixed tilt of the wordmark ring's own plane, in radians — combined with
+// the oval shape in GlobeText (ORBIT_RADIUS_X/Z above), this is what makes
+// it read as a proper elliptical orbit path around the globe — like an
+// orbit diagram — rather than a flat horizontal belt or a steep halo. It's
+// set once and never animated; only the spin below changes frame to frame.
+const TEXT_ORBIT_TILT = Math.PI / 5;
 
 // Wraps the globe + its orbiting wordmark in one animated group: a gentle
 // idle spin at rest that picks up a little pace as you scroll, and fades
@@ -189,8 +209,10 @@ function DriftingGlobe({
       drag.deltaX = 0;
       drag.deltaY = 0;
     } else {
+      // Slow, calm idle spin — still picks up a little pace as you scroll,
+      // just far less than before.
       const p = progressRef.current;
-      const spinSpeed = 0.18 + p * 0.5;
+      const spinSpeed = 0.07 + p * 0.18;
       group.rotation.y += delta * spinSpeed;
     }
 
@@ -219,8 +241,14 @@ function DriftingGlobe({
     <group ref={groupRef}>
       <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
         <ClayGlobe />
-        <group ref={textOrbitRef}>
-          <GlobeText />
+        {/* Static tilt on the outer group sets the orbital plane once;
+            the inner group spins within that tilted plane each frame —
+            keeping the two separate avoids the wobble/precession you'd
+            get from animating rotation on an already-tilted axis. */}
+        <group rotation={[TEXT_ORBIT_TILT, 0, 0]}>
+          <group ref={textOrbitRef}>
+            <GlobeText />
+          </group>
         </group>
       </Float>
     </group>
