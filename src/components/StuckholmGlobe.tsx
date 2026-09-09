@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Text3D, Center, Float, OrbitControls, Stars } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Text3D, Center, Float } from "@react-three/drei";
 import * as THREE from "three";
 
 function hashNoise(x: number, y: number, z: number) {
@@ -131,10 +131,23 @@ function GlobeText() {
   );
 }
 
+// Drag state shared between the plain-HTML pointer handlers (in
+// StuckholmGlobe below, outside the R3F tree) and the per-frame rotation
+// logic here — a ref so dragging never triggers a React re-render.
+type DragState = { dragging: boolean; deltaX: number };
+
 // Wraps the globe + its orbiting wordmark in one animated group: a gentle
-// idle spin at rest, ramping into a fast spin-away that shrinks and pushes
-// the whole thing back into the starfield as `scrollProgress` goes 0 -> 1.
-function DriftingGlobe({ scrollProgress }: { scrollProgress: number }) {
+// idle spin at rest that picks up a little pace as you scroll (no more
+// shrinking/flying off into the distance — the globe stays put, only the
+// sky around it changes, see SceneBackground/Starfield below). Grabbing it
+// with the mouse overrides the auto-spin and rotates it directly.
+function DriftingGlobe({
+  scrollProgress,
+  dragRef,
+}: {
+  scrollProgress: number;
+  dragRef: React.MutableRefObject<DragState>;
+}) {
   const groupRef = React.useRef<THREE.Group>(null);
   const progressRef = React.useRef(0);
 
@@ -146,21 +159,16 @@ function DriftingGlobe({ scrollProgress }: { scrollProgress: number }) {
     const group = groupRef.current;
     if (!group) return;
 
-    const p = progressRef.current;
-
-    // idle spin at p = 0, ramping sharply into a fast spin-away
-    const spinSpeed = 0.18 + p * p * 5.5;
-    group.rotation.y += delta * spinSpeed;
-
-    const targetScale = THREE.MathUtils.lerp(1, 0.06, p);
-    const targetZ = THREE.MathUtils.lerp(0, -22, p);
-    const targetY = THREE.MathUtils.lerp(0, 3.2, p);
-
-    const dampLambda = 4;
-    const nextScale = THREE.MathUtils.damp(group.scale.x, targetScale, dampLambda, delta);
-    group.scale.setScalar(nextScale);
-    group.position.z = THREE.MathUtils.damp(group.position.z, targetZ, dampLambda, delta);
-    group.position.y = THREE.MathUtils.damp(group.position.y, targetY, dampLambda, delta);
+    const drag = dragRef.current;
+    if (drag.dragging) {
+      // Direct manipulation: one radian of spin per ~320px of mouse travel.
+      group.rotation.y += drag.deltaX * 0.0032;
+      drag.deltaX = 0;
+    } else {
+      const p = progressRef.current;
+      const spinSpeed = 0.18 + p * 0.5;
+      group.rotation.y += delta * spinSpeed;
+    }
   });
 
   return (
@@ -173,34 +181,133 @@ function DriftingGlobe({ scrollProgress }: { scrollProgress: number }) {
   );
 }
 
+const SKY_DARK = new THREE.Color("#04050c");
+const SKY_WHITE = new THREE.Color("#ffffff");
+
+// Animates the scene's clear colour from the night-sky navy to white as
+// `progress` goes 0 -> 1, instead of the globe flying away into it.
+function SceneBackground({ progress }: { progress: number }) {
+  const { scene } = useThree();
+  const colorRef = React.useRef(new THREE.Color().copy(SKY_DARK));
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  React.useEffect(() => {
+    scene.background = colorRef.current;
+  }, [scene]);
+
+  useFrame(() => {
+    colorRef.current.lerpColors(
+      SKY_DARK,
+      SKY_WHITE,
+      THREE.MathUtils.clamp(progressRef.current, 0, 1)
+    );
+  });
+
+  return null;
+}
+
+// A simple hand-rolled starfield (instead of drei's <Stars>) so we can fade
+// its opacity to nothing as the sky goes white, rather than leaving grey
+// specks floating over a white background.
+function Starfield({ progress }: { progress: number }) {
+  const pointsRef = React.useRef<THREE.Points>(null);
+  const materialRef = React.useRef<THREE.PointsMaterial>(null);
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  const geometry = React.useMemo(() => {
+    const count = 2400;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const r = 40 + Math.random() * 50;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    return geo;
+  }, []);
+
+  useFrame((_, delta) => {
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y += delta * 0.02;
+    }
+    if (materialRef.current) {
+      materialRef.current.opacity =
+        1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    }
+  });
+
+  return (
+    <points ref={pointsRef} geometry={geometry}>
+      <pointsMaterial
+        ref={materialRef}
+        color="#ffffff"
+        size={0.6}
+        sizeAttenuation
+        transparent
+        opacity={1}
+        depthWrite={false}
+      />
+    </points>
+  );
+}
+
 export function StuckholmGlobe({
   scrollProgress = 0,
 }: {
   scrollProgress?: number;
 }) {
+  const dragRef = React.useRef<DragState>({ dragging: false, deltaX: 0 });
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = true;
+    dragRef.current.deltaX = 0;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.dragging) return;
+    dragRef.current.deltaX += e.movementX;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = false;
+    setIsDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
   return (
-    <div className="w-full h-full">
+    <div
+      className="w-full h-full"
+      style={{ cursor: isDragging ? "grabbing" : "grab", touchAction: "none" }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerLeave={endDrag}
+      onPointerCancel={endDrag}
+    >
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <color attach="background" args={["#04050c"]} />
-        <Stars
-          radius={90}
-          depth={55}
-          count={3200}
-          factor={3.2}
-          saturation={0}
-          fade
-          speed={0.6}
-        />
+        <SceneBackground progress={scrollProgress} />
+        <Starfield progress={scrollProgress} />
         <ambientLight intensity={0.9} />
         <directionalLight position={[0, 2, 8]} intensity={0.9} />
         <directionalLight position={[0, -2, -6]} intensity={0.25} />
-        <DriftingGlobe scrollProgress={scrollProgress} />
-        <OrbitControls
-          enableZoom={false}
-          enablePan={false}
-          enableDamping
-          dampingFactor={0.08}
-        />
+        <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
       </Canvas>
     </div>
   );

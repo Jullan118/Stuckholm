@@ -10,13 +10,19 @@ const LINKS = [
 // Always-visible horizontal category row (replaces the old hamburger menu).
 // Each link grows slightly on hover instead of just changing color.
 // On the home page the hero is a dark starfield, so the nav switches to
-// white there instead of its usual black-on-white.
+// white there instead of its usual black-on-white. On every other page the
+// mini globe logo (MiniGlobe) sits in the same top-left corner, so the nav
+// shifts right to sit beside it instead of underneath it.
 export function MainNav() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
 
   return (
-    <nav className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-6 sm:gap-10">
+    <nav
+      className={`absolute top-4 right-4 z-20 flex flex-wrap items-center gap-6 sm:gap-10 ${
+        isHome ? "left-4" : "left-20 sm:left-24"
+      }`}
+    >
       {LINKS.map((link) => (
         <Link
           key={link.label}
