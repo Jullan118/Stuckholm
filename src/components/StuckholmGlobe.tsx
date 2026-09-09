@@ -108,12 +108,10 @@ function buildLayout(words: string[]) {
   return items;
 }
 
-// A true oval, not a circle — wider along X than deep along Z, so the path
-// itself reads as an elliptical orbit (like an orbit diagram) rather than a
-// tilted circle. It also sits further out from the globe's surface than
-// before, like a real orbit path instead of a ring hugging the surface.
-const ORBIT_RADIUS_X = 2.35;
-const ORBIT_RADIUS_Z = 1.55;
+// A plain circular ring around the globe — the tilt on the outer group
+// (TEXT_ORBIT_TILT, below) is what gives it an elliptical look in
+// perspective, so the path itself stays round rather than an actual oval.
+const ORBIT_RADIUS = 1.68;
 
 function GlobeText() {
   const items = React.useMemo(() => buildLayout(GLOBE_WORDS), []);
@@ -121,18 +119,11 @@ function GlobeText() {
   return (
     <group>
       {items.map(({ char, angle }, i) => {
-        const x = Math.sin(angle) * ORBIT_RADIUS_X;
-        const z = Math.cos(angle) * ORBIT_RADIUS_Z;
-
-        // Face along the ellipse's tangent (not the radial angle, which
-        // would look wrong on an oval) so each letter sits flush with the
-        // curve it's traveling along.
-        const tangentX = Math.cos(angle) * ORBIT_RADIUS_X;
-        const tangentZ = -Math.sin(angle) * ORBIT_RADIUS_Z;
-        const facing = Math.atan2(tangentX, tangentZ);
+        const x = Math.sin(angle) * ORBIT_RADIUS;
+        const z = Math.cos(angle) * ORBIT_RADIUS;
 
         return (
-          <group key={i} position={[x, 0, z]} rotation={[0, facing, 0]}>
+          <group key={i} position={[x, 0, z]} rotation={[0, angle, 0]}>
             <Center>
               <Text3D
                 font="/fonts/Skarp-Italic.typeface.json"
