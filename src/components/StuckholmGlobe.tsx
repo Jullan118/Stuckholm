@@ -72,11 +72,21 @@ function ClayGlobe() {
   );
 }
 
-const GLOBE_WORDS = ["STUCK", "IN", "STUCKHOLM"];
+// The phrase repeats twice around the ring — a tighter kerning
+// (letterUnit/wordGap below) makes room for both passes without the
+// letters overlapping.
+const GLOBE_WORDS = [
+  "STUCK",
+  "IN",
+  "STUCKHOLM",
+  "STUCK",
+  "IN",
+  "STUCKHOLM",
+];
 
 function buildLayout(words: string[]) {
-  const letterUnit = 0.85;
-  const wordGap = 2.2;
+  const letterUnit = 0.62;
+  const wordGap = 1.3;
 
   let totalUnits = 0;
   words.forEach((word) => {
@@ -136,13 +146,21 @@ function GlobeText() {
 // logic here — a ref so dragging never triggers a React re-render.
 type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
+// Independent orbit speed for the wordmark ring, in radians/sec — it never
+// stops or syncs with the globe's own spin below, so the text visibly
+// slides around the globe's surface at its own pace (a "moon" orbiting the
+// "planet") rather than being glued to it like a texture.
+const TEXT_ORBIT_SPEED = 0.42;
+
 // Wraps the globe + its orbiting wordmark in one animated group: a gentle
 // idle spin at rest that picks up a little pace as you scroll, and fades
 // out (opacity -> 0) as the sky behind it goes white — the globe stays put
 // in its fixed spot the whole time, it never shrinks or flies away, it
 // just disappears in place to make room for whatever comes next on scroll.
-// Grabbing it with the mouse overrides the auto-spin and free-rotates it
-// in whatever direction you drag, on both axes at once.
+// Grabbing it with the mouse overrides the auto-spin and free-rotates the
+// whole scene (globe + orbit together) in whatever direction you drag, on
+// both axes at once — the text ring keeps orbiting independently on top of
+// that.
 function DriftingGlobe({
   scrollProgress,
   dragRef,
@@ -151,6 +169,7 @@ function DriftingGlobe({
   dragRef: React.MutableRefObject<DragState>;
 }) {
   const groupRef = React.useRef<THREE.Group>(null);
+  const textOrbitRef = React.useRef<THREE.Group>(null);
   const progressRef = React.useRef(0);
 
   React.useEffect(() => {
@@ -175,6 +194,12 @@ function DriftingGlobe({
       group.rotation.y += delta * spinSpeed;
     }
 
+    // The wordmark's own orbital motion, layered on top of whatever the
+    // globe itself is doing — always running, drag or no drag.
+    if (textOrbitRef.current) {
+      textOrbitRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
+    }
+
     const opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
     group.traverse((child) => {
       const mat = (child as THREE.Mesh).material as
@@ -194,7 +219,9 @@ function DriftingGlobe({
     <group ref={groupRef}>
       <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
         <ClayGlobe />
-        <GlobeText />
+        <group ref={textOrbitRef}>
+          <GlobeText />
+        </group>
       </Float>
     </group>
   );
