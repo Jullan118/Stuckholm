@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
-import { ContactCorner } from "@/components/ContactCorner";
 import { CartCorner } from "@/components/CartCorner";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Home } from "@/pages/Home";
@@ -21,7 +20,6 @@ function App() {
         <MiniGlobe />
         <MainNav />
         <CartCorner />
-        <ContactCorner />
 
         <Routes>
           <Route path="/" element={<Home />} />
