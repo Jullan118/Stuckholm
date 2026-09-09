@@ -42,7 +42,7 @@ export function SiteFooter() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <span className="text-black/40 uppercase tracking-wide text-xs mb-1">
+          <span className="text-black/40 uppercase tracking-wide text-sm mb-1">
             Follow
           </span>
           <a
