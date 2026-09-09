@@ -1,9 +1,10 @@
 import * as React from "react";
 import { StuckholmGlobe } from "@/components/StuckholmGlobe";
 
-// How much extra scrolling (in viewport-heights) it takes for the globe to
-// fully spin away into the starfield once it starts. The hero itself stays
-// pinned (sticky) for that whole stretch.
+// How much extra scrolling (in viewport-heights) it takes for the sky
+// behind the globe to fully fade from the starry night down to white. The
+// hero itself stays pinned (sticky) for that whole stretch; the globe keeps
+// spinning in place the entire time, it never shrinks or flies away.
 const SPIN_AWAY_VH = 120;
 
 export function Home() {

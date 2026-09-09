@@ -49,11 +49,7 @@ export function Trash() {
   }, []);
 
   return (
-    <div className="relative z-10 w-full pt-28 pb-16">
-      <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-4 text-center">
-        Trash
-      </h1>
-
+    <div className="relative z-10 w-full pt-24 pb-16">
       {usingExamples && (
         <p className="text-center text-black/50 text-sm mb-6">
           Showing example items — add your own below and these will disappear.
@@ -63,7 +59,7 @@ export function Trash() {
       {/* Category filter — purely a view filter. Nothing is grouped or
           sorted until the visitor clicks one of these; "All" (the default)
           shows every item mixed together. */}
-      <div className="flex items-center justify-center gap-6 mb-10 text-sm">
+      <div className="flex items-center justify-start gap-4 mb-6 px-1 text-xs">
         {(["All", ...CATEGORIES] as const).map((option) => (
           <button
             key={option}

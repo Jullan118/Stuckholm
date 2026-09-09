@@ -44,11 +44,7 @@ export function NewFlames() {
   }, []);
 
   return (
-    <div className="relative z-10 w-full pt-28 pb-16">
-      <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-4 text-center">
-        Off the shelf
-      </h1>
-
+    <div className="relative z-10 w-full pt-24 pb-16">
       {usingExamples && (
         <p className="text-center text-black/50 text-sm mb-6">
           Showing example products — add your own below and these will disappear.
