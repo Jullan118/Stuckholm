@@ -1,0 +1,368 @@
+import * as React from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Text3D, Center, Float } from "@react-three/drei";
+import * as THREE from "three";
+
+function hashNoise(x: number, y: number, z: number) {
+  const s = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+function createBlobGeometry() {
+  const geometry = new THREE.IcosahedronGeometry(1.4, 12);
+  const position = geometry.attributes.position;
+  const vertex = new THREE.Vector3();
+  const colors: number[] = [];
+
+  const oceanDeep = new THREE.Color("#214a9c").convertSRGBToLinear();
+  const oceanShallow = new THREE.Color("#0a9ac5").convertSRGBToLinear();
+  const land = new THREE.Color("#87c661").convertSRGBToLinear();
+
+  for (let i = 0; i < position.count; i++) {
+    vertex.fromBufferAttribute(position, i);
+    const dir = vertex.clone().normalize();
+
+    const bigLumps =
+      Math.sin(dir.x * 3 + dir.y * 2) * 0.07 +
+      Math.sin(dir.y * 2.5 + dir.z * 3) * 0.06 +
+      Math.sin(dir.z * 3.5 + dir.x * 2.5) * 0.05;
+
+    const smallBumps =
+      (hashNoise(
+        Math.round(dir.x * 6),
+        Math.round(dir.y * 6),
+        Math.round(dir.z * 6)
+      ) -
+        0.5) *
+      0.06;
+
+    const noise = bigLumps + smallBumps;
+
+    vertex.multiplyScalar(1 + noise);
+    position.setXYZ(i, vertex.x, vertex.y, vertex.z);
+
+    const landNoise =
+      Math.sin(dir.x * 3 + dir.y * 2.5 + 1.5) * 0.5 +
+      Math.sin(dir.y * 4 - dir.z * 3 + 0.7) * 0.5 +
+      Math.sin(dir.z * 2 + dir.x * 5) * 0.3;
+
+    const t = THREE.MathUtils.clamp(landNoise * 0.6 + 0.4, 0, 1);
+    const ocean = oceanDeep.clone().lerp(oceanShallow, dir.y * 0.5 + 0.5);
+    const color = ocean.lerp(land, t);
+    colors.push(color.r, color.g, color.b);
+  }
+
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+function ClayGlobe() {
+  const geometry = React.useMemo(() => createBlobGeometry(), []);
+
+  return (
+    <mesh geometry={geometry}>
+      <meshStandardMaterial
+        vertexColors
+        roughness={1}
+        metalness={0}
+        flatShading
+      />
+    </mesh>
+  );
+}
+
+// The phrase repeats twice around the ring — a tighter kerning
+// (letterUnit/wordGap below) makes room for both passes without the
+// letters overlapping.
+const GLOBE_WORDS = [
+  "stuck",
+  "in",
+  "stuckholm",
+  "stuck",
+  "in",
+  "stuckholm",
+];
+
+function buildLayout(words: string[]) {
+  const letterUnit = 0.62;
+  const wordGap = 1.3;
+
+  let totalUnits = 0;
+  words.forEach((word) => {
+    totalUnits += word.length * letterUnit + wordGap;
+  });
+
+  const angleStep = (Math.PI * 2) / totalUnits;
+
+  const items: { char: string; angle: number }[] = [];
+  let cursor = 0;
+  words.forEach((word) => {
+    for (const char of word) {
+      items.push({ char, angle: cursor * angleStep });
+      cursor += letterUnit;
+    }
+    cursor += wordGap;
+  });
+
+  return items;
+}
+
+function GlobeText() {
+  const items = React.useMemo(() => buildLayout(GLOBE_WORDS), []);
+  const radius = 1.68;
+
+  return (
+    <group>
+      {items.map(({ char, angle }, i) => {
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius;
+
+        return (
+          <group key={i} position={[x, 0, z]} rotation={[0, angle, 0]}>
+            <Center>
+              <Text3D
+                font="/fonts/Skarp-Italic.typeface.json"
+                size={0.32}
+                height={0.09}
+                curveSegments={8}
+                bevelEnabled
+                bevelThickness={0.013}
+                bevelSize={0.013}
+              >
+                {char}
+                <meshStandardMaterial color="#d51f26" roughness={0.4} />
+              </Text3D>
+            </Center>
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+// Drag state shared between the plain-HTML pointer handlers (in
+// StuckholmGlobe below, outside the R3F tree) and the per-frame rotation
+// logic here — a ref so dragging never triggers a React re-render.
+type DragState = { dragging: boolean; deltaX: number; deltaY: number };
+
+// Independent orbit speed for the wordmark ring, in radians/sec — it never
+// stops or syncs with the globe's own spin below, so the text visibly
+// slides around the globe's surface at its own pace (a "moon" orbiting the
+// "planet") rather than being glued to it like a texture.
+const TEXT_ORBIT_SPEED = 0.16;
+
+// Wraps the globe + its orbiting wordmark in one animated group: a gentle
+// idle spin at rest that picks up a little pace as you scroll, and fades
+// out (opacity -> 0) as the sky behind it goes white — the globe stays put
+// in its fixed spot the whole time, it never shrinks or flies away, it
+// just disappears in place to make room for whatever comes next on scroll.
+// Grabbing it with the mouse overrides the auto-spin and free-rotates the
+// whole scene (globe + orbit together) in whatever direction you drag, on
+// both axes at once — the text ring keeps orbiting independently on top of
+// that.
+function DriftingGlobe({
+  scrollProgress,
+  dragRef,
+}: {
+  scrollProgress: number;
+  dragRef: React.MutableRefObject<DragState>;
+}) {
+  const groupRef = React.useRef<THREE.Group>(null);
+  const textOrbitRef = React.useRef<THREE.Group>(null);
+  const progressRef = React.useRef(0);
+
+  React.useEffect(() => {
+    progressRef.current = scrollProgress;
+  }, [scrollProgress]);
+
+  useFrame((_, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    const drag = dragRef.current;
+    if (drag.dragging) {
+      // Direct manipulation: one radian of spin per ~320px of mouse travel,
+      // on both axes — drag sideways to spin it, drag up/down to tip it.
+      group.rotation.y += drag.deltaX * 0.0032;
+      group.rotation.x += drag.deltaY * 0.0032;
+      drag.deltaX = 0;
+      drag.deltaY = 0;
+    } else {
+      // Slow, calm idle spin — still picks up a little pace as you scroll,
+      // just far less than before.
+      const p = progressRef.current;
+      const spinSpeed = 0.07 + p * 0.18;
+      group.rotation.y += delta * spinSpeed;
+    }
+
+    // The wordmark's own orbital motion, layered on top of whatever the
+    // globe itself is doing — always running, drag or no drag.
+    if (textOrbitRef.current) {
+      textOrbitRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
+    }
+
+    const opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    group.traverse((child) => {
+      const mat = (child as THREE.Mesh).material as
+        | THREE.Material
+        | THREE.Material[]
+        | undefined;
+      if (!mat) return;
+      const mats = Array.isArray(mat) ? mat : [mat];
+      for (const m of mats) {
+        m.transparent = true;
+        m.opacity = opacity;
+      }
+    });
+  });
+
+  return (
+    <group ref={groupRef}>
+      <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
+        <ClayGlobe />
+        <group ref={textOrbitRef}>
+          <GlobeText />
+        </group>
+      </Float>
+    </group>
+  );
+}
+
+const SKY_DARK = new THREE.Color("#04050c");
+const SKY_WHITE = new THREE.Color("#ffffff");
+
+// Animates the scene's clear colour from the night-sky navy to white as
+// `progress` goes 0 -> 1, instead of the globe flying away into it.
+function SceneBackground({ progress }: { progress: number }) {
+  const { scene } = useThree();
+  const colorRef = React.useRef(new THREE.Color().copy(SKY_DARK));
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  React.useEffect(() => {
+    scene.background = colorRef.current;
+  }, [scene]);
+
+  useFrame(() => {
+    colorRef.current.lerpColors(
+      SKY_DARK,
+      SKY_WHITE,
+      THREE.MathUtils.clamp(progressRef.current, 0, 1)
+    );
+  });
+
+  return null;
+}
+
+// A simple hand-rolled starfield (instead of drei's <Stars>) so we can fade
+// its opacity to nothing as the sky goes white, rather than leaving grey
+// specks floating over a white background.
+function Starfield({ progress }: { progress: number }) {
+  const pointsRef = React.useRef<THREE.Points>(null);
+  const materialRef = React.useRef<THREE.PointsMaterial>(null);
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  const geometry = React.useMemo(() => {
+    const count = 2400;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const r = 40 + Math.random() * 50;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    return geo;
+  }, []);
+
+  useFrame((_, delta) => {
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y += delta * 0.02;
+    }
+    if (materialRef.current) {
+      materialRef.current.opacity =
+        1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    }
+  });
+
+  return (
+    <points ref={pointsRef} geometry={geometry}>
+      <pointsMaterial
+        ref={materialRef}
+        color="#ffffff"
+        size={0.6}
+        sizeAttenuation
+        transparent
+        opacity={1}
+        depthWrite={false}
+      />
+    </points>
+  );
+}
+
+export function StuckholmGlobe({
+  scrollProgress = 0,
+}: {
+  scrollProgress?: number;
+}) {
+  const dragRef = React.useRef<DragState>({
+    dragging: false,
+    deltaX: 0,
+    deltaY: 0,
+  });
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = true;
+    dragRef.current.deltaX = 0;
+    dragRef.current.deltaY = 0;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.dragging) return;
+    dragRef.current.deltaX += e.movementX;
+    dragRef.current.deltaY += e.movementY;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = false;
+    setIsDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  return (
+    <div
+      className="w-full h-full"
+      style={{ cursor: isDragging ? "grabbing" : "grab", touchAction: "none" }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerLeave={endDrag}
+      onPointerCancel={endDrag}
+    >
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+        <SceneBackground progress={scrollProgress} />
+        <Starfield progress={scrollProgress} />
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[0, 2, 8]} intensity={0.9} />
+        <directionalLight position={[0, -2, -6]} intensity={0.25} />
+        <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
+      </Canvas>
+    </div>
+  );
+}
