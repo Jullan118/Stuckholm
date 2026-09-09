@@ -150,6 +150,21 @@ function GlobeText() {
 // logic here — a ref so dragging never triggers a React re-render.
 type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
+// World-space axes for trackball-style dragging — reused every frame
+// instead of allocated fresh. Rotating around these FIXED world axes
+// (rather than the group's own local axes, which is what plain
+// `rotation.x +=` / `rotation.y +=` does) is what lets the globe spin all
+// the way around on both axes without ever binding up: with local-axis
+// Euler increments, once the globe is tipped away from its start
+// orientation the "up/down" axis drifts too, so further vertical dragging
+// stops doing what it looks like it should (classic gimbal lock). Using
+// quaternions pinned to the world X/Y axes keeps "drag sideways = yaw,
+// drag up/down = pitch" true from the viewer's perspective no matter how
+// the globe is currently oriented.
+const YAW_AXIS = new THREE.Vector3(0, 1, 0);
+const PITCH_AXIS = new THREE.Vector3(1, 0, 0);
+const dragQuat = new THREE.Quaternion();
+
 // Independent orbit speed for the wordmark ring, in radians/sec — it never
 // stops or syncs with the globe's own spin below, so the text visibly
 // slides around the globe's surface at its own pace (a "moon" orbiting the
@@ -194,17 +209,23 @@ function DriftingGlobe({
     const drag = dragRef.current;
     if (drag.dragging) {
       // Direct manipulation: one radian of spin per ~320px of mouse travel,
-      // on both axes — drag sideways to spin it, drag up/down to tip it.
-      group.rotation.y += drag.deltaX * 0.0032;
-      group.rotation.x += drag.deltaY * 0.0032;
+      // freely on both axes — drag sideways to spin it all the way around,
+      // drag up/down to roll it all the way over. Pre-multiplying by
+      // world-axis quaternions (see YAW_AXIS/PITCH_AXIS above) keeps this
+      // working the same way regardless of the globe's current tilt.
+      dragQuat.setFromAxisAngle(YAW_AXIS, drag.deltaX * 0.0032);
+      group.quaternion.premultiply(dragQuat);
+      dragQuat.setFromAxisAngle(PITCH_AXIS, drag.deltaY * 0.0032);
+      group.quaternion.premultiply(dragQuat);
       drag.deltaX = 0;
       drag.deltaY = 0;
     } else {
       // Slow, calm idle spin — still picks up a little pace as you scroll,
-      // just far less than before.
+      // just far less than before. rotateY spins around the globe's own
+      // (possibly drag-tilted) axis rather than resetting its orientation.
       const p = progressRef.current;
       const spinSpeed = 0.07 + p * 0.18;
-      group.rotation.y += delta * spinSpeed;
+      group.rotateY(delta * spinSpeed);
     }
 
     // The wordmark's own orbital motion, layered on top of whatever the

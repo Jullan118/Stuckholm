@@ -1,30 +1,29 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 
 // Site-wide footer, shown at the bottom of every page (in normal document
 // flow — it sits after whatever the current route renders, not pinned to
 // the viewport) rather than only on /about as before. Structured like
 // AVAVAV's: a couple of link/info columns, then a thin copyright bar
-// underneath.
+// underneath. "Login" (far right, same row as the other column headers)
+// is now the site's only link to /about — the old floating bottom-right
+// ContactCorner link was removed in favor of this.
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    // Extra bottom margin here isn't decorative — ContactCorner floats
-    // "bottom-4" relative to <main>, which now ends with this footer, so
-    // without this gap the "Contact" link would sit right on top of the
-    // copyright bar. This reserves clear space below the footer for it.
     <footer className="w-full font-skarp text-black mt-20 mb-14">
-      <div className="w-full px-6 sm:px-8 py-12 grid grid-cols-2 sm:grid-cols-3 gap-10 text-sm sm:text-base">
-        <div className="flex flex-col gap-2">
-          <span className="text-black/40 uppercase tracking-wide text-xs mb-1">
+      <div className="w-full px-6 sm:px-8 py-12 grid grid-cols-2 sm:grid-cols-4 gap-10 text-base sm:text-lg">
+        <div className="flex flex-col gap-1 leading-tight">
+          <span className="text-black/40 uppercase tracking-wide text-sm mb-1">
             About
           </span>
           <span>Stuckholm</span>
           <span className="text-black/60">by 2 Stuckholm Kids</span>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-black/40 uppercase tracking-wide text-xs mb-1">
+        <div className="flex flex-col gap-1 leading-tight">
+          <span className="text-black/40 uppercase tracking-wide text-sm mb-1">
             Contact
           </span>
           <a
@@ -41,7 +40,7 @@ export function SiteFooter() {
           </a>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1 leading-tight">
           <span className="text-black/40 uppercase tracking-wide text-sm mb-1">
             Follow
           </span>
@@ -54,9 +53,18 @@ export function SiteFooter() {
             Instagram
           </a>
         </div>
+
+        <div className="flex flex-col items-end gap-1 leading-tight text-right">
+          <Link
+            to="/about"
+            className="text-black/40 hover:text-black uppercase tracking-wide text-sm transition-colors"
+          >
+            Login
+          </Link>
+        </div>
       </div>
 
-      <div className="px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-black/50 w-full">
+      <div className="px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-sm text-black/50 w-full">
         <span>© {year} Stuck in Stuckholm — all rights reserved</span>
         <span>Stockholm, Sweden</span>
       </div>
