@@ -76,12 +76,12 @@ function ClayGlobe() {
 // (letterUnit/wordGap below) makes room for both passes without the
 // letters overlapping.
 const GLOBE_WORDS = [
-  "stuck",
-  "in",
-  "stuckholm",
-  "stuck",
-  "in",
-  "stuckholm",
+  "STUCK",
+  "IN",
+  "STUCKHOLM",
+  "STUCK",
+  "IN",
+  "STUCKHOLM",
 ];
 
 function buildLayout(words: string[]) {
@@ -196,7 +196,14 @@ function DriftingGlobe({
       // Direct manipulation: one radian of spin per ~320px of mouse travel,
       // on both axes — drag sideways to spin it, drag up/down to tip it.
       group.rotation.y += drag.deltaX * 0.0032;
-      group.rotation.x += drag.deltaY * 0.0032;
+      // Vertical drag tips the globe, but clamped so it can never be
+      // flipped upside down — free spin stays horizontal-only, the tip is
+      // just a limited "look up/down" tilt.
+      group.rotation.x = THREE.MathUtils.clamp(
+        group.rotation.x + drag.deltaY * 0.0032,
+        -0.6,
+        0.6
+      );
       drag.deltaX = 0;
       drag.deltaY = 0;
     } else {
