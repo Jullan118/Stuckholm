@@ -196,14 +196,7 @@ function DriftingGlobe({
       // Direct manipulation: one radian of spin per ~320px of mouse travel,
       // on both axes — drag sideways to spin it, drag up/down to tip it.
       group.rotation.y += drag.deltaX * 0.0032;
-      // Vertical drag tips the globe, but clamped so it can never be
-      // flipped upside down — free spin stays horizontal-only, the tip is
-      // just a limited "look up/down" tilt.
-      group.rotation.x = THREE.MathUtils.clamp(
-        group.rotation.x + drag.deltaY * 0.0032,
-        -0.6,
-        0.6
-      );
+      group.rotation.x += drag.deltaY * 0.0032;
       drag.deltaX = 0;
       drag.deltaY = 0;
     } else {
