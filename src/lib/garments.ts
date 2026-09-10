@@ -8,13 +8,15 @@ export const CATEGORIES = ["Women's", "Men's"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 // The feminine↔masculine scale that replaced the old Women's/Men's category
-// filter on the Trash page: 1 = 100% feminine, 3 = neutral ("Stuck, can't
-// decide"), 5 = 100% masculine. Unscored items (older listings, or ones
-// nobody has set a value for yet) are `null` and simply don't show up once a
-// visitor has picked a spot on the scale.
-export const GENDER_SCALE_MIN = 1;
-export const GENDER_SCALE_MAX = 5;
-export const GENDER_SCALE_NEUTRAL = 3;
+// filter on the Trash page: -2 = 100% feminine, 0 = neutral ("Stuck, can't
+// decide"), 2 = 100% masculine. At 0 every item shows, scored or not; moving
+// toward either end narrows the grid to items scored at least that far in
+// that direction (see the cumulative filter in Trash.tsx) — so the further
+// out you drag, the fewer items remain. Unscored items (older listings, or
+// ones nobody has set a value for yet) are `null` and only show at 0.
+export const GENDER_SCALE_MIN = -2;
+export const GENDER_SCALE_MAX = 2;
+export const GENDER_SCALE_NEUTRAL = 0;
 
 export type Garment = {
   slug: string;
@@ -22,7 +24,7 @@ export type Garment = {
   image: string; // primary/thumbnail image (first of `images`)
   images: string[]; // all images for this garment, up to MAX_IMAGES
   category: Category;
-  genderScale: number | null; // 1–5, see GENDER_SCALE_* above
+  genderScale: number | null; // -2–2, see GENDER_SCALE_* above
   brand: string;
   colour: string;
   condition: string;
