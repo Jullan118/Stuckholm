@@ -3,12 +3,11 @@ import type { Session } from "@supabase/supabase-js";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
 import {
-  CATEGORIES,
   CURRENCIES,
+  GENDER_SCALE_NEUTRAL,
   MAX_IMAGES,
   SHORT_DESCRIPTION_MAX,
   garmentFromRow,
-  type Category,
   type Currency,
 } from "@/lib/garments";
 
@@ -49,7 +48,7 @@ export function TrashUpload() {
   const [loginError, setLoginError] = React.useState("");
 
   const [name, setName] = React.useState("");
-  const [category, setCategory] = React.useState<Category>("Women's");
+  const [genderScale, setGenderScale] = React.useState<number>(GENDER_SCALE_NEUTRAL);
   const [brand, setBrand] = React.useState("");
   const [colour, setColour] = React.useState("");
   const [condition, setCondition] = React.useState("");
@@ -102,7 +101,7 @@ export function TrashUpload() {
             return;
           }
           setName(g.name);
-          setCategory(g.category);
+          setGenderScale(g.genderScale ?? GENDER_SCALE_NEUTRAL);
           setBrand(g.brand);
           setColour(g.colour);
           setCondition(g.condition);
@@ -199,7 +198,7 @@ export function TrashUpload() {
           .from("garments")
           .update({
             name,
-            category,
+            gender_scale: genderScale,
             brand,
             colour,
             condition,
@@ -220,7 +219,7 @@ export function TrashUpload() {
         const { error: insertError } = await supabase.from("garments").insert({
           slug,
           name,
-          category,
+          gender_scale: genderScale,
           brand,
           colour,
           condition,
@@ -238,6 +237,7 @@ export function TrashUpload() {
 
         setMessage("Item uploaded!");
         setName("");
+        setGenderScale(GENDER_SCALE_NEUTRAL);
         setBrand("");
         setColour("");
         setCondition("");
@@ -413,22 +413,25 @@ export function TrashUpload() {
           required
         />
 
-        {/* Category — decides which section (Women's / Men's) this item
-            sorts into on the Trash listing page. */}
+        {/* Feminine↔masculine scale — decides where on the Trash listing's
+            scale (1 = feminine, 3 = neutral, 5 = masculine) this item shows
+            up once a visitor filters by it. A plain 1–5 dropdown here, rather
+            than the draggable slider visitors see, since picking a number is
+            faster than dragging when you're entering data. */}
         <div className="flex items-center border border-black/20 rounded-lg overflow-hidden">
           <span className="pl-3 pr-1 py-2 text-black/50 whitespace-nowrap text-sm">
-            Category:
+            Scale (1–5):
           </span>
           <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as Category)}
+            value={genderScale}
+            onChange={(e) => setGenderScale(Number(e.target.value))}
             className="flex-1 min-w-0 px-2 py-2 outline-none bg-transparent"
           >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
+            <option value={1}>1 — feminine</option>
+            <option value={2}>2</option>
+            <option value={3}>3 — neutral</option>
+            <option value={4}>4</option>
+            <option value={5}>5 — masculine</option>
           </select>
         </div>
 

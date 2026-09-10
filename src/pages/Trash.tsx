@@ -1,8 +1,9 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
-import { CATEGORIES, garmentFromRow, type Garment } from "@/lib/garments";
+import { garmentFromRow, type Garment } from "@/lib/garments";
 import { TRASH_PRODUCTS } from "@/data/trashProducts";
+import { GenderScaleSlider } from "@/components/GenderScaleSlider";
 
 export function Trash() {
   const [products, setProducts] = React.useState<Garment[]>(TRASH_PRODUCTS);
@@ -12,11 +13,11 @@ export function Trash() {
   // real items have loaded.
   const [usingExamples, setUsingExamples] = React.useState(true);
   const [userId, setUserId] = React.useState<string | null>(null);
-  // "All" shows everything mixed together (the default) — nothing is
-  // auto-sorted into Women's/Men's until the visitor clicks a filter.
-  const [filter, setFilter] = React.useState<"All" | (typeof CATEGORIES)[number]>(
-    "All"
-  );
+  // `null` shows everything mixed together (the default) — nothing is
+  // filtered by the feminine↔masculine scale until the visitor drags or taps
+  // the slider, at which point it snaps to the nearest of 5 steps (1–5) and
+  // only items scored exactly at that step remain visible.
+  const [scale, setScale] = React.useState<number | null>(null);
   const [hoveredSlug, setHoveredSlug] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -50,35 +51,24 @@ export function Trash() {
 
   return (
     <div className="relative z-10 w-full pt-24 pb-16">
-      {usingExamples && (
-        <p className="text-center text-black/50 text-sm mb-6">
-          Showing example items — add your own below and these will disappear.
-        </p>
-      )}
-
-      {/* Category filter — purely a view filter. Nothing is grouped or
-          sorted until the visitor clicks one of these; "All" (the default)
-          shows every item mixed together. */}
-      <div className="flex items-center justify-start gap-4 mb-6 px-1 text-xs">
-        {(["All", ...CATEGORIES] as const).map((option) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => setFilter(option)}
-            className={
-              filter === option
-                ? "text-black underline underline-offset-4"
-                : "text-black/50 hover:text-black transition-colors"
-            }
-          >
-            {option}
-          </button>
-        ))}
-      </div>
+      {/* Feminine↔masculine scale — replaces the old All/Women's/Men's
+          tabs. Purely a view filter: nothing is grouped or sorted until the
+          visitor drags/taps the slider, at which point it snaps to the
+          nearest of 5 steps and only items scored at that exact step stay
+          visible. */}
+      <GenderScaleSlider
+        value={scale}
+        onCommit={setScale}
+        leftLabel="Women's"
+        centerLabel="Stuck, can't decide"
+        rightLabel="Men's"
+        resetLabel="All"
+        onReset={() => setScale(null)}
+      />
 
       {(() => {
         const visible =
-          filter === "All" ? products : products.filter((p) => p.category === filter);
+          scale === null ? products : products.filter((p) => p.genderScale === scale);
 
         if (visible.length === 0) {
           return (
