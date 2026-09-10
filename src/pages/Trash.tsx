@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
-import { garmentFromRow, type Garment } from "@/lib/garments";
+import { GENDER_SCALE_NEUTRAL, garmentFromRow, type Garment } from "@/lib/garments";
 import { TRASH_PRODUCTS } from "@/data/trashProducts";
 import { GenderScaleSlider } from "@/components/GenderScaleSlider";
 
@@ -13,11 +13,12 @@ export function Trash() {
   // real items have loaded.
   const [usingExamples, setUsingExamples] = React.useState(true);
   const [userId, setUserId] = React.useState<string | null>(null);
-  // `null` shows everything mixed together (the default) — nothing is
-  // filtered by the feminine↔masculine scale until the visitor drags or taps
-  // the slider, at which point it snaps to the nearest of 5 steps (1–5) and
-  // only items scored exactly at that step remain visible.
-  const [scale, setScale] = React.useState<number | null>(null);
+  // 0 ("Stuck, can't decide") shows every item, scored or not — the default.
+  // Dragging toward either end narrows the grid instead of picking an exact
+  // match: at -1, items scored -1 *and* -2 stay visible; at -2, only -2
+  // remains. Same going the other way toward Men's. So the further out you
+  // drag, the fewer (but more strongly feminine/masculine) items remain.
+  const [scale, setScale] = React.useState<number>(GENDER_SCALE_NEUTRAL);
   const [hoveredSlug, setHoveredSlug] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -54,8 +55,9 @@ export function Trash() {
       {/* Feminine↔masculine scale — replaces the old All/Women's/Men's
           tabs. Purely a view filter: nothing is grouped or sorted until the
           visitor drags/taps the slider, at which point it snaps to the
-          nearest of 5 steps and only items scored at that exact step stay
-          visible. */}
+          nearest of 5 steps. 0 (center) always shows everything; moving
+          toward either end keeps only items scored at least that far in
+          that direction, so the grid narrows the further out you go. */}
       <GenderScaleSlider
         value={scale}
         onCommit={setScale}
@@ -63,12 +65,17 @@ export function Trash() {
         centerLabel="Stuck, can't decide"
         rightLabel="Men's"
         resetLabel="All"
-        onReset={() => setScale(null)}
+        onReset={() => setScale(GENDER_SCALE_NEUTRAL)}
       />
 
       {(() => {
-        const visible =
-          scale === null ? products : products.filter((p) => p.genderScale === scale);
+        const visible = products.filter((p) => {
+          if (scale === GENDER_SCALE_NEUTRAL) return true;
+          if (p.genderScale === null) return false;
+          return scale < GENDER_SCALE_NEUTRAL
+            ? p.genderScale <= scale
+            : p.genderScale >= scale;
+        });
 
         if (visible.length === 0) {
           return (

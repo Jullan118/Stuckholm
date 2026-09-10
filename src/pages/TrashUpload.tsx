@@ -414,24 +414,25 @@ export function TrashUpload() {
         />
 
         {/* Feminine↔masculine scale — decides where on the Trash listing's
-            scale (1 = feminine, 3 = neutral, 5 = masculine) this item shows
-            up once a visitor filters by it. A plain 1–5 dropdown here, rather
-            than the draggable slider visitors see, since picking a number is
-            faster than dragging when you're entering data. */}
+            scale (-2 = feminine, 0 = "Stuck, can't decide", 2 = masculine)
+            this item shows up once a visitor moves off center. A plain
+            dropdown here, rather than the draggable slider visitors see,
+            since picking a number is faster than dragging when entering
+            data. */}
         <div className="flex items-center border border-black/20 rounded-lg overflow-hidden">
           <span className="pl-3 pr-1 py-2 text-black/50 whitespace-nowrap text-sm">
-            Scale (1–5):
+            Scale (-2–2):
           </span>
           <select
             value={genderScale}
             onChange={(e) => setGenderScale(Number(e.target.value))}
             className="flex-1 min-w-0 px-2 py-2 outline-none bg-transparent"
           >
-            <option value={1}>1 — feminine</option>
-            <option value={2}>2</option>
-            <option value={3}>3 — neutral</option>
-            <option value={4}>4</option>
-            <option value={5}>5 — masculine</option>
+            <option value={-2}>-2 — feminine</option>
+            <option value={-1}>-1</option>
+            <option value={0}>0 — stuck, can't decide</option>
+            <option value={1}>1</option>
+            <option value={2}>2 — masculine</option>
           </select>
         </div>
 
