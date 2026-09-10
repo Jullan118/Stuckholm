@@ -7,12 +7,22 @@ export type Currency = (typeof CURRENCIES)[number];
 export const CATEGORIES = ["Women's", "Men's"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
+// The feminine↔masculine scale that replaced the old Women's/Men's category
+// filter on the Trash page: 1 = 100% feminine, 3 = neutral ("Stuck, can't
+// decide"), 5 = 100% masculine. Unscored items (older listings, or ones
+// nobody has set a value for yet) are `null` and simply don't show up once a
+// visitor has picked a spot on the scale.
+export const GENDER_SCALE_MIN = 1;
+export const GENDER_SCALE_MAX = 5;
+export const GENDER_SCALE_NEUTRAL = 3;
+
 export type Garment = {
   slug: string;
   name: string;
   image: string; // primary/thumbnail image (first of `images`)
   images: string[]; // all images for this garment, up to MAX_IMAGES
   category: Category;
+  genderScale: number | null; // 1–5, see GENDER_SCALE_* above
   brand: string;
   colour: string;
   condition: string;
@@ -32,6 +42,7 @@ export type GarmentRow = {
   image_url: string | null;
   image_urls: string[] | null;
   category: string | null;
+  gender_scale: number | null;
   brand: string | null;
   colour: string | null;
   condition: string | null;
@@ -71,6 +82,7 @@ export function garmentFromRow(row: GarmentRow): Garment {
     image: images[0] ?? "",
     images,
     category: (row.category as Category) || "Women's",
+    genderScale: typeof row.gender_scale === "number" ? row.gender_scale : null,
     brand: row.brand ?? "",
     colour: row.colour ?? "",
     condition: row.condition ?? "",
