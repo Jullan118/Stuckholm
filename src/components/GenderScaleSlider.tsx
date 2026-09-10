@@ -105,7 +105,7 @@ export function GenderScaleSlider({
             type="button"
             onClick={onReset}
             className={
-              value === null
+              (value ?? GENDER_SCALE_NEUTRAL) === GENDER_SCALE_NEUTRAL
                 ? "text-black text-sm sm:text-base underline underline-offset-4"
                 : "text-black/50 hover:text-black text-sm sm:text-base transition-colors"
             }
