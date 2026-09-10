@@ -19,7 +19,6 @@ export function Trash() {
   // remains. Same going the other way toward Men's. So the further out you
   // drag, the fewer (but more strongly feminine/masculine) items remain.
   const [scale, setScale] = React.useState<number>(GENDER_SCALE_NEUTRAL);
-  const [hoveredSlug, setHoveredSlug] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase) return;
@@ -86,20 +85,12 @@ export function Trash() {
         }
 
         return (
-          <div
-            className="grid grid-cols-2 sm:grid-cols-4 mb-16"
-            onMouseLeave={() => setHoveredSlug(null)}
-          >
+          <div className="grid grid-cols-2 sm:grid-cols-4 mb-16">
             {visible.map((product) => (
               <div
                 key={product.slug}
-                className="border-r border-b transition-opacity duration-300"
-                style={{
-                  borderColor: "rgba(0,0,0,0.08)",
-                  opacity:
-                    hoveredSlug && hoveredSlug !== product.slug ? 0.4 : 1,
-                }}
-                onMouseEnter={() => setHoveredSlug(product.slug)}
+                className="border-r border-b"
+                style={{ borderColor: "rgba(0,0,0,0.08)" }}
               >
                 <Link to={`/trash/${product.slug}`}>
                   <div className="relative aspect-[4/5] overflow-hidden">
@@ -114,21 +105,6 @@ export function Trash() {
                         Image
                       </div>
                     )}
-
-                    {/* hover overlay: brand / colour / condition, one per line */}
-                    <div className="absolute inset-0 bg-white/90 opacity-0 hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-center px-3 gap-1">
-                      {product.brand && (
-                        <span className="text-black text-sm">Brand: {product.brand}</span>
-                      )}
-                      {product.colour && (
-                        <span className="text-black text-sm">Colour: {product.colour}</span>
-                      )}
-                      {product.condition && (
-                        <span className="text-black text-sm">
-                          Condition: {product.condition}
-                        </span>
-                      )}
-                    </div>
                   </div>
                 </Link>
 
