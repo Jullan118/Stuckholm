@@ -386,7 +386,19 @@ export function StuckholmGlobe({
   return (
     <div
       className="w-full h-full"
-      style={{ cursor: isDragging ? "grabbing" : "grab", touchAction: "none" }}
+      style={{
+        cursor: isDragging ? "grabbing" : "grab",
+        // "none" here (the previous value) blocked ALL native touch
+        // gestures on this div — including the vertical swipe iPhone users
+        // need to scroll past the hero, since this div covers the entire
+        // pinned/sticky viewport on the home page. "pan-y" hands vertical
+        // single-finger swipes back to the browser for normal page
+        // scrolling, while still leaving horizontal swipes free for our own
+        // pointer handlers below to use as a yaw-drag on the globe. Desktop
+        // mouse dragging (both axes) is unaffected either way, since
+        // touch-action only governs touch gestures.
+        touchAction: "pan-y",
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
