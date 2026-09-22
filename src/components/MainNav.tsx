@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const LINKS = [
-  { label: "Off the shelf", to: "/off-the-shelf" },
+  { label: "In Stock", to: "/off-the-shelf" },
   { label: "Trash", to: "/trash" },
 ];
 
