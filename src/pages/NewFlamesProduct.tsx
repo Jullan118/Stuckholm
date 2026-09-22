@@ -63,7 +63,7 @@ export function NewFlamesProduct() {
           Not found
         </h1>
         <Link to="/off-the-shelf" className="text-black underline">
-          Back to Off the shelf
+          Back to In Stock
         </Link>
       </div>
     );
@@ -96,7 +96,7 @@ export function NewFlamesProduct() {
         to="/off-the-shelf"
         className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
       >
-        ← Off the shelf
+        ← In Stock
       </Link>
 
       <div className="flex flex-col md:flex-row gap-10">

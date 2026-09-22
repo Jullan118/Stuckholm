@@ -544,7 +544,7 @@ export function NewFlamesUpload() {
       </form>
 
       <Link to="/off-the-shelf" className="block text-center text-black/60 text-sm mt-6">
-        ← See Off the shelf
+        ← See In Stock
       </Link>
     </div>
   );
