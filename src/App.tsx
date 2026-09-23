@@ -3,6 +3,8 @@ import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
 import { CartCorner } from "@/components/CartCorner";
 import { SiteFooter } from "@/components/SiteFooter";
+import { CartDrawer } from "@/components/CartDrawer";
+import { CartProvider } from "@/lib/cart";
 import { Home } from "@/pages/Home";
 import { NewFlames } from "@/pages/NewFlames";
 import { NewFlamesProduct } from "@/pages/NewFlamesProduct";
@@ -16,6 +18,7 @@ import { TrashUpload } from "@/pages/TrashUpload";
 function App() {
   return (
     <BrowserRouter>
+      <CartProvider>
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <MiniGlobe />
         <MainNav />
@@ -37,6 +40,8 @@ function App() {
 
         <SiteFooter />
       </main>
+      <CartDrawer />
+      </CartProvider>
     </BrowserRouter>
   );
 }
