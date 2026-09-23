@@ -4,6 +4,8 @@ import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
 import { flameFromRow, formatColorCount, type Flame } from "@/lib/flames";
 import { NEW_FLAMES_PRODUCTS } from "@/data/newFlamesProducts";
 import { ImageLightbox } from "@/components/ImageLightbox";
+import { AddToCart } from "@/components/AddToCart";
+import { productFromFlame } from "@/lib/commerce";
 
 export function NewFlamesProduct() {
   const { slug } = useParams();
@@ -15,8 +17,6 @@ export function NewFlamesProduct() {
 
   // Which image the big frame + thumbnail strip currently show.
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const [selectedSize, setSelectedSize] = React.useState("");
-  const [sizeError, setSizeError] = React.useState(false);
 
   React.useEffect(() => {
     if (!supabaseConfigured || !supabase || !slug) return;
@@ -49,12 +49,15 @@ export function NewFlamesProduct() {
     };
   }, [slug]);
 
-  // Reset the carousel + size choice whenever we land on a different product.
+  // Reset the carousel whenever we land on a different product.
   React.useEffect(() => {
     setActiveIndex(0);
-    setSelectedSize("");
-    setSizeError(false);
   }, [product?.slug]);
+
+  const commerceProduct = React.useMemo(
+    () => (product ? productFromFlame(product) : null),
+    [product]
+  );
 
   if (notFound || !product) {
     return (
@@ -77,17 +80,6 @@ export function NewFlamesProduct() {
   }
   function goNext() {
     setActiveIndex((i) => (i + 1) % images.length);
-  }
-
-  function handleAddToCart() {
-    if (product && product.sizes.length > 0 && !selectedSize) {
-      setSizeError(true);
-      return;
-    }
-    setSizeError(false);
-    const sizeNote = selectedSize ? ` (size ${selectedSize})` : "";
-    const subject = `Order: ${product?.name}${sizeNote}`;
-    window.location.href = `mailto:hello.stuckholm@gmail.com?subject=${encodeURIComponent(subject)}`;
   }
 
   return (
@@ -194,38 +186,7 @@ export function NewFlamesProduct() {
             </p>
           )}
 
-          {product.sizes.length > 0 && (
-            <div>
-              <select
-                value={selectedSize}
-                onChange={(e) => {
-                  setSelectedSize(e.target.value);
-                  setSizeError(false);
-                }}
-                className="border border-black/30 px-3 py-2 w-full max-w-[10rem]"
-              >
-                <option value="" disabled>
-                  Size
-                </option>
-                {product.sizes.map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-              {sizeError && (
-                <p className="text-[#d51f26] text-sm mt-1">Pick a size first.</p>
-              )}
-            </div>
-          )}
-
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            className="border border-black text-black px-6 py-2 w-fit hover:bg-black hover:text-white transition-colors"
-          >
-            Add to cart
-          </button>
+          {commerceProduct && <AddToCart product={commerceProduct} />}
 
           {product.details && (
             <p className="text-black/80 mt-2">{product.details}</p>

@@ -5,6 +5,8 @@ import { garmentFromRow, type Garment } from "@/lib/garments";
 import { TRASH_PRODUCTS } from "@/data/trashProducts";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { JumpyText } from "@/components/JumpyText";
+import { AddToCart } from "@/components/AddToCart";
+import { productFromGarment } from "@/lib/commerce";
 
 export function TrashProduct() {
   const { slug } = useParams();
@@ -52,6 +54,11 @@ export function TrashProduct() {
   React.useEffect(() => {
     setActiveIndex(0);
   }, [product?.slug]);
+
+  const commerceProduct = React.useMemo(
+    () => (product ? productFromGarment(product) : null),
+    [product]
+  );
 
   if (notFound || !product) {
     return (
@@ -185,14 +192,11 @@ export function TrashProduct() {
             <p className="text-black/60 text-sm">Seller: {product.sellerName}</p>
           )}
 
-          <a
-            href={`mailto:hello.stuckholm@gmail.com?subject=Order: ${encodeURIComponent(
-              product.name
-            )}`}
-            className="mt-4 inline-block border border-black text-black px-6 py-2 w-fit hover:bg-black hover:text-white transition-colors text-center"
-          >
-            Add to cart
-          </a>
+          {commerceProduct && (
+            <div className="mt-4">
+              <AddToCart product={commerceProduct} />
+            </div>
+          )}
 
           {userId && (userId === product.ownerId || !product.ownerId) && (
             <Link
