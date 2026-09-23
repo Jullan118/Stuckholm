@@ -29,6 +29,19 @@
   font-display: swap;
 }
 
+/* Skarp Thin's punctuation glyphs are broken in the font file itself
+   (the hyphen has a comma tail stuck to it, the period floats, etc.).
+   Borrow just those characters from Skarp Regular: ! , - . : ; ? */
+@font-face {
+  font-family: "Skarp Thin";
+  src: url("/fonts/Skarp-Regular.woff2") format("woff2"),
+       url("/fonts/Skarp-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0021, U+002C-002E, U+003A-003B, U+003F;
+}
+
 @font-face {
   font-family: "Skarp Thin Italic";
   src: url("/fonts/Skarp-Thin-Italic.woff2") format("woff2"),
