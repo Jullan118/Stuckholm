@@ -1,0 +1,442 @@
+import * as React from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Float, useGLTF } from "@react-three/drei";
+import * as THREE from "three";
+
+// The blob is a Rhino/Grasshopper export (blobben.glb) that replaces the old
+// procedural noise sphere. It is re-centred and re-scaled in code below so the
+// file's own units don't matter, and it gets the same ocean/land vertex
+// palette the procedural globe used.
+const BLOB_MODEL_URL = "/models/blobben.glb";
+const BLOB_RADIUS = 1.85;
+// Scales the letter ring around the globe. 1 = as placed in blobben.glb.
+const LETTER_SCALE = 1;
+
+const OCEAN_DEEP = new THREE.Color("#214a9c").convertSRGBToLinear();
+const OCEAN_SHALLOW = new THREE.Color("#0a9ac5").convertSRGBToLinear();
+const LAND = new THREE.Color("#87c661").convertSRGBToLinear();
+const GOLD = new THREE.Color("#d4af37").convertSRGBToLinear();
+const ENAMEL_BLUE = new THREE.Color("#2f63e0").convertSRGBToLinear();
+
+// "blue-green": the whole blob uses the ocean/land palette, and the letters
+// are red. "gold": the blob is gold like the reference, with a blue bead on
+// top and white pearls.
+const GLOBE_STYLE: "gold" | "blue-green" = "blue-green";
+
+// The round bead on the stalk, just below the crown (raw model units).
+const BEAD_CENTER = new THREE.Vector3(0, 0.117, 0);
+const BEAD_RADIUS = 0.0075;
+
+// Node names from blobben.glb. The letters are the 16 "Raven" meshes that
+// orbit the globe; everything else is part of the blob itself.
+type PartKind = "globe" | "pearl" | "gold" | "stalk" | "letter";
+
+function partKind(name: string): PartKind {
+  // three.js turns spaces in node names into underscores and adds _N to
+  // duplicates, so match on prefixes rather than the exact export names.
+  if (name.startsWith("Raven")) return "letter";
+  const part = /BLOBBI_part_0(\d)/.exec(name);
+  if (part) {
+    const n = Number(part[1]);
+    if (n === 1 || n === 2) return "globe";
+    if (n >= 3 && n <= 5) return "pearl";
+    if (n === 7) return "stalk";
+  }
+  // Band (part 06) and the Svensk krona crown.
+  return "gold";
+}
+
+function colorBlobGeometry(
+  geometry: THREE.BufferGeometry,
+  center: THREE.Vector3,
+  kind: PartKind
+) {
+  const position = geometry.attributes.position;
+  const vertex = new THREE.Vector3();
+  const colors = new Float32Array(position.count * 3);
+  const color = new THREE.Color();
+  const usePalette = GLOBE_STYLE === "blue-green";
+
+  for (let i = 0; i < position.count; i++) {
+    vertex.fromBufferAttribute(position, i);
+
+    if (usePalette) {
+      const dir = vertex.clone().sub(center).normalize();
+      const landNoise =
+        Math.sin(dir.x * 3 + dir.y * 2.5 + 1.5) * 0.5 +
+        Math.sin(dir.y * 4 - dir.z * 3 + 0.7) * 0.5 +
+        Math.sin(dir.z * 2 + dir.x * 5) * 0.3;
+      const t = THREE.MathUtils.clamp(landNoise * 0.6 + 0.4, 0, 1);
+      color
+        .copy(OCEAN_DEEP)
+        .lerp(OCEAN_SHALLOW, dir.y * 0.5 + 0.5)
+        .lerp(LAND, t);
+    } else {
+      const isBead =
+        GLOBE_STYLE === "gold" &&
+        kind === "stalk" &&
+        vertex.distanceTo(BEAD_CENTER) < BEAD_RADIUS;
+      color.copy(isBead ? ENAMEL_BLUE : GOLD);
+    }
+
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
+  }
+
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+}
+
+// Splits the GLB into the blob (globe, pearls, band, stalk, crown), which
+// sits at the origin, and the letter ring, which is returned separately so it
+// can orbit with the same tilt and speed as before.
+function createBlobFromModel(scene: THREE.Object3D) {
+  const root = scene.clone(true);
+
+  // Size and centre come from the blob parts only, so the letters don't
+  // change how big the globe is.
+  const box = new THREE.Box3();
+  root.children.forEach((child) => {
+    if (partKind(child.name) !== "letter") box.expandByObject(child);
+  });
+  const center = box.getCenter(new THREE.Vector3());
+  const halfDiagonal = box.getSize(new THREE.Vector3()).length() / 2;
+  const scale = BLOB_RADIUS / halfDiagonal;
+  root.position.copy(center).multiplyScalar(-scale);
+  root.scale.setScalar(scale);
+
+  const letters = new THREE.Group();
+  letters.position.copy(root.position).multiplyScalar(LETTER_SCALE);
+  letters.scale.setScalar(scale * LETTER_SCALE);
+
+  // Matte clay look for the blue-green palette (as before); a soft metallic
+  // look for the gold style.
+  const material =
+    GLOBE_STYLE === "blue-green"
+      ? new THREE.MeshStandardMaterial({
+          vertexColors: true,
+          roughness: 1,
+          metalness: 0,
+          flatShading: true,
+        })
+      : new THREE.MeshStandardMaterial({
+          vertexColors: true,
+          color: "#ffffff",
+          metalness: 0.45,
+          roughness: 0.35,
+          emissive: "#3a2a00",
+          emissiveIntensity: 0.6,
+        });
+  const pearlMaterial = new THREE.MeshStandardMaterial({
+    color: "#f7f3e8",
+    metalness: 0.1,
+    roughness: 0.25,
+  });
+  const letterMaterial = new THREE.MeshStandardMaterial({
+    color: "#d51f26",
+    roughness: 0.4,
+    metalness: 0,
+  });
+
+  const letterMeshes: THREE.Mesh[] = [];
+  root.traverse((child) => {
+    const mesh = child as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const kind = partKind(mesh.name);
+    // Geometry is shared with the cached GLTF, so work on a copy.
+    mesh.geometry = mesh.geometry.clone();
+
+    if (kind === "letter") {
+      mesh.material = letterMaterial;
+      letterMeshes.push(mesh);
+    } else if (kind === "pearl" && GLOBE_STYLE === "gold") {
+      mesh.material = pearlMaterial;
+    } else {
+      colorBlobGeometry(mesh.geometry, center, kind);
+      mesh.material = material;
+    }
+  });
+
+  letterMeshes.forEach((mesh) => {
+    root.remove(mesh);
+    letters.add(mesh);
+  });
+
+  return { blob: root, letters };
+}
+
+useGLTF.preload(BLOB_MODEL_URL);
+
+type DragState = { dragging: boolean; deltaX: number; deltaY: number };
+
+// World-space axes for trackball-style dragging — reused every frame
+// instead of allocated fresh. Rotating around these FIXED world axes
+// (rather than the group's own local axes, which is what plain
+// `rotation.x +=` / `rotation.y +=` does) is what lets the globe spin all
+// the way around on both axes without ever binding up: with local-axis
+// Euler increments, once the globe is tipped away from its start
+// orientation the "up/down" axis drifts too, so further vertical dragging
+// stops doing what it looks like it should (classic gimbal lock). Using
+// quaternions pinned to the world X/Y axes keeps "drag sideways = yaw,
+// drag up/down = pitch" true from the viewer's perspective no matter how
+// the globe is currently oriented.
+const YAW_AXIS = new THREE.Vector3(0, 1, 0);
+const PITCH_AXIS = new THREE.Vector3(1, 0, 0);
+const dragQuat = new THREE.Quaternion();
+
+// Independent orbit speed for the wordmark ring, in radians/sec — it never
+// stops or syncs with the globe's own spin below, so the text visibly
+// slides around the globe's surface at its own pace (a "moon" orbiting the
+// "planet") rather than being glued to it like a texture. Slow and steady.
+const TEXT_ORBIT_SPEED = 0.08;
+
+// Fixed tilt of the wordmark ring's own plane, in radians — combined with
+// the letter ring placed in blobben.glb, this is what makes
+// it read as a proper elliptical orbit path around the globe — like an
+// orbit diagram — rather than a flat horizontal belt or a steep halo. It's
+// set once and never animated; only the spin below changes frame to frame.
+const TEXT_ORBIT_TILT = Math.PI / 5;
+
+// Wraps the globe + its orbiting wordmark in one animated group: a gentle
+// idle spin at rest that picks up a little pace as you scroll, and fades
+// out (opacity -> 0) as the sky behind it goes white — the globe stays put
+// in its fixed spot the whole time, it never shrinks or flies away, it
+// just disappears in place to make room for whatever comes next on scroll.
+// Grabbing it with the mouse overrides the auto-spin and free-rotates the
+// whole scene (globe + orbit together) in whatever direction you drag, on
+// both axes at once — the text ring keeps orbiting independently on top of
+// that.
+function DriftingGlobe({
+  scrollProgress,
+  dragRef,
+}: {
+  scrollProgress: number;
+  dragRef: React.MutableRefObject<DragState>;
+}) {
+  const groupRef = React.useRef<THREE.Group>(null);
+  const textOrbitRef = React.useRef<THREE.Group>(null);
+  const progressRef = React.useRef(0);
+  const gltf = useGLTF(BLOB_MODEL_URL);
+  const { blob, letters } = React.useMemo(
+    () => createBlobFromModel(gltf.scene),
+    [gltf.scene]
+  );
+
+  React.useEffect(() => {
+    progressRef.current = scrollProgress;
+  }, [scrollProgress]);
+
+  useFrame((_, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    const drag = dragRef.current;
+    if (drag.dragging) {
+      // Direct manipulation: one radian of spin per ~320px of mouse travel,
+      // freely on both axes — drag sideways to spin it all the way around,
+      // drag up/down to roll it all the way over. Pre-multiplying by
+      // world-axis quaternions (see YAW_AXIS/PITCH_AXIS above) keeps this
+      // working the same way regardless of the globe's current tilt.
+      dragQuat.setFromAxisAngle(YAW_AXIS, drag.deltaX * 0.0032);
+      group.quaternion.premultiply(dragQuat);
+      dragQuat.setFromAxisAngle(PITCH_AXIS, drag.deltaY * 0.0032);
+      group.quaternion.premultiply(dragQuat);
+      drag.deltaX = 0;
+      drag.deltaY = 0;
+    } else {
+      // Slow, calm idle spin — still picks up a little pace as you scroll,
+      // just far less than before. rotateY spins around the globe's own
+      // (possibly drag-tilted) axis rather than resetting its orientation.
+      const p = progressRef.current;
+      const spinSpeed = 0.07 + p * 0.18;
+      group.rotateY(delta * spinSpeed);
+    }
+
+    // The wordmark's own orbital motion, layered on top of whatever the
+    // globe itself is doing — always running, drag or no drag.
+    if (textOrbitRef.current) {
+      textOrbitRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
+    }
+
+    const opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    group.traverse((child) => {
+      const mat = (child as THREE.Mesh).material as
+        | THREE.Material
+        | THREE.Material[]
+        | undefined;
+      if (!mat) return;
+      const mats = Array.isArray(mat) ? mat : [mat];
+      for (const m of mats) {
+        m.transparent = true;
+        m.opacity = opacity;
+      }
+    });
+  });
+
+  return (
+    <group ref={groupRef}>
+      <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
+        <primitive object={blob} />
+        {/* Static tilt on the outer group sets the orbital plane once;
+            the inner group spins within that tilted plane each frame —
+            keeping the two separate avoids the wobble/precession you'd
+            get from animating rotation on an already-tilted axis. */}
+        <group rotation={[TEXT_ORBIT_TILT, 0, 0]}>
+          <group ref={textOrbitRef}>
+            <primitive object={letters} />
+          </group>
+        </group>
+      </Float>
+    </group>
+  );
+}
+
+const SKY_DARK = new THREE.Color("#04050c");
+const SKY_WHITE = new THREE.Color("#ffffff");
+
+// Animates the scene's clear colour from the night-sky navy to white as
+// `progress` goes 0 -> 1, instead of the globe flying away into it.
+function SceneBackground({ progress }: { progress: number }) {
+  const { scene } = useThree();
+  const colorRef = React.useRef(new THREE.Color().copy(SKY_DARK));
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  React.useEffect(() => {
+    scene.background = colorRef.current;
+  }, [scene]);
+
+  useFrame(() => {
+    colorRef.current.lerpColors(
+      SKY_DARK,
+      SKY_WHITE,
+      THREE.MathUtils.clamp(progressRef.current, 0, 1)
+    );
+  });
+
+  return null;
+}
+
+// A simple hand-rolled starfield (instead of drei's <Stars>) so we can fade
+// its opacity to nothing as the sky goes white, rather than leaving grey
+// specks floating over a white background.
+function Starfield({ progress }: { progress: number }) {
+  const pointsRef = React.useRef<THREE.Points>(null);
+  const materialRef = React.useRef<THREE.PointsMaterial>(null);
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  const geometry = React.useMemo(() => {
+    const count = 2400;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const r = 40 + Math.random() * 50;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    return geo;
+  }, []);
+
+  useFrame((_, delta) => {
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y += delta * 0.02;
+    }
+    if (materialRef.current) {
+      materialRef.current.opacity =
+        1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    }
+  });
+
+  return (
+    <points ref={pointsRef} geometry={geometry}>
+      <pointsMaterial
+        ref={materialRef}
+        color="#ffffff"
+        size={0.6}
+        sizeAttenuation
+        transparent
+        opacity={1}
+        depthWrite={false}
+      />
+    </points>
+  );
+}
+
+export function StuckholmGlobe({
+  scrollProgress = 0,
+}: {
+  scrollProgress?: number;
+}) {
+  const dragRef = React.useRef<DragState>({
+    dragging: false,
+    deltaX: 0,
+    deltaY: 0,
+  });
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = true;
+    dragRef.current.deltaX = 0;
+    dragRef.current.deltaY = 0;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.dragging) return;
+    dragRef.current.deltaX += e.movementX;
+    dragRef.current.deltaY += e.movementY;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = false;
+    setIsDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  return (
+    <div
+      className="w-full h-full"
+      style={{
+        cursor: isDragging ? "grabbing" : "grab",
+        // "none" here (the previous value) blocked ALL native touch
+        // gestures on this div — including the vertical swipe iPhone users
+        // need to scroll past the hero, since this div covers the entire
+        // pinned/sticky viewport on the home page. "pan-y" hands vertical
+        // single-finger swipes back to the browser for normal page
+        // scrolling, while still leaving horizontal swipes free for our own
+        // pointer handlers below to use as a yaw-drag on the globe. Desktop
+        // mouse dragging (both axes) is unaffected either way, since
+        // touch-action only governs touch gestures.
+        touchAction: "pan-y",
+      }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerLeave={endDrag}
+      onPointerCancel={endDrag}
+    >
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+        <SceneBackground progress={scrollProgress} />
+        <Starfield progress={scrollProgress} />
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[0, 2, 8]} intensity={0.9} />
+        <directionalLight position={[0, -2, -6]} intensity={0.25} />
+        <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
+      </Canvas>
+    </div>
+  );
+}
