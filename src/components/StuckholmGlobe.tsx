@@ -8,9 +8,9 @@ import * as THREE from "three";
 // file's own units don't matter, and it gets the same ocean/land vertex
 // palette the procedural globe used.
 const BLOB_MODEL_URL = "/models/blobben.glb";
-const BLOB_RADIUS = 4.0;
+const BLOB_RADIUS = 4.8;
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
-const LETTER_SCALE = 1.2;
+const LETTER_SCALE = 1;
 
 const OCEAN_DEEP = new THREE.Color("#214a9c").convertSRGBToLinear();
 const OCEAN_SHALLOW = new THREE.Color("#0a9ac5").convertSRGBToLinear();
@@ -262,34 +262,33 @@ function DriftingGlobe({
     }
 
     const opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
-    const fadeTargets = [group, ringRef.current].filter(
-      (obj): obj is THREE.Group => obj !== null
-    );
-    fadeTargets.forEach((target) =>
-      target.traverse((child) => {
-        const mat = (child as THREE.Mesh).material as
-          | THREE.Material
-          | THREE.Material[]
-          | undefined;
-        if (!mat) return;
-        const mats = Array.isArray(mat) ? mat : [mat];
-        for (const m of mats) {
-          m.transparent = true;
-          m.opacity = opacity;
-        }
-      })
-    );
+    group.traverse((child) => {
+      const mat = (child as THREE.Mesh).material as
+        | THREE.Material
+        | THREE.Material[]
+        | undefined;
+      if (!mat) return;
+      const mats = Array.isArray(mat) ? mat : [mat];
+      for (const m of mats) {
+        m.transparent = true;
+        m.opacity = opacity;
+      }
+    });
   });
 
   return (
     <>
+      {/* Globe and letter ring share one drag group, so the ring turns with
+          the globe when you drag. Float only bobs the whole thing up and down
+          (rotationIntensity 0 stops its small wobble, which tilted the globe
+          around the z axis). */}
       <group ref={groupRef}>
-        <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
+        <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
+          <group ref={ringRef}>
+            <primitive object={letters} />
+          </group>
         </Float>
-      </group>
-      <group ref={ringRef}>
-        <primitive object={letters} />
       </group>
     </>
   );
