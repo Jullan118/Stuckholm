@@ -8,7 +8,7 @@ import * as THREE from "three";
 // file's own units don't matter, and it gets the same ocean/land vertex
 // palette the procedural globe used.
 const BLOB_MODEL_URL = "/models/blobben.glb";
-const BLOB_RADIUS = 1.85;
+const BLOB_RADIUS = 4.8;
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
 
@@ -105,6 +105,8 @@ function createBlobFromModel(scene: THREE.Object3D) {
   root.position.copy(center).multiplyScalar(-scale);
   root.scale.setScalar(scale);
 
+  // The letters follow the globe's scale, so the ring keeps the proportions
+  // set in blobben.glb.
   const letters = new THREE.Group();
   letters.position.copy(root.position).multiplyScalar(LETTER_SCALE);
   letters.scale.setScalar(scale * LETTER_SCALE);
@@ -133,7 +135,7 @@ function createBlobFromModel(scene: THREE.Object3D) {
     roughness: 0.25,
   });
   const letterMaterial = new THREE.MeshStandardMaterial({
-    color: "#d51f26",
+    color: "#ffffff",
     roughness: 0.4,
     metalness: 0,
   });
@@ -195,7 +197,6 @@ const TEXT_ORBIT_SPEED = 0.08;
 // it read as a proper elliptical orbit path around the globe — like an
 // orbit diagram — rather than a flat horizontal belt or a steep halo. It's
 // set once and never animated; only the spin below changes frame to frame.
-const TEXT_ORBIT_TILT = Math.PI / 5;
 
 // Wraps the globe + its orbiting wordmark in one animated group: a gentle
 // idle spin at rest that picks up a little pace as you scroll, and fades
@@ -214,7 +215,9 @@ function DriftingGlobe({
   dragRef: React.MutableRefObject<DragState>;
 }) {
   const groupRef = React.useRef<THREE.Group>(null);
-  const textOrbitRef = React.useRef<THREE.Group>(null);
+  // The letter ring lives outside the dragged globe, so it stays in its own
+  // horizontal plane and only spins around the vertical axis.
+  const ringRef = React.useRef<THREE.Group>(null);
   const progressRef = React.useRef(0);
   const gltf = useGLTF(BLOB_MODEL_URL);
   const { blob, letters } = React.useMemo(
@@ -254,40 +257,41 @@ function DriftingGlobe({
 
     // The wordmark's own orbital motion, layered on top of whatever the
     // globe itself is doing — always running, drag or no drag.
-    if (textOrbitRef.current) {
-      textOrbitRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
+    if (ringRef.current) {
+      ringRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
     }
 
     const opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
-    group.traverse((child) => {
-      const mat = (child as THREE.Mesh).material as
-        | THREE.Material
-        | THREE.Material[]
-        | undefined;
-      if (!mat) return;
-      const mats = Array.isArray(mat) ? mat : [mat];
-      for (const m of mats) {
-        m.transparent = true;
-        m.opacity = opacity;
-      }
-    });
+    const fadeTargets = [group, ringRef.current].filter(
+      (obj): obj is THREE.Group => obj !== null
+    );
+    fadeTargets.forEach((target) =>
+      target.traverse((child) => {
+        const mat = (child as THREE.Mesh).material as
+          | THREE.Material
+          | THREE.Material[]
+          | undefined;
+        if (!mat) return;
+        const mats = Array.isArray(mat) ? mat : [mat];
+        for (const m of mats) {
+          m.transparent = true;
+          m.opacity = opacity;
+        }
+      })
+    );
   });
 
   return (
-    <group ref={groupRef}>
-      <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
-        <primitive object={blob} />
-        {/* Static tilt on the outer group sets the orbital plane once;
-            the inner group spins within that tilted plane each frame —
-            keeping the two separate avoids the wobble/precession you'd
-            get from animating rotation on an already-tilted axis. */}
-        <group rotation={[TEXT_ORBIT_TILT, 0, 0]}>
-          <group ref={textOrbitRef}>
-            <primitive object={letters} />
-          </group>
-        </group>
-      </Float>
-    </group>
+    <>
+      <group ref={groupRef}>
+        <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
+          <primitive object={blob} />
+        </Float>
+      </group>
+      <group ref={ringRef}>
+        <primitive object={letters} />
+      </group>
+    </>
   );
 }
 
@@ -429,7 +433,7 @@ export function StuckholmGlobe({
       onPointerLeave={endDrag}
       onPointerCancel={endDrag}
     >
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+      <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
         <SceneBackground progress={scrollProgress} />
         <Starfield progress={scrollProgress} />
         <ambientLight intensity={0.9} />
