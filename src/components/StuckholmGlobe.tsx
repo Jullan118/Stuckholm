@@ -8,7 +8,7 @@ import * as THREE from "three";
 // file's own units don't matter, and it gets the same ocean/land vertex
 // palette the procedural globe used.
 const BLOB_MODEL_URL = "/models/blobben.glb";
-const BLOB_RADIUS = 4.3;
+const BLOB_RADIUS = 4.0;
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
 
