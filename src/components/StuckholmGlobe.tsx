@@ -1,153 +1,172 @@
 import * as React from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Text3D, Center, Float } from "@react-three/drei";
+import { Float, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
-function hashNoise(x: number, y: number, z: number) {
-  const s = Math.sin(x * 12.9898 + y * 78.233 + z * 37.719) * 43758.5453;
-  return s - Math.floor(s);
+// The blob is a Rhino/Grasshopper export (blobben.glb) that replaces the old
+// procedural noise sphere. It is re-centred and re-scaled in code below so the
+// file's own units don't matter, and it gets the same ocean/land vertex
+// palette the procedural globe used.
+const BLOB_MODEL_URL = "/models/blobben.glb";
+const BLOB_RADIUS = 1.85;
+// Scales the letter ring around the globe. 1 = as placed in blobben.glb.
+const LETTER_SCALE = 1;
+
+const OCEAN_DEEP = new THREE.Color("#214a9c").convertSRGBToLinear();
+const OCEAN_SHALLOW = new THREE.Color("#0a9ac5").convertSRGBToLinear();
+const LAND = new THREE.Color("#87c661").convertSRGBToLinear();
+const GOLD = new THREE.Color("#d4af37").convertSRGBToLinear();
+const ENAMEL_BLUE = new THREE.Color("#2f63e0").convertSRGBToLinear();
+
+// "blue-green": the whole blob uses the ocean/land palette, and the letters
+// are red. "gold": the blob is gold like the reference, with a blue bead on
+// top and white pearls.
+const GLOBE_STYLE: "gold" | "blue-green" = "blue-green";
+
+// The round bead on the stalk, just below the crown (raw model units).
+const BEAD_CENTER = new THREE.Vector3(0, 0.117, 0);
+const BEAD_RADIUS = 0.0075;
+
+// Node names from blobben.glb. The letters are the 16 "Raven" meshes that
+// orbit the globe; everything else is part of the blob itself.
+type PartKind = "globe" | "pearl" | "gold" | "stalk" | "letter";
+
+function partKind(name: string): PartKind {
+  // three.js turns spaces in node names into underscores and adds _N to
+  // duplicates, so match on prefixes rather than the exact export names.
+  if (name.startsWith("Raven")) return "letter";
+  const part = /BLOBBI_part_0(\d)/.exec(name);
+  if (part) {
+    const n = Number(part[1]);
+    if (n === 1 || n === 2) return "globe";
+    if (n >= 3 && n <= 5) return "pearl";
+    if (n === 7) return "stalk";
+  }
+  // Band (part 06) and the Svensk krona crown.
+  return "gold";
 }
 
-function createBlobGeometry() {
-  const geometry = new THREE.IcosahedronGeometry(1.4, 12);
+function colorBlobGeometry(
+  geometry: THREE.BufferGeometry,
+  center: THREE.Vector3,
+  kind: PartKind
+) {
   const position = geometry.attributes.position;
   const vertex = new THREE.Vector3();
-  const colors: number[] = [];
-
-  const oceanDeep = new THREE.Color("#214a9c").convertSRGBToLinear();
-  const oceanShallow = new THREE.Color("#0a9ac5").convertSRGBToLinear();
-  const land = new THREE.Color("#87c661").convertSRGBToLinear();
+  const colors = new Float32Array(position.count * 3);
+  const color = new THREE.Color();
+  const usePalette = GLOBE_STYLE === "blue-green";
 
   for (let i = 0; i < position.count; i++) {
     vertex.fromBufferAttribute(position, i);
-    const dir = vertex.clone().normalize();
 
-    const bigLumps =
-      Math.sin(dir.x * 3 + dir.y * 2) * 0.07 +
-      Math.sin(dir.y * 2.5 + dir.z * 3) * 0.06 +
-      Math.sin(dir.z * 3.5 + dir.x * 2.5) * 0.05;
+    if (usePalette) {
+      const dir = vertex.clone().sub(center).normalize();
+      const landNoise =
+        Math.sin(dir.x * 3 + dir.y * 2.5 + 1.5) * 0.5 +
+        Math.sin(dir.y * 4 - dir.z * 3 + 0.7) * 0.5 +
+        Math.sin(dir.z * 2 + dir.x * 5) * 0.3;
+      const t = THREE.MathUtils.clamp(landNoise * 0.6 + 0.4, 0, 1);
+      color
+        .copy(OCEAN_DEEP)
+        .lerp(OCEAN_SHALLOW, dir.y * 0.5 + 0.5)
+        .lerp(LAND, t);
+    } else {
+      const isBead =
+        GLOBE_STYLE === "gold" &&
+        kind === "stalk" &&
+        vertex.distanceTo(BEAD_CENTER) < BEAD_RADIUS;
+      color.copy(isBead ? ENAMEL_BLUE : GOLD);
+    }
 
-    const smallBumps =
-      (hashNoise(
-        Math.round(dir.x * 6),
-        Math.round(dir.y * 6),
-        Math.round(dir.z * 6)
-      ) -
-        0.5) *
-      0.06;
-
-    const noise = bigLumps + smallBumps;
-
-    vertex.multiplyScalar(1 + noise);
-    position.setXYZ(i, vertex.x, vertex.y, vertex.z);
-
-    const landNoise =
-      Math.sin(dir.x * 3 + dir.y * 2.5 + 1.5) * 0.5 +
-      Math.sin(dir.y * 4 - dir.z * 3 + 0.7) * 0.5 +
-      Math.sin(dir.z * 2 + dir.x * 5) * 0.3;
-
-    const t = THREE.MathUtils.clamp(landNoise * 0.6 + 0.4, 0, 1);
-    const ocean = oceanDeep.clone().lerp(oceanShallow, dir.y * 0.5 + 0.5);
-    const color = ocean.lerp(land, t);
-    colors.push(color.r, color.g, color.b);
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
   }
 
-  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-  geometry.computeVertexNormals();
-  return geometry;
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 }
 
-function ClayGlobe() {
-  const geometry = React.useMemo(() => createBlobGeometry(), []);
+// Splits the GLB into the blob (globe, pearls, band, stalk, crown), which
+// sits at the origin, and the letter ring, which is returned separately so it
+// can orbit with the same tilt and speed as before.
+function createBlobFromModel(scene: THREE.Object3D) {
+  const root = scene.clone(true);
 
-  return (
-    <mesh geometry={geometry}>
-      <meshStandardMaterial
-        vertexColors
-        roughness={1}
-        metalness={0}
-        flatShading
-      />
-    </mesh>
-  );
-}
+  // Size and centre come from the blob parts only, so the letters don't
+  // change how big the globe is.
+  const box = new THREE.Box3();
+  root.children.forEach((child) => {
+    if (partKind(child.name) !== "letter") box.expandByObject(child);
+  });
+  const center = box.getCenter(new THREE.Vector3());
+  const halfDiagonal = box.getSize(new THREE.Vector3()).length() / 2;
+  const scale = BLOB_RADIUS / halfDiagonal;
+  root.position.copy(center).multiplyScalar(-scale);
+  root.scale.setScalar(scale);
 
-// The phrase repeats twice around the ring — a tighter kerning
-// (letterUnit/wordGap below) makes room for both passes without the
-// letters overlapping.
-const GLOBE_WORDS = [
-  "STUCK",
-  "IN",
-  "STUCKHOLM",
-  "STUCK",
-  "IN",
-  "STUCKHOLM",
-];
+  const letters = new THREE.Group();
+  letters.position.copy(root.position).multiplyScalar(LETTER_SCALE);
+  letters.scale.setScalar(scale * LETTER_SCALE);
 
-function buildLayout(words: string[]) {
-  const letterUnit = 0.62;
-  const wordGap = 1.3;
-
-  let totalUnits = 0;
-  words.forEach((word) => {
-    totalUnits += word.length * letterUnit + wordGap;
+  // Matte clay look for the blue-green palette (as before); a soft metallic
+  // look for the gold style.
+  const material =
+    GLOBE_STYLE === "blue-green"
+      ? new THREE.MeshStandardMaterial({
+          vertexColors: true,
+          roughness: 1,
+          metalness: 0,
+          flatShading: true,
+        })
+      : new THREE.MeshStandardMaterial({
+          vertexColors: true,
+          color: "#ffffff",
+          metalness: 0.45,
+          roughness: 0.35,
+          emissive: "#3a2a00",
+          emissiveIntensity: 0.6,
+        });
+  const pearlMaterial = new THREE.MeshStandardMaterial({
+    color: "#f7f3e8",
+    metalness: 0.1,
+    roughness: 0.25,
+  });
+  const letterMaterial = new THREE.MeshStandardMaterial({
+    color: "#d51f26",
+    roughness: 0.4,
+    metalness: 0,
   });
 
-  const angleStep = (Math.PI * 2) / totalUnits;
+  const letterMeshes: THREE.Mesh[] = [];
+  root.traverse((child) => {
+    const mesh = child as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    const kind = partKind(mesh.name);
+    // Geometry is shared with the cached GLTF, so work on a copy.
+    mesh.geometry = mesh.geometry.clone();
 
-  const items: { char: string; angle: number }[] = [];
-  let cursor = 0;
-  words.forEach((word) => {
-    for (const char of word) {
-      items.push({ char, angle: cursor * angleStep });
-      cursor += letterUnit;
+    if (kind === "letter") {
+      mesh.material = letterMaterial;
+      letterMeshes.push(mesh);
+    } else if (kind === "pearl" && GLOBE_STYLE === "gold") {
+      mesh.material = pearlMaterial;
+    } else {
+      colorBlobGeometry(mesh.geometry, center, kind);
+      mesh.material = material;
     }
-    cursor += wordGap;
   });
 
-  return items;
+  letterMeshes.forEach((mesh) => {
+    root.remove(mesh);
+    letters.add(mesh);
+  });
+
+  return { blob: root, letters };
 }
 
-// A plain circular ring around the globe — the tilt on the outer group
-// (TEXT_ORBIT_TILT, below) is what gives it an elliptical look in
-// perspective, so the path itself stays round rather than an actual oval.
-const ORBIT_RADIUS = 1.68;
+useGLTF.preload(BLOB_MODEL_URL);
 
-function GlobeText() {
-  const items = React.useMemo(() => buildLayout(GLOBE_WORDS), []);
-
-  return (
-    <group>
-      {items.map(({ char, angle }, i) => {
-        const x = Math.sin(angle) * ORBIT_RADIUS;
-        const z = Math.cos(angle) * ORBIT_RADIUS;
-
-        return (
-          <group key={i} position={[x, 0, z]} rotation={[0, angle, 0]}>
-            <Center>
-              <Text3D
-                font="/fonts/Skarp-Italic.typeface.json"
-                size={0.32}
-                height={0.09}
-                curveSegments={8}
-                bevelEnabled
-                bevelThickness={0.013}
-                bevelSize={0.013}
-              >
-                {char}
-                <meshStandardMaterial color="#d51f26" roughness={0.4} />
-              </Text3D>
-            </Center>
-          </group>
-        );
-      })}
-    </group>
-  );
-}
-
-// Drag state shared between the plain-HTML pointer handlers (in
-// StuckholmGlobe below, outside the R3F tree) and the per-frame rotation
-// logic here — a ref so dragging never triggers a React re-render.
 type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
 // World-space axes for trackball-style dragging — reused every frame
@@ -172,7 +191,7 @@ const dragQuat = new THREE.Quaternion();
 const TEXT_ORBIT_SPEED = 0.08;
 
 // Fixed tilt of the wordmark ring's own plane, in radians — combined with
-// the oval shape in GlobeText (ORBIT_RADIUS_X/Z above), this is what makes
+// the letter ring placed in blobben.glb, this is what makes
 // it read as a proper elliptical orbit path around the globe — like an
 // orbit diagram — rather than a flat horizontal belt or a steep halo. It's
 // set once and never animated; only the spin below changes frame to frame.
@@ -197,6 +216,11 @@ function DriftingGlobe({
   const groupRef = React.useRef<THREE.Group>(null);
   const textOrbitRef = React.useRef<THREE.Group>(null);
   const progressRef = React.useRef(0);
+  const gltf = useGLTF(BLOB_MODEL_URL);
+  const { blob, letters } = React.useMemo(
+    () => createBlobFromModel(gltf.scene),
+    [gltf.scene]
+  );
 
   React.useEffect(() => {
     progressRef.current = scrollProgress;
@@ -252,14 +276,14 @@ function DriftingGlobe({
   return (
     <group ref={groupRef}>
       <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.4}>
-        <ClayGlobe />
+        <primitive object={blob} />
         {/* Static tilt on the outer group sets the orbital plane once;
             the inner group spins within that tilted plane each frame —
             keeping the two separate avoids the wobble/precession you'd
             get from animating rotation on an already-tilted axis. */}
         <group rotation={[TEXT_ORBIT_TILT, 0, 0]}>
           <group ref={textOrbitRef}>
-            <GlobeText />
+            <primitive object={letters} />
           </group>
         </group>
       </Float>
