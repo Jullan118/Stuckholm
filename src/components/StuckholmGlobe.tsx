@@ -130,11 +130,11 @@ function createBlobFromModel(scene: THREE.Object3D) {
     metalness: 0.1,
     roughness: 0.25,
   });
-  // Glossy, lit-from-within lime plastic. Clearcoat gives the wet highlights,
+  // Glossy, lit-from-within red plastic. Clearcoat gives the wet highlights,
   // and emissive gives the inner glow.
   const letterMaterial = new THREE.MeshPhysicalMaterial({
-    color: "#7ed321",
-    emissive: "#5cc81a",
+    color: "#d51f26",
+    emissive: "#8a0c10",
     emissiveIntensity: 0.35,
     roughness: 0.15,
     metalness: 0,
