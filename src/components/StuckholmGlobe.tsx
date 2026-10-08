@@ -8,9 +8,9 @@ import * as THREE from "three";
 // file's own units don't matter, and it gets the same ocean/land vertex
 // palette the procedural globe used.
 const BLOB_MODEL_URL = "/models/blobben.glb";
-const BLOB_RADIUS = 3.2;
+const BLOB_RADIUS = 4.0;
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
-const LETTER_SCALE = 1;
+const LETTER_SCALE = 1.2;
 
 const OCEAN_DEEP = new THREE.Color("#214a9c").convertSRGBToLinear();
 const OCEAN_SHALLOW = new THREE.Color("#0a9ac5").convertSRGBToLinear();
