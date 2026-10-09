@@ -289,7 +289,7 @@ export function NewFlamesUpload() {
   if (!supabaseConfigured) {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
-        <h1 className="text-2xl font-zenloop font-light text-black mb-4">
+        <h1 className="text-2xl font-archivo font-light text-black mb-4">
           {isEditMode ? "Edit product" : "Upload product"}
         </h1>
         <p className="text-black/70">
@@ -307,7 +307,7 @@ export function NewFlamesUpload() {
   if (!session) {
     return (
       <div className="relative z-10 w-full max-w-sm px-6 pt-28 pb-16">
-        <h1 className="text-2xl font-zenloop font-light text-black mb-6 text-center">
+        <h1 className="text-2xl font-archivo font-light text-black mb-6 text-center">
           Log in
         </h1>
         <form onSubmit={handleLogin} className="flex flex-col gap-3">
@@ -347,7 +347,7 @@ export function NewFlamesUpload() {
   if (isEditMode && notOwner) {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
-        <h1 className="text-2xl font-zenloop font-light text-black mb-4">
+        <h1 className="text-2xl font-archivo font-light text-black mb-4">
           Edit product
         </h1>
         <p className="text-black/70">
@@ -364,7 +364,7 @@ export function NewFlamesUpload() {
   return (
     <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-zenloop font-light text-black">
+        <h1 className="text-2xl font-archivo font-light text-black">
           {isEditMode ? "Edit product" : "Add product"}
         </h1>
         <button onClick={handleLogout} className="text-black/60 text-sm underline">

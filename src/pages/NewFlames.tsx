@@ -82,7 +82,7 @@ export function NewFlames() {
               </div>
             </Link>
 
-            <div className="flex items-baseline justify-between font-zenloop font-light px-4 py-3">
+            <div className="flex items-baseline justify-between font-archivo font-light px-4 py-3">
               <Link to={`/off-the-shelf/${product.slug}`}>
                 <span className="text-black">{product.name}</span>
               </Link>
@@ -90,7 +90,7 @@ export function NewFlames() {
             </div>
             {product.colorCount !== null && (
               <span
-                className="font-zenloop font-light -mt-2 px-4 pb-3 block"
+                className="font-archivo font-light -mt-2 px-4 pb-3 block"
                 style={{ color: "#d7d7d7" }}
               >
                 {formatColorCount(product.colorCount)}
