@@ -412,7 +412,7 @@ function Starfield({ progress }: { progress: number }) {
         x: (Math.random() * 2 - 1) * 28,
         y: (Math.random() * 2 - 1) * 16,
         z: -25 - Math.random() * 35,
-        size: 0.35 + Math.random() * 0.9,
+        size: 0.6 + Math.random() * 1.0,
         phase: Math.random() * Math.PI * 2,
         speed: 0.6 + Math.random() * 0.8,
       })),
@@ -429,7 +429,9 @@ function Starfield({ progress }: { progress: number }) {
     sparkles.forEach((s, i) => {
       const line = lineRefs.current[i];
       if (!line) return;
-      const pulse = 0.75 + 0.25 * Math.sin(t * s.speed + s.phase);
+      // Gentle size wobble only. A deep pulse shrank the small sparkles to
+      // almost nothing, which made them look like they were disappearing.
+      const pulse = 0.94 + 0.06 * Math.sin(t * s.speed + s.phase);
       line.scale.setScalar(s.size * pulse);
     });
   });
