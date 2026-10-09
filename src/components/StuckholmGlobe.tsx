@@ -13,6 +13,10 @@ const LETTER_SCALE = 1;
 // Line-drawing look: white fill, anthracite grey (RAL 7016) for all details.
 const INK = "#383e42";
 const PAPER = "#ffffff";
+// Night-sky background behind the hero, as on the home page wrapper.
+const BACKGROUND = "#04050c";
+// Stars are white so they stay visible on the dark background.
+const STAR = "#ffffff";
 
 // Orbit speed of the letter ring around the globe's vertical axis, in rad/s.
 const TEXT_ORBIT_SPEED = 0.08;
@@ -234,7 +238,7 @@ function Starfield({ progress }: { progress: number }) {
   const material = React.useMemo(
     () =>
       new THREE.LineBasicMaterial({
-        color: INK,
+        color: STAR,
         transparent: true,
         depthWrite: false,
       }),
@@ -247,7 +251,7 @@ function Starfield({ progress }: { progress: number }) {
         x: (Math.random() * 2 - 1) * 28,
         y: (Math.random() * 2 - 1) * 16,
         z: -25 - Math.random() * 35,
-        size: 0.6 + Math.random() * 1.0,
+        size: 0.12 + Math.random() * 0.16,
         phase: Math.random() * Math.PI * 2,
         speed: 0.6 + Math.random() * 0.8,
       })),
@@ -256,7 +260,9 @@ function Starfield({ progress }: { progress: number }) {
 
   useFrame((state, delta) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.02;
+      // Sway back and forth instead of spinning forever. A full spin carried
+      // the stars off-screen over time, and they never came back.
+      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.05) * 0.06;
     }
     material.opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
 
@@ -342,7 +348,7 @@ export function StuckholmGlobe({
         camera={{ position: [0, 0, 8], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
-        <color attach="background" args={[PAPER]} />
+        <color attach="background" args={[BACKGROUND]} />
         <Starfield progress={scrollProgress} />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
       </Canvas>
