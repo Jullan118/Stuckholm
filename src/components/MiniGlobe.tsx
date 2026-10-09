@@ -91,7 +91,7 @@ function RotatingGlobe() {
           <group key={i} position={[x, 0, z]} rotation={[0, angle, 0]}>
             <Center>
               <Text3D
-                font="/fonts/ZenLoop-Italic.typeface.json"
+                font="/fonts/ArchivoItalic.typeface.json"
                 size={0.22}
                 height={0.05}
                 curveSegments={4}

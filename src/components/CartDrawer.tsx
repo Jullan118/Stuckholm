@@ -82,7 +82,7 @@ export function CartDrawer() {
                       <Link
                         to={line.href}
                         onClick={closeCart}
-                        className="font-zenloop font-light truncate hover:underline"
+                        className="font-archivo font-light truncate hover:underline"
                       >
                         {line.productTitle}
                       </Link>
