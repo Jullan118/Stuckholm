@@ -43,7 +43,7 @@ export function About() {
 
   return (
     <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center px-6 text-center">
-      <h1 className="text-3xl sm:text-4xl font-archivo font-light text-black mb-8">
+      <h1 className="text-3xl sm:text-4xl font-manrope font-light text-black mb-8">
         Contact
       </h1>
 

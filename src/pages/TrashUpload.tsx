@@ -280,7 +280,7 @@ export function TrashUpload() {
   if (!supabaseConfigured) {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
-        <h1 className="text-2xl font-archivo font-light text-black mb-4">
+        <h1 className="text-2xl font-manrope font-light text-black mb-4">
           {isEditMode ? "Edit item" : "Upload item"}
         </h1>
         <p className="text-black/70">
@@ -298,7 +298,7 @@ export function TrashUpload() {
   if (!session) {
     return (
       <div className="relative z-10 w-full max-w-sm px-6 pt-28 pb-16">
-        <h1 className="text-2xl font-archivo font-light text-black mb-6 text-center">
+        <h1 className="text-2xl font-manrope font-light text-black mb-6 text-center">
           Log in
         </h1>
         <form onSubmit={handleLogin} className="flex flex-col gap-3">
@@ -338,7 +338,7 @@ export function TrashUpload() {
   if (isEditMode && notOwner) {
     return (
       <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16 text-center">
-        <h1 className="text-2xl font-archivo font-light text-black mb-4">
+        <h1 className="text-2xl font-manrope font-light text-black mb-4">
           Edit item
         </h1>
         <p className="text-black/70">
@@ -355,7 +355,7 @@ export function TrashUpload() {
   return (
     <div className="relative z-10 w-full max-w-md px-6 pt-28 pb-16">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-archivo font-light text-black">
+        <h1 className="text-2xl font-manrope font-light text-black">
           {isEditMode ? "Edit item" : "Add item"}
         </h1>
         <button onClick={handleLogout} className="text-black/60 text-sm underline">
