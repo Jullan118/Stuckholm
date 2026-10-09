@@ -21,6 +21,11 @@ const ENAMEL_BLUE = new THREE.Color("#2f63e0").convertSRGBToLinear();
 // "gold": the blob is gold, with a blue bead on top and white pearls.
 const GLOBE_STYLE: "gold" | "blue-green" = "blue-green";
 
+// Line-drawing look for the hero: white background, white fill, black ink
+// outlines. Set to false to get the coloured version back.
+const LINE_ART = true;
+const INK = "#111111";
+
 // The round bead on the stalk, just below the crown (raw model units).
 const BEAD_CENTER = new THREE.Vector3(0, 0.117, 0);
 const BEAD_RADIUS = 0.0075;
@@ -108,9 +113,14 @@ function createBlobFromModel(scene: THREE.Object3D) {
   letters.position.copy(root.position).multiplyScalar(LETTER_SCALE);
   letters.scale.setScalar(scale * LETTER_SCALE);
 
+  // Line-drawing look: white fill that hides what's behind it, with black ink
+  // outlines added below.
+  const lineFill = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+
   // Matte clay for the blue-green palette; soft metal for the gold style.
-  const blobMaterial =
-    GLOBE_STYLE === "blue-green"
+  const blobMaterial: THREE.Material = LINE_ART
+    ? lineFill
+    : GLOBE_STYLE === "blue-green"
       ? new THREE.MeshStandardMaterial({
           vertexColors: true,
           roughness: 1,
@@ -132,7 +142,7 @@ function createBlobFromModel(scene: THREE.Object3D) {
   });
   // Glossy white plastic for the wordmark. Clearcoat gives the wet highlights.
   // No emissive glow and reduced environment reflection keep it clean white.
-  const letterMaterial = new THREE.MeshPhysicalMaterial({
+  const letterMaterial: THREE.Material = LINE_ART ? lineFill : new THREE.MeshPhysicalMaterial({
     color: "#ffffff",
     roughness: 0.25,
     metalness: 0,
@@ -144,6 +154,7 @@ function createBlobFromModel(scene: THREE.Object3D) {
   // Collect the letter meshes first, then move them out of the blob, so the
   // traversal isn't changing the tree while it walks it.
   const letterMeshes: THREE.Mesh[] = [];
+  const blobMeshes: THREE.Mesh[] = [];
   root.traverse((child) => {
     const mesh = child as THREE.Mesh;
     if (!mesh.isMesh) return;
@@ -154,11 +165,12 @@ function createBlobFromModel(scene: THREE.Object3D) {
     if (kind === "letter") {
       mesh.material = letterMaterial;
       letterMeshes.push(mesh);
-    } else if (kind === "pearl" && GLOBE_STYLE === "gold") {
+    } else if (kind === "pearl" && GLOBE_STYLE === "gold" && !LINE_ART) {
       mesh.material = pearlMaterial;
     } else {
       colorBlobGeometry(mesh.geometry, center, kind);
       mesh.material = blobMaterial;
+      blobMeshes.push(mesh);
     }
   });
 
@@ -166,6 +178,29 @@ function createBlobFromModel(scene: THREE.Object3D) {
     root.remove(mesh);
     letters.add(mesh);
   });
+
+  if (LINE_ART) {
+    const ink = new THREE.LineBasicMaterial({ color: INK });
+    const inkHull = new THREE.MeshBasicMaterial({
+      color: INK,
+      side: THREE.BackSide,
+    });
+    // Silhouette: a slightly larger black back-face shell behind each blob part.
+    blobMeshes.forEach((mesh) => {
+      const hull = new THREE.Mesh(mesh.geometry, inkHull);
+      hull.scale.setScalar(1.008);
+      mesh.add(hull);
+    });
+    // Creases and edges: black lines where the surface turns sharply.
+    [...blobMeshes, ...letterMeshes].forEach((mesh) => {
+      mesh.add(
+        new THREE.LineSegments(
+          new THREE.EdgesGeometry(mesh.geometry, 25),
+          ink
+        )
+      );
+    });
+  }
 
   return { blob: root, letters };
 }
