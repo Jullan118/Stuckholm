@@ -325,7 +325,9 @@ const SKY_WHITE = new THREE.Color("#ffffff");
 // progresses from 0 to 1.
 function SceneBackground({ progress }: { progress: number }) {
   const { scene } = useThree();
-  const colorRef = React.useRef(new THREE.Color().copy(SKY_DARK));
+  const colorRef = React.useRef(
+    new THREE.Color().copy(LINE_ART ? SKY_WHITE : SKY_DARK)
+  );
   const progressRef = React.useRef(progress);
 
   React.useEffect(() => {
@@ -337,6 +339,7 @@ function SceneBackground({ progress }: { progress: number }) {
   }, [scene]);
 
   useFrame(() => {
+    if (LINE_ART) return;
     colorRef.current.lerpColors(
       SKY_DARK,
       SKY_WHITE,
@@ -394,7 +397,7 @@ function Starfield({ progress }: { progress: number }) {
   const material = React.useMemo(
     () =>
       new THREE.LineBasicMaterial({
-        color: "#ffffff",
+        color: LINE_ART ? INK : "#ffffff",
         transparent: true,
         depthWrite: false,
       }),
