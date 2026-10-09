@@ -12,7 +12,7 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="w-full font-skarp text-black mt-20 mb-14">
+    <footer className="w-full font-zenloop text-black mt-20 mb-14">
       <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-3 gap-3 sm:gap-10 text-sm sm:text-lg">
         <div className="flex flex-col gap-1 leading-tight">
           <span className="text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1">

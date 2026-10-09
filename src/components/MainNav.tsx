@@ -27,7 +27,7 @@ export function MainNav() {
           key={link.label}
           to={link.to}
           className={`inline-block text-xl sm:text-2xl transition-transform duration-200 ease-out hover:scale-125 ${
-            isHome ? "text-white hover:text-white/70" : "text-black hover:text-black/70"
+            "text-black hover:text-black/70"
           }`}
         >
           {link.label}

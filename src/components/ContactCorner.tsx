@@ -13,7 +13,7 @@ export function ContactCorner() {
     <Link
       to="/about"
       className={`absolute bottom-4 right-4 z-20 text-sm sm:text-base transition-transform duration-200 ease-out hover:scale-125 ${
-        isHome ? "text-white hover:text-white/70" : "text-black hover:text-black/70"
+        "text-black hover:text-black/70"
       }`}
     >
       Contact

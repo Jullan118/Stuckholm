@@ -17,7 +17,7 @@ export function CartCorner() {
       type="button"
       onClick={openCart}
       className={`absolute top-4 right-4 z-20 flex items-center gap-1 transition-transform duration-200 hover:scale-110 ${
-        isHome ? "text-white" : "text-black"
+        "text-black"
       }`}
       aria-label={`Cart, ${totalQuantity} item${totalQuantity === 1 ? "" : "s"}`}
     >

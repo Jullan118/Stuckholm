@@ -24,7 +24,8 @@ const GLOBE_STYLE: "gold" | "blue-green" = "blue-green";
 // Line-drawing look for the hero: white background, white fill, black ink
 // outlines. Set to false to get the coloured version back.
 const LINE_ART = true;
-const INK = "#111111";
+// Details (edges, outlines, wordmark, stars) are anthracite grey, RAL 7016.
+const INK = "#383e42";
 
 // The round bead on the stalk, just below the crown (raw model units).
 const BEAD_CENTER = new THREE.Vector3(0, 0.117, 0);
@@ -115,7 +116,14 @@ function createBlobFromModel(scene: THREE.Object3D) {
 
   // Line-drawing look: white fill that hides what's behind it, with black ink
   // outlines added below.
-  const lineFill = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+  // Pure white, pushed slightly back in depth so the ink lines sit on top of
+  // it instead of flickering against it (that flicker read as grey).
+  const lineFill = new THREE.MeshBasicMaterial({
+    color: "#ffffff",
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
 
   // Matte clay for the blue-green palette; soft metal for the gold style.
   const blobMaterial: THREE.Material = LINE_ART
@@ -142,7 +150,9 @@ function createBlobFromModel(scene: THREE.Object3D) {
   });
   // Glossy white plastic for the wordmark. Clearcoat gives the wet highlights.
   // No emissive glow and reduced environment reflection keep it clean white.
-  const letterMaterial: THREE.Material = LINE_ART ? lineFill : new THREE.MeshPhysicalMaterial({
+  // In line-art mode the wordmark is solid black, as requested.
+  const letterInk = new THREE.MeshBasicMaterial({ color: INK });
+  const letterMaterial: THREE.Material = LINE_ART ? letterInk : new THREE.MeshPhysicalMaterial({
     color: "#ffffff",
     roughness: 0.25,
     metalness: 0,
@@ -410,7 +420,7 @@ function Starfield({ progress }: { progress: number }) {
         x: (Math.random() * 2 - 1) * 28,
         y: (Math.random() * 2 - 1) * 16,
         z: -25 - Math.random() * 35,
-        size: 0.35 + Math.random() * 0.9,
+        size: 0.6 + Math.random() * 1.0,
         phase: Math.random() * Math.PI * 2,
         speed: 0.6 + Math.random() * 0.8,
       })),
@@ -427,7 +437,9 @@ function Starfield({ progress }: { progress: number }) {
     sparkles.forEach((s, i) => {
       const line = lineRefs.current[i];
       if (!line) return;
-      const pulse = 0.75 + 0.25 * Math.sin(t * s.speed + s.phase);
+      // Gentle size wobble only. A deep pulse shrank the small sparkles to
+      // almost nothing, which made them look like they were disappearing.
+      const pulse = 0.94 + 0.06 * Math.sin(t * s.speed + s.phase);
       line.scale.setScalar(s.size * pulse);
     });
   });
