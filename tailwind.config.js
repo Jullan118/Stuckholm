@@ -14,7 +14,7 @@ export default {
         "letter-jump": "letterJump 0.4s ease",
       },
       fontFamily: {
-        zenloop: ['"Zen Loop"', "sans-serif"],
+        archivo: ['Archivo', 'sans-serif'],
       },
     },
   },
