@@ -67,7 +67,7 @@ export function NewFlames() {
             onMouseEnter={() => setHoveredSlug(product.slug)}
           >
             <Link to={`/off-the-shelf/${product.slug}`}>
-              <div className="aspect-[4/5] overflow-hidden bg-[#f2f2f2] p-8">
+              <div className="aspect-[3/4] overflow-hidden bg-[#f2f2f2] p-6">
                 {product.image ? (
                   <img
                     src={product.image}
