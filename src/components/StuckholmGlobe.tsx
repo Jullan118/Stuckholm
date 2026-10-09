@@ -312,19 +312,23 @@ function SceneBackground({ progress }: { progress: number }) {
   return null;
 }
 
-// Outline of a four-point sparkle, like the reference: straight-ish tips with
-// concave sides. Pinch controls how deep the sides curve in.
-function sparkleOutline(size: number, pinch = 0.2, segments = 14) {
-  const tips = [
-    new THREE.Vector2(0, size),
-    new THREE.Vector2(size, 0),
-    new THREE.Vector2(0, -size),
-    new THREE.Vector2(-size, 0),
-  ];
+// Outline of an eight-point compass sparkle, like the reference: long thin
+// spikes on the main axes, shorter ones on the diagonals, and concave sides
+// between them. `pinch` controls how deep the sides curve in.
+function sparkleOutline(size: number, pinch = 0.12, segments = 10) {
+  const TIPS = 8;
+  const tips: THREE.Vector2[] = [];
+  for (let i = 0; i < TIPS; i++) {
+    const angle = (i / TIPS) * Math.PI * 2 + Math.PI / 2;
+    const length = size * (i % 2 === 0 ? 1 : 0.45);
+    tips.push(
+      new THREE.Vector2(Math.cos(angle) * length, Math.sin(angle) * length)
+    );
+  }
   const points: THREE.Vector3[] = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < TIPS; i++) {
     const a = tips[i];
-    const b = tips[(i + 1) % 4];
+    const b = tips[(i + 1) % TIPS];
     const control = a.clone().add(b).multiplyScalar(0.5 * pinch);
     const curve = new THREE.QuadraticBezierCurve(a, control, b);
     for (const p of curve.getPoints(segments)) {
