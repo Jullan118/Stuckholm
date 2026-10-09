@@ -24,13 +24,18 @@ export function Home() {
 
       const rect = el.getBoundingClientRect();
       const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
-      setProgress(scrolled / scrollable);
+      const next = scrolled / scrollable;
+      setProgress(next);
+      // Once the background has turned mostly white, the header and corners
+      // switch from white to black (see .home-ink in index.css).
+      document.documentElement.classList.toggle("hero-light", next > 0.5);
     }
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll);
     return () => {
+      document.documentElement.classList.remove("hero-light");
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
     };
