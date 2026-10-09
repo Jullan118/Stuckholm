@@ -142,7 +142,9 @@ function createBlobFromModel(scene: THREE.Object3D) {
   });
   // Glossy white plastic for the wordmark. Clearcoat gives the wet highlights.
   // No emissive glow and reduced environment reflection keep it clean white.
-  const letterMaterial: THREE.Material = LINE_ART ? lineFill : new THREE.MeshPhysicalMaterial({
+  // In line-art mode the wordmark is solid black, as requested.
+  const letterInk = new THREE.MeshBasicMaterial({ color: INK });
+  const letterMaterial: THREE.Material = LINE_ART ? letterInk : new THREE.MeshPhysicalMaterial({
     color: "#ffffff",
     roughness: 0.25,
     metalness: 0,
