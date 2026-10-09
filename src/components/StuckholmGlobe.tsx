@@ -112,10 +112,9 @@ function createBlobFromModel(scene: THREE.Object3D) {
 
 type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
-// World-space axes for drag rotation. Rotating around fixed world axes keeps
-// "drag sideways = yaw, drag up/down = pitch" true however the globe is tilted.
+// Drag only turns the globe sideways, around the world vertical (Y) axis. It
+// stays upright and never tips over, no matter how you drag.
 const YAW_AXIS = new THREE.Vector3(0, 1, 0);
-const PITCH_AXIS = new THREE.Vector3(1, 0, 0);
 const dragQuat = new THREE.Quaternion();
 
 // The globe and its letter ring share one drag group, so the ring turns with
@@ -150,10 +149,8 @@ function DriftingGlobe({
 
     const drag = dragRef.current;
     if (drag.dragging) {
-      // About one radian per ~320px of mouse travel, on both axes.
+      // About one radian per ~320px of sideways mouse travel.
       dragQuat.setFromAxisAngle(YAW_AXIS, drag.deltaX * 0.0032);
-      group.quaternion.premultiply(dragQuat);
-      dragQuat.setFromAxisAngle(PITCH_AXIS, drag.deltaY * 0.0032);
       group.quaternion.premultiply(dragQuat);
       drag.deltaX = 0;
       drag.deltaY = 0;
