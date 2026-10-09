@@ -130,11 +130,10 @@ function createBlobFromModel(scene: THREE.Object3D) {
     metalness: 0.1,
     roughness: 0.25,
   });
-  // Glossy red plastic in the site's red. Clearcoat gives the wet highlights.
-  // No emissive glow and reduced environment reflection, so the colour stays
-  // saturated instead of washing out to pastel.
+  // Glossy white plastic for the wordmark. Clearcoat gives the wet highlights.
+  // No emissive glow and reduced environment reflection keep it clean white.
   const letterMaterial = new THREE.MeshPhysicalMaterial({
-    color: "#d51f26",
+    color: "#ffffff",
     roughness: 0.25,
     metalness: 0,
     clearcoat: 1,
@@ -313,55 +312,98 @@ function SceneBackground({ progress }: { progress: number }) {
   return null;
 }
 
-// A hand-rolled starfield, so its opacity can fade to nothing as the sky goes
-// white (drei's <Stars> can't do that cleanly).
+// Outline of a four-point sparkle, like the reference: straight-ish tips with
+// concave sides. Pinch controls how deep the sides curve in.
+function sparkleOutline(size: number, pinch = 0.2, segments = 14) {
+  const tips = [
+    new THREE.Vector2(0, size),
+    new THREE.Vector2(size, 0),
+    new THREE.Vector2(0, -size),
+    new THREE.Vector2(-size, 0),
+  ];
+  const points: THREE.Vector3[] = [];
+  for (let i = 0; i < 4; i++) {
+    const a = tips[i];
+    const b = tips[(i + 1) % 4];
+    const control = a.clone().add(b).multiplyScalar(0.5 * pinch);
+    const curve = new THREE.QuadraticBezierCurve(a, control, b);
+    for (const p of curve.getPoints(segments)) {
+      points.push(new THREE.Vector3(p.x, p.y, 0));
+    }
+  }
+  return points;
+}
+
+const SPARKLE_COUNT = 70;
+
+// Thin-outline sparkles scattered behind the globe. They twinkle, drift
+// slowly, and fade out with the sky as scroll progresses.
 function Starfield({ progress }: { progress: number }) {
-  const pointsRef = React.useRef<THREE.Points>(null);
-  const materialRef = React.useRef<THREE.PointsMaterial>(null);
+  const groupRef = React.useRef<THREE.Group>(null);
+  const lineRefs = React.useRef<(THREE.LineLoop | null)[]>([]);
   const progressRef = React.useRef(progress);
 
   React.useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
-  const geometry = React.useMemo(() => {
-    const count = 2400;
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      const r = 40 + Math.random() * 50;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = r * Math.cos(phi);
-    }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    return geo;
-  }, []);
+  const geometry = React.useMemo(
+    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1)),
+    []
+  );
 
-  useFrame((_, delta) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y += delta * 0.02;
+  const material = React.useMemo(
+    () =>
+      new THREE.LineBasicMaterial({
+        color: "#ffffff",
+        transparent: true,
+        depthWrite: false,
+      }),
+    []
+  );
+
+  const sparkles = React.useMemo(
+    () =>
+      Array.from({ length: SPARKLE_COUNT }, () => ({
+        x: (Math.random() * 2 - 1) * 28,
+        y: (Math.random() * 2 - 1) * 16,
+        z: -25 - Math.random() * 35,
+        size: 0.35 + Math.random() * 0.9,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.6 + Math.random() * 0.8,
+      })),
+    []
+  );
+
+  useFrame((state, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.02;
     }
-    if (materialRef.current) {
-      materialRef.current.opacity =
-        1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
-    }
+    material.opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+
+    const t = state.clock.elapsedTime;
+    sparkles.forEach((s, i) => {
+      const line = lineRefs.current[i];
+      if (!line) return;
+      const pulse = 0.75 + 0.25 * Math.sin(t * s.speed + s.phase);
+      line.scale.setScalar(s.size * pulse);
+    });
   });
 
   return (
-    <points ref={pointsRef} geometry={geometry}>
-      <pointsMaterial
-        ref={materialRef}
-        color="#ffffff"
-        size={0.6}
-        sizeAttenuation
-        transparent
-        opacity={1}
-        depthWrite={false}
-      />
-    </points>
+    <group ref={groupRef}>
+      {sparkles.map((s, i) => (
+        <lineLoop
+          key={i}
+          ref={(el: THREE.LineLoop | null) => {
+            lineRefs.current[i] = el;
+          }}
+          geometry={geometry}
+          material={material}
+          position={[s.x, s.y, s.z]}
+        />
+      ))}
+    </group>
   );
 }
 
