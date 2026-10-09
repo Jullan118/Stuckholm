@@ -24,7 +24,8 @@ const GLOBE_STYLE: "gold" | "blue-green" = "blue-green";
 // Line-drawing look for the hero: white background, white fill, black ink
 // outlines. Set to false to get the coloured version back.
 const LINE_ART = true;
-const INK = "#111111";
+// Details (edges, outlines, wordmark, stars) are anthracite grey, RAL 7016.
+const INK = "#383e42";
 
 // The round bead on the stalk, just below the crown (raw model units).
 const BEAD_CENTER = new THREE.Vector3(0, 0.117, 0);
@@ -115,7 +116,14 @@ function createBlobFromModel(scene: THREE.Object3D) {
 
   // Line-drawing look: white fill that hides what's behind it, with black ink
   // outlines added below.
-  const lineFill = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+  // Pure white, pushed slightly back in depth so the ink lines sit on top of
+  // it instead of flickering against it (that flicker read as grey).
+  const lineFill = new THREE.MeshBasicMaterial({
+    color: "#ffffff",
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
 
   // Matte clay for the blue-green palette; soft metal for the gold style.
   const blobMaterial: THREE.Material = LINE_ART
