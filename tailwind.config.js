@@ -14,7 +14,7 @@ export default {
         "letter-jump": "letterJump 0.4s ease",
       },
       fontFamily: {
-        archivo: ['Archivo', 'sans-serif'],
+        manrope: ['Manrope', 'sans-serif'],
       },
     },
   },
