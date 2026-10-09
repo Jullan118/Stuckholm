@@ -11,6 +11,7 @@ import { NewFlamesProduct } from "@/pages/NewFlamesProduct";
 import { NewFlamesUpload } from "@/pages/NewFlamesUpload";
 import { About } from "@/pages/About";
 import { Contact } from "@/pages/Contact";
+import { Shipping } from "@/pages/Shipping";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
 import { TrashUpload } from "@/pages/TrashUpload";
@@ -36,6 +37,7 @@ function App() {
           <Route path="/trash/:slug" element={<TrashProduct />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/shipping" element={<Shipping />} />
         </Routes>
 
         <SiteFooter />
