@@ -1,13 +1,11 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-// Site-wide footer, shown at the bottom of every page (in normal document
-// flow — it sits after whatever the current route renders, not pinned to
-// the viewport) rather than only on /about as before. Structured like
-// AVAVAV's: a couple of link/info columns, then a thin copyright bar
-// underneath. "Login" sits in the bottom bar, stacked right above
-// "Stockholm, Sweden" on the right — it's the site's only link to /about,
-// replacing the old floating bottom-right ContactCorner link.
+// Site-wide footer, shown at the bottom of every page. Columns: Follow,
+// Contact, Shipping (Shipping links to /shipping). A thin copyright bar sits
+// underneath with Login stacked above "Stockholm, Sweden" on the right.
+// The About text is no longer in the footer; it lives above the footer on
+// the home page only (see Home.tsx).
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
@@ -16,10 +14,16 @@ export function SiteFooter() {
       <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-3 gap-3 sm:gap-10 text-sm sm:text-lg">
         <div className="flex flex-col gap-1 leading-tight">
           <span className="text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1">
-            About
+            Follow
           </span>
-          <span>Stuckholm</span>
-          <span className="text-black/60">by 2 Stuckholm Kids</span>
+          <a
+            href="https://instagram.com/skraqp"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:opacity-70 transition-opacity"
+          >
+            Instagram
+          </a>
         </div>
 
         <div className="flex flex-col gap-1 leading-tight">
@@ -42,16 +46,14 @@ export function SiteFooter() {
 
         <div className="flex flex-col gap-1 leading-tight">
           <span className="text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1">
-            Follow
+            Shipping
           </span>
-          <a
-            href="https://instagram.com/skraqp"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            to="/shipping"
             className="hover:opacity-70 transition-opacity"
           >
-            Instagram
-          </a>
+            Shipping
+          </Link>
         </div>
       </div>
 
