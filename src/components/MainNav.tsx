@@ -19,15 +19,15 @@ export function MainNav() {
   return (
     <nav
       className={`absolute top-4 right-4 z-20 flex flex-wrap items-center gap-6 sm:gap-10 ${
-        isHome ? "left-4" : "left-20 sm:left-24"
+        isHome ? "left-8 sm:left-12" : "left-20 sm:left-24"
       }`}
     >
       {LINKS.map((link) => (
         <Link
           key={link.label}
           to={link.to}
-          className={`inline-block text-xl sm:text-2xl transition-transform duration-200 ease-out hover:scale-125 ${
-            "text-black hover:text-black/70"
+          className={`inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${
+            isHome ? "text-white hover:text-white/70" : "text-black hover:text-black/70"
           }`}
         >
           {link.label}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -13,8 +13,11 @@ const LETTER_SCALE = 1;
 // Line-drawing look: white fill, anthracite grey (RAL 7016) for all details.
 const INK = "#383e42";
 const PAPER = "#ffffff";
-// Night-sky background behind the hero, as on the home page wrapper.
-const BACKGROUND = "#04050c";
+// Light grey for the globe body.
+const GLOBE_GREY = "#d4d7da";
+// Night-sky navy at the top of the page, fading to white as you scroll.
+const SKY_DARK = new THREE.Color("#04050c");
+const SKY_WHITE = new THREE.Color("#ffffff");
 // Stars are white so they stay visible on the dark background.
 const STAR = "#ffffff";
 
@@ -55,7 +58,7 @@ function createBlobFromModel(scene: THREE.Object3D) {
   // White fill that hides what's behind it. Pushed slightly back in depth so
   // the ink lines sit on top of it instead of flickering against it.
   const fill = new THREE.MeshBasicMaterial({
-    color: PAPER,
+    color: GLOBE_GREY,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1,
@@ -65,7 +68,7 @@ function createBlobFromModel(scene: THREE.Object3D) {
     color: INK,
     side: THREE.BackSide,
   });
-  const letterInk = new THREE.MeshBasicMaterial({ color: INK });
+  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER });
 
   const letterMeshes: THREE.Mesh[] = [];
   const blobMeshes: THREE.Mesh[] = [];
@@ -219,6 +222,31 @@ function sparkleOutline(size: number, pinch = 0.12, segments = 10) {
 
 const SPARKLE_COUNT = 70;
 
+// Fades the background from night-sky navy to white as scroll progresses.
+function SceneBackground({ progress }: { progress: number }) {
+  const { scene } = useThree();
+  const colorRef = React.useRef(new THREE.Color().copy(SKY_DARK));
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  React.useEffect(() => {
+    scene.background = colorRef.current;
+  }, [scene]);
+
+  useFrame(() => {
+    colorRef.current.lerpColors(
+      SKY_DARK,
+      SKY_WHITE,
+      THREE.MathUtils.clamp(progressRef.current, 0, 1)
+    );
+  });
+
+  return null;
+}
+
 // Thin-outline sparkles scattered behind the globe. They twinkle, drift
 // slowly, and fade out as scroll progresses.
 function Starfield({ progress }: { progress: number }) {
@@ -348,7 +376,7 @@ export function StuckholmGlobe({
         camera={{ position: [0, 0, 8], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
-        <color attach="background" args={[BACKGROUND]} />
+        <SceneBackground progress={scrollProgress} />
         <Starfield progress={scrollProgress} />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
       </Canvas>
