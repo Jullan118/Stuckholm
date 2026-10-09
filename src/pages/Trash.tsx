@@ -108,7 +108,7 @@ export function Trash() {
                   </div>
                 </Link>
 
-                <div className="flex items-baseline justify-between font-skarp-thin px-4 py-3">
+                <div className="flex items-baseline justify-between font-zenloop font-light px-4 py-3">
                   <Link to={`/trash/${product.slug}`}>
                     <span className="text-black">{product.name}</span>
                   </Link>

@@ -62,7 +62,7 @@ export function NewFlamesProduct() {
   if (notFound || !product) {
     return (
       <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 text-center">
-        <h1 className="text-3xl sm:text-4xl font-skarp-thin text-black mb-6">
+        <h1 className="text-3xl sm:text-4xl font-zenloop font-light text-black mb-6">
           Not found
         </h1>
         <Link to="/off-the-shelf" className="text-black underline">
@@ -173,7 +173,7 @@ export function NewFlamesProduct() {
         {/* Name, price, size, add to cart, and all the product copy */}
         <div className="w-full md:w-2/5 flex flex-col gap-3">
           <div className="flex items-baseline justify-between gap-4">
-            <h1 className="text-2xl sm:text-3xl font-skarp-thin text-black">
+            <h1 className="text-2xl sm:text-3xl font-zenloop font-light text-black">
               {product.name}
             </h1>
             <p className="text-black font-medium text-lg whitespace-nowrap">
