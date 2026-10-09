@@ -13,6 +13,8 @@ const LETTER_SCALE = 1;
 // Line-drawing look: white fill, anthracite grey (RAL 7016) for all details.
 const INK = "#383e42";
 const PAPER = "#ffffff";
+// How opaque the globe is at the top of the page (1 = solid).
+const GLOBE_START_OPACITY = 0.8;
 // Light grey for the globe body.
 const GLOBE_GREY = "#d4d7da";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -166,7 +168,8 @@ function DriftingGlobe({
       ringRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
     }
 
-    const opacity = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    // Starts at 80% opacity and fades out with the rest as you scroll.
+    const opacity = GLOBE_START_OPACITY * (1 - THREE.MathUtils.clamp(progressRef.current, 0, 1));
     group.traverse((child) => {
       const mat = (child as THREE.Mesh).material as
         | THREE.Material

@@ -18,7 +18,7 @@ export function MainNav() {
 
   return (
     <nav
-      className={`absolute top-4 right-4 z-20 flex flex-wrap items-center gap-6 sm:gap-10 ${
+      className={`${isHome ? "fixed" : "absolute"} top-4 right-4 z-20 flex flex-wrap items-center gap-6 sm:gap-10 ${
         isHome ? "left-8 sm:left-12" : "left-20 sm:left-24"
       }`}
     >
