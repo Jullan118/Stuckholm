@@ -7,6 +7,11 @@ import { StuckholmGlobe } from "@/components/StuckholmGlobe";
 // spinning in place the entire time, it never shrinks or flies away.
 const SPIN_AWAY_VH = 120;
 
+// About text shown above the footer, on the home page only. Edit this text
+// freely; it is placeholder copy for now.
+const ABOUT_TEXT =
+  "stuckholm is an independent brand. blablabka blomberg fkn legedn bajkorvarrrr hej";
+
 export function Home() {
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const [progress, setProgress] = React.useState(0);
@@ -42,14 +47,22 @@ export function Home() {
   }, []);
 
   return (
-    <div
-      ref={wrapperRef}
-      className="relative w-full"
-      style={{ height: `${100 + SPIN_AWAY_VH}vh` }}
-    >
-      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden bg-[#04050c]">
-        <StuckholmGlobe scrollProgress={progress} />
+    <>
+      <div
+        ref={wrapperRef}
+        className="relative w-full"
+        style={{ height: `${100 + SPIN_AWAY_VH}vh` }}
+      >
+        <div className="sticky top-0 left-0 w-full h-screen overflow-hidden bg-[#04050c]">
+          <StuckholmGlobe scrollProgress={progress} />
+        </div>
       </div>
-    </div>
+
+      <section className="w-full px-4 sm:px-8 py-16 font-manrope text-black">
+        <p className="max-w-3xl text-base sm:text-xl leading-relaxed">
+          {ABOUT_TEXT}
+        </p>
+      </section>
+    </>
   );
 }
