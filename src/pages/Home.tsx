@@ -10,7 +10,7 @@ const SPIN_AWAY_VH = 120;
 // About text shown above the footer, on the home page only. Edit this text
 // freely; it is placeholder copy for now.
 const ABOUT_TEXT =
-  "stuckholm is an independent brand. blablabka blomberg fkn legedn bajkorvarrrr hej";
+  "stuckholm is an independent brand. blablabka ";
 
 export function Home() {
   const wrapperRef = React.useRef<HTMLDivElement>(null);
