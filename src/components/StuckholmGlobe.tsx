@@ -322,6 +322,24 @@ function Starfield({ progress }: { progress: number }) {
   );
 }
 
+// Moves the camera back on narrow screens (phones), so the whole globe and its
+// letter ring fit the width instead of being cut off at the sides. Wide
+// screens keep the normal distance of 8.
+function FitCamera() {
+  const size = useThree((state) => state.size);
+  const camera = useThree((state) => state.camera);
+
+  React.useEffect(() => {
+    const aspect = size.width / size.height;
+    const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
+    // 4 = how many world units wide the view must be to hold the letter ring.
+    const fit = 4 / (halfTan * aspect);
+    camera.position.z = Math.max(8, fit);
+  }, [size, camera]);
+
+  return null;
+}
+
 export function StuckholmGlobe({
   scrollProgress = 0,
 }: {
@@ -377,6 +395,7 @@ export function StuckholmGlobe({
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
+        <FitCamera />
         <Starfield progress={scrollProgress} />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
       </Canvas>
