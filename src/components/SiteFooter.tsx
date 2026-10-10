@@ -16,7 +16,7 @@ export function SiteFooter() {
 
   return (
     <footer className="w-full font-manrope text-black mt-20 mb-14">
-      <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 sm:gap-10 text-xs sm:text-base">
+      <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 sm:gap-4 text-xs sm:text-base">
         <div className="flex flex-col gap-1 leading-tight">
           <span className={headingClass}>Service</span>
           <Link to="/shipping" className={linkClass}>Leverans</Link>
