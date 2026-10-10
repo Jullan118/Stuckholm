@@ -13,6 +13,7 @@ import { About } from "@/pages/About";
 import { Contact } from "@/pages/Contact";
 import { InfoPage } from "@/pages/InfoPage";
 import { Cookies } from "@/pages/Cookies";
+import { Terms } from "@/pages/Terms";
 import { Shipping } from "@/pages/Shipping";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
@@ -45,7 +46,7 @@ function App() {
           <Route path="/faq" element={<InfoPage title="FAQ" />} />
           <Route path="/privacy" element={<InfoPage title="Integritetspolicy" />} />
           <Route path="/cookies" element={<Cookies />} />
-          <Route path="/terms" element={<InfoPage title="Användarvillkor" />} />
+          <Route path="/terms" element={<Terms />} />
         </Routes>
 
         <SiteFooter />
