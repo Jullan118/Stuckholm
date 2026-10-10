@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 // grey rule under its heading, followed by a thin copyright bar. "Login"
 // sits in the bottom bar, stacked right above "Stockholm, Sweden".
 const headingClass =
-  "pb-3 mb-4 border-b border-black/20 text-black uppercase tracking-wide text-sm sm:text-base";
+  "mb-4 text-black uppercase tracking-wide text-sm sm:text-base";
 const linkClass =
   "uppercase tracking-wide hover:opacity-70 transition-opacity break-words";
 
