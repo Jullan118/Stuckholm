@@ -45,8 +45,7 @@ export function MiniGlobe() {
   return (
     <Link
       to="/"
-      className="absolute top-2 left-3 z-20 w-16 h-16 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform"
-      title="Till startsidan"
+    className="absolute top-4 left-3 z-20 w-16 h-16 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform"      title="Till startsidan"
     >
       <Canvas camera={{ position: [0, 0, 6], fov: 40 }} style={{ background: "transparent" }}>
         <ambientLight intensity={1} />
