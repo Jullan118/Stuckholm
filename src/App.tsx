@@ -6,9 +6,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartProvider } from "@/lib/cart";
 import { Home } from "@/pages/Home";
-import { NewFlames } from "@/pages/NewFlames";
-import { NewFlamesProduct } from "@/pages/NewFlamesProduct";
-import { NewFlamesUpload } from "@/pages/NewFlamesUpload";
+import { InStock } from "@/pages/InStock";
+import { InStockProduct } from "@/pages/InStockProduct";
+import { InStockUpload } from "@/pages/InStockUpload";
 import { About } from "@/pages/About";
 import { Contact } from "@/pages/Contact";
 import { InfoPage } from "@/pages/InfoPage";
@@ -30,10 +30,10 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/off-the-shelf" element={<NewFlames />} />
-          <Route path="/off-the-shelf/upload" element={<NewFlamesUpload />} />
-          <Route path="/off-the-shelf/edit/:slug" element={<NewFlamesUpload />} />
-          <Route path="/off-the-shelf/:slug" element={<NewFlamesProduct />} />
+          <Route path="/in-stock" element={<InStock />} />
+          <Route path="/in-stock/upload" element={<InStockUpload />} />
+          <Route path="/in-stock/edit/:slug" element={<InStockUpload />} />
+          <Route path="/in-stock/:slug" element={<InStockProduct />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/trash/upload" element={<TrashUpload />} />
           <Route path="/trash/edit/:slug" element={<TrashUpload />} />
