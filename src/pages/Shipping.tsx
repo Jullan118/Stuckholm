@@ -1,7 +1,7 @@
 export function Shipping() {
   return (
     <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 font-manrope text-black text-center text-xs sm:text-xs leading-snug">
-      <h1 className="text-3xl sm:text-lg font-light mb-4 text-center">
+      <h1 className="text-lg sm:text-xl font-light mb-4">
         Shipping
       </h1>
 
@@ -18,7 +18,7 @@ export function Shipping() {
         confirmation.
       </p>
 
-      <h2 className="text-base sm:text-lg font-light mb-4">
+      <h2 className="text-sm sm:text-base font-light mb-4">
         Production &amp; Shipping Timeline
       </h2>
       <p className="mb-3">
@@ -38,7 +38,7 @@ export function Shipping() {
         Shipping timelines are estimates, not guarantees.
       </p>
 
-      <h2 className="text-xl sm:text-2xl font-light mb-4">
+      <h2 className="text-sm sm:text-base font-light mb-4">
         Tracking Information
       </h2>
       <p className="mb-10">
@@ -53,7 +53,7 @@ export function Shipping() {
         .
       </p>
 
-      <h2 className="text-xl sm:text-2xl font-light mb-4">
+      <h2 className="text-sm sm:text-base font-light mb-4">
         Customs, Duties &amp; Import Taxes
       </h2>
       <p className="mb-10">
@@ -62,7 +62,7 @@ export function Shipping() {
         responsibility.
       </p>
 
-      <h2 className="text-xl sm:text-2xl font-light mb-4">
+      <h2 className="text-sm sm:text-base font-light mb-4">
         Delays and Disclaimers
       </h2>
       <p className="mb-2">We are not liable for delays caused by:</p>
