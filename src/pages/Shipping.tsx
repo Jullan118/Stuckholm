@@ -1,6 +1,6 @@
 export function Shipping() {
   return (
-    <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 font-manrope text-black text-sm sm:text-base leading-relaxed">
+    <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 font-manrope text-black text-center text-sm sm:text-base leading-relaxed">
       <h1 className="text-3xl sm:text-4xl font-light mb-10 text-center">
         Delivery
       </h1>
@@ -36,13 +36,6 @@ export function Shipping() {
       </ul>
       <p className="mb-10">
         Shipping timelines are estimates, not guarantees.
-      </p>
-
-      <h2 className="text-xl sm:text-2xl font-light mb-4">Split Shipments</h2>
-      <p className="mb-10">
-        Your order may be shipped in multiple packages if items are produced by
-        different partners. You will receive tracking information for each
-        shipment.
       </p>
 
       <h2 className="text-xl sm:text-2xl font-light mb-4">
