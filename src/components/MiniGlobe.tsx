@@ -10,16 +10,16 @@ function SpinningBlob() {
   const gltf = useGLTF(BLOB_MODEL_URL);
   const groupRef = React.useRef<THREE.Group>(null);
 
-  // Copy the model and give every mesh the same grey material, so the globe
-  // is grey here regardless of the colours in the .glb file.
+  // Copy the model and give every mesh the same dark, matte grey material,
+  // so the globe looks the same regardless of the colours in the .glb file.
   const scene = React.useMemo(() => {
     const copy = gltf.scene.clone(true);
     copy.traverse((obj) => {
       const mesh = obj as THREE.Mesh;
       if (mesh.isMesh) {
         mesh.material = new THREE.MeshStandardMaterial({
-          color: "#b5b5b5",
-          roughness: 0.6,
+          color: "#6b6b6b",
+          roughness: 1,
           metalness: 0,
         });
       }
@@ -45,7 +45,7 @@ export function MiniGlobe() {
   return (
     <Link
       to="/"
-      className="absolute -top-0 left-3 z-20 w-16 h-16 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform"
+      className="absolute top-4 left-3 z-20 w-16 h-16 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform"
       title="Till startsidan"
     >
       <Canvas camera={{ position: [0, 0, 6], fov: 40 }} style={{ background: "transparent" }}>
