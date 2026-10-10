@@ -1,7 +1,7 @@
 export function Shipping() {
   return (
-    <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 font-manrope text-black text-center text-xs sm:text-sm leading-relaxed">
-      <h1 className="text-3xl sm:text-4xl font-light mb-10 text-center">
+    <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 font-manrope text-black text-center text-xs sm:text-xs leading-relaxed">
+      <h1 className="text-3xl sm:text-4xl font-light mb-6 text-center">
         Shipping
       </h1>
 
