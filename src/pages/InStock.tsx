@@ -50,54 +50,56 @@ export function InStock() {
         </p>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-4">
-        {products.map((product) => (
-          <div
-            key={product.slug}
-            className="border-r border-b"
-            style={{ borderColor: "rgba(0,0,0,0.08)" }}
-          >
-            <Link to={`/in-stock/${product.slug}`}>
-              <div className="aspect-[4/5] overflow-hidden bg-[#f2f2f2] p-8">
-                {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-black/60">
-                    Image
-                  </div>
-                )}
-              </div>
-            </Link>
-
-            <div className="flex items-baseline justify-between font-manrope font-light px-4 py-3">
+      <div className="px-4 sm:px-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4">
+          {products.map((product) => (
+            <div
+              key={product.slug}
+              className="border-r border-b"
+              style={{ borderColor: "rgba(0,0,0,0.08)" }}
+            >
               <Link to={`/in-stock/${product.slug}`}>
-                <span className="text-black">{product.name}</span>
+                <div className="aspect-[4/5] overflow-hidden bg-[#f2f2f2] p-8">
+                  {product.image ? (
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-black/60">
+                      Image
+                    </div>
+                  )}
+                </div>
               </Link>
-              <span style={{ color: "#999999" }}>{product.price}</span>
-            </div>
-            {product.colorCount !== null && (
-              <span
-                className="font-manrope font-light -mt-2 px-4 pb-3 block"
-                style={{ color: "#d7d7d7" }}
-              >
-                {formatColorCount(product.colorCount)}
-              </span>
-            )}
 
-            {!usingExamples && userId && (userId === product.ownerId || !product.ownerId) && (
-              <Link
-                to={`/in-stock/edit/${product.slug}`}
-                className="text-black/40 hover:text-black text-xs underline px-4 pb-3 block"
-              >
-                Edit
-              </Link>
-            )}
-          </div>
-        ))}
+              <div className="flex items-baseline justify-between font-manrope font-light px-4 py-3">
+                <Link to={`/in-stock/${product.slug}`}>
+                  <span className="text-black">{product.name}</span>
+                </Link>
+                <span style={{ color: "#999999" }}>{product.price}</span>
+              </div>
+              {product.colorCount !== null && (
+                <span
+                  className="font-manrope font-light -mt-2 px-4 pb-3 block"
+                  style={{ color: "#d7d7d7" }}
+                >
+                  {formatColorCount(product.colorCount)}
+                </span>
+              )}
+
+              {!usingExamples && userId && (userId === product.ownerId || !product.ownerId) && (
+                <Link
+                  to={`/in-stock/edit/${product.slug}`}
+                  className="text-black/40 hover:text-black text-xs underline px-4 pb-3 block"
+                >
+                  Edit
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
 
       {userId && (
