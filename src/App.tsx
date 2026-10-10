@@ -12,6 +12,7 @@ import { NewFlamesUpload } from "@/pages/NewFlamesUpload";
 import { About } from "@/pages/About";
 import { Contact } from "@/pages/Contact";
 import { InfoPage } from "@/pages/InfoPage";
+import { Shipping } from "@/pages/Shipping";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
 import { TrashUpload } from "@/pages/TrashUpload";
@@ -37,7 +38,7 @@ function App() {
           <Route path="/trash/:slug" element={<TrashProduct />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/shipping" element={<InfoPage title="Leverans" />} />
+          <Route path="/shipping" element={<Shipping />} />
           <Route path="/returns" element={<InfoPage title="Retur och ånger" />} />
           <Route path="/payments" element={<InfoPage title="Betalning" />} />
           <Route path="/faq" element={<InfoPage title="FAQ" />} />
