@@ -3,7 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "@/lib/supabaseClient";
 
 // This is the site-wide login. Logging in here (or on /trash/upload or
-// /off-the-shelf/upload directly) unlocks the "+ Add product" / "+ Add item"
+// /in-stock/upload directly) unlocks the "+ Add product" / "+ Add item"
 // links on the Trash and Off the shelf pages, since it's the same Supabase
 // auth session everywhere. Only Julia and her brother have accounts — there's
 // no sign-up form, on purpose.
