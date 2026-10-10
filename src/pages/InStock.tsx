@@ -74,7 +74,7 @@ export function InStock() {
                 </div>
               </Link>
 
-              <div className="flex items-baseline justify-between font-manrope font-light px-4 py-3">
+              <div className="flex items-baseline justify-between font-manrope font-light px-0 py-3">
                 <Link to={`/in-stock/${product.slug}`}>
                   <span className="text-black">{product.name}</span>
                 </Link>
@@ -82,7 +82,7 @@ export function InStock() {
               </div>
               {product.colorCount !== null && (
                 <span
-                  className="font-manrope font-light -mt-2 px-4 pb-3 block"
+                  className="font-manrope font-light -mt-2 px-0 pb-3 block"
                   style={{ color: "#d7d7d7" }}
                 >
                   {formatColorCount(product.colorCount)}
@@ -92,7 +92,7 @@ export function InStock() {
               {!usingExamples && userId && (userId === product.ownerId || !product.ownerId) && (
                 <Link
                   to={`/in-stock/edit/${product.slug}`}
-                  className="text-black/40 hover:text-black text-xs underline px-4 pb-3 block"
+                  className="text-black/40 hover:text-black text-xs underline px-0 pb-3 block"
                 >
                   Edit
                 </Link>
