@@ -4,7 +4,7 @@ import { useGLTF, Bounds } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
 import type { Group } from "three";
 
-const BLOB_MODEL_URL = "/models/blobben.glb";
+const BLOB_MODEL_URL = "/models/globee.glb";
 
 function SpinningBlob() {
   const gltf = useGLTF(BLOB_MODEL_URL);
