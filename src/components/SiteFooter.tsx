@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 // grey rule under its heading, followed by a thin copyright bar. "Login"
 // sits in the bottom bar, stacked right above "Stockholm, Sweden".
 const headingClass =
-  "mb-4 text-black uppercase tracking-wide text-sm sm:text-base";
+  "mb-2 text-black uppercase tracking-wide text-sm sm:text-base";
 const linkClass =
   "uppercase tracking-wide hover:opacity-70 transition-opacity break-words";
 
@@ -17,22 +17,22 @@ export function SiteFooter() {
   return (
     <footer className="w-full font-manrope text-black mt-20 mb-14">
       <div className="w-full px-4 sm:px-8">
-      <div className="border-t border-black/20 py-12 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 sm:gap-10 text-xs sm:text-sm">
-        <div className="flex flex-col gap-4 leading-tight">
+      <div className="border-t border-black/20 pt-6 pb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-8 text-xs sm:text-sm">
+        <div className="flex flex-col gap-3 leading-tight">
           <span className={headingClass}>Info</span>
           <Link to="/faq" className={linkClass}>FAQ</Link>
           <Link to="/shipping" className={linkClass}>Shipping</Link>
           <Link to="/returns" className={linkClass}>Returns</Link>
         </div>
 
-        <div className="flex flex-col gap-4 leading-tight">
+        <div className="flex flex-col gap-3 leading-tight">
           <span className={headingClass}>Legal</span>
           <Link to="/cookies" className={linkClass}>Cookies</Link>
           <Link to="/privacy" className={linkClass}>Privacy Policy</Link>
           <Link to="/terms" className={linkClass}>Terms of Use</Link>
         </div>
 
-        <div className="flex flex-col gap-4 leading-tight">
+        <div className="flex flex-col gap-3 leading-tight">
           <span className={headingClass}>Stuckholm</span>
           <a href="mailto:stuck@stuckholm.se" className={linkClass}>Contact</a>
           <Link to="/about" className={linkClass}>About</Link>
