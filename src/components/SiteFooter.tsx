@@ -3,41 +3,39 @@ import { Link } from "react-router-dom";
 
 // Site-wide footer, shown at the bottom of every page (in normal document
 // flow — it sits after whatever the current route renders, not pinned to
-// the viewport). Three link columns (Service, Legal, Stuckholm) followed by
-// a thin copyright bar underneath. "Login" sits in the bottom bar, stacked
-// right above "Stockholm, Sweden" on the right — it's the site's only link
-// to /about.
+// the viewport). Three link columns (INFO, LEGAL, STUCKHOLM), each with a
+// grey rule under its heading, followed by a thin copyright bar. "Login"
+// sits in the bottom bar, stacked right above "Stockholm, Sweden".
 const headingClass =
-  "text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1";
-const linkClass = "hover:opacity-70 transition-opacity break-words";
+  "pb-3 mb-4 border-b border-black/20 text-black uppercase tracking-wide text-sm sm:text-base";
+const linkClass =
+  "uppercase tracking-wide hover:opacity-70 transition-opacity break-words";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="w-full font-manrope text-black mt-20 mb-14">
-      <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-10 text-xs sm:text-base">
-        <div className="flex flex-col gap-1 leading-tight">
-          <span className={headingClass}>Service</span>
-          <Link to="/shipping" className={linkClass}>Shipping</Link>
-          <Link to="/returns" className={linkClass}>Returns &amp; Refunds</Link>
-          <Link to="/payments" className={linkClass}>Payments</Link>
-          <a href="mailto:stuck@stuckholm.se" className={`${linkClass} break-words`}>
-            Contact
-          </a>
-        </div>
-
-        <div className="flex flex-col gap-1 leading-tight">
-          <span className={headingClass}>Legal</span>
-          <Link to="/privacy" className={linkClass}>Privacy Policy</Link>
-          <Link to="/cookies" className={linkClass}>Cookies</Link>
-          <Link to="/terms" className={linkClass}>Terms of Service</Link>
-        </div>
-
-        <div className="flex flex-col gap-1 leading-tight">
-          <span className={headingClass}>Stuckholm</span>
-          <Link to="/about" className={linkClass}>About Us</Link>
+      <div className="w-full px-4 sm:px-8">
+      <div className="border-t border-black/20 py-12 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 sm:gap-10 text-xs sm:text-sm">
+        <div className="flex flex-col gap-4 leading-tight">
+          <span className={headingClass}>Info</span>
           <Link to="/faq" className={linkClass}>FAQ</Link>
+          <Link to="/shipping" className={linkClass}>Shipping</Link>
+          <Link to="/returns" className={linkClass}>Returns</Link>
+        </div>
+
+        <div className="flex flex-col gap-4 leading-tight">
+          <span className={headingClass}>Legal</span>
+          <Link to="/cookies" className={linkClass}>Cookies</Link>
+          <Link to="/privacy" className={linkClass}>Privacy Policy</Link>
+          <Link to="/terms" className={linkClass}>Terms of Use</Link>
+        </div>
+
+        <div className="flex flex-col gap-4 leading-tight">
+          <span className={headingClass}>Stuckholm</span>
+          <a href="mailto:stuck@stuckholm.se" className={linkClass}>Contact</a>
+          <Link to="/about" className={linkClass}>About</Link>
           <a
             href="https://www.instagram.com/stuckholm.se/"
             target="_blank"
@@ -47,6 +45,7 @@ export function SiteFooter() {
             Instagram
           </a>
         </div>
+      </div>
       </div>
 
       <div className="px-6 sm:px-8 py-4 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-1 text-sm text-black/50 w-full">
