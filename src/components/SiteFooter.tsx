@@ -16,27 +16,27 @@ export function SiteFooter() {
 
   return (
     <footer className="w-full font-manrope text-black mt-20 mb-14">
-      <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-6 text-xs sm:text-base">
+      <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-10 text-xs sm:text-base">
         <div className="flex flex-col gap-1 leading-tight">
           <span className={headingClass}>Service</span>
-          <Link to="/shipping" className={linkClass}>Leverans</Link>
-          <Link to="/returns" className={linkClass}>Retur och ånger</Link>
-          <Link to="/payments" className={linkClass}>Betalning</Link>
+          <Link to="/shipping" className={linkClass}>Delivery</Link>
+          <Link to="/returns" className={linkClass}>Returns &amp; Refunds</Link>
+          <Link to="/payments" className={linkClass}>Payments</Link>
           <a href="mailto:stuck@stuckholm.se" className={`${linkClass} break-words`}>
-            Kontakt
+            Contact
           </a>
         </div>
 
         <div className="flex flex-col gap-1 leading-tight">
-          <span className={headingClass}>Juridiskt</span>
-          <Link to="/privacy" className={linkClass}>Integritetspolicy</Link>
+          <span className={headingClass}>Legal</span>
+          <Link to="/privacy" className={linkClass}>Privacy Policy</Link>
           <Link to="/cookies" className={linkClass}>Cookies</Link>
-          <Link to="/terms" className={linkClass}>Användarvillkor</Link>
+          <Link to="/terms" className={linkClass}>Terms of Service</Link>
         </div>
 
         <div className="flex flex-col gap-1 leading-tight">
           <span className={headingClass}>Stuckholm</span>
-          <Link to="/about" className={linkClass}>Om oss</Link>
+          <Link to="/about" className={linkClass}>About Us</Link>
           <Link to="/faq" className={linkClass}>FAQ</Link>
           <a
             href="https://www.instagram.com/stuckholm.se/"
