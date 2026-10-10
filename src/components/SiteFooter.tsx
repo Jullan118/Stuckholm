@@ -19,7 +19,7 @@ export function SiteFooter() {
       <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-10 text-xs sm:text-base">
         <div className="flex flex-col gap-1 leading-tight">
           <span className={headingClass}>Service</span>
-          <Link to="/shipping" className={linkClass}>Delivery</Link>
+          <Link to="/shipping" className={linkClass}>Shipping</Link>
           <Link to="/returns" className={linkClass}>Returns &amp; Refunds</Link>
           <Link to="/payments" className={linkClass}>Payments</Link>
           <a href="mailto:stuck@stuckholm.se" className={`${linkClass} break-words`}>
