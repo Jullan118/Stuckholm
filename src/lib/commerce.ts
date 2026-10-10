@@ -139,7 +139,7 @@ export function productFromFlame(flame: Flame): CommerceProduct {
     id: `flame:${flame.slug}`,
     handle: flame.slug,
     title: flame.name,
-    href: `/off-the-shelf/${flame.slug}`,
+    href: `/in-stock/${flame.slug}`,
     image: flame.images[0] ?? flame.image,
   };
 
