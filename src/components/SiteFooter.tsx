@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 const headingClass =
   "mb-2 text-black uppercase tracking-wide text-xs sm:text-sm";
 const linkClass =
-  "uppercase tracking-wide hover:opacity-70 transition-opacity break-words";
+  "uppercase tracking-wide text-black/70 hover:opacity-70 transition-opacity break-words";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
