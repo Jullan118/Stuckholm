@@ -1,59 +1,51 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-// Site-wide footer, shown at the bottom of every page. Columns: Follow,
-// Contact, Shipping (Shipping links to /shipping). A thin copyright bar sits
-// underneath with Login stacked above "Stockholm, Sweden" on the right.
-// The About text is no longer in the footer; it lives above the footer on
-// the home page only (see Home.tsx).
+// Site-wide footer, shown at the bottom of every page (in normal document
+// flow — it sits after whatever the current route renders, not pinned to
+// the viewport). Three link columns (Service, Legal, Stuckholm) followed by
+// a thin copyright bar underneath. "Login" sits in the bottom bar, stacked
+// right above "Stockholm, Sweden" on the right — it's the site's only link
+// to /about.
+const headingClass =
+  "text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1";
+const linkClass = "hover:opacity-70 transition-opacity break-words";
+
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="w-full font-manrope text-black mt-20 mb-14">
-      <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-3 gap-3 sm:gap-10 text-sm sm:text-lg">
+      <div className="w-full px-4 sm:px-8 py-12 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 sm:gap-10 text-xs sm:text-base">
         <div className="flex flex-col gap-1 leading-tight">
-          <span className="text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1">
-            Follow
-          </span>
+          <span className={headingClass}>Service</span>
+          <Link to="/shipping" className={linkClass}>Leverans</Link>
+          <Link to="/returns" className={linkClass}>Retur och ånger</Link>
+          <Link to="/payments" className={linkClass}>Betalning</Link>
+          <a href="mailto:stuck@stuckholm.se" className={`${linkClass} break-words`}>
+            Kontakt
+          </a>
+        </div>
+
+        <div className="flex flex-col gap-1 leading-tight">
+          <span className={headingClass}>Juridiskt</span>
+          <Link to="/privacy" className={linkClass}>Integritetspolicy</Link>
+          <Link to="/cookies" className={linkClass}>Cookies</Link>
+          <Link to="/terms" className={linkClass}>Användarvillkor</Link>
+        </div>
+
+        <div className="flex flex-col gap-1 leading-tight">
+          <span className={headingClass}>Stuckholm</span>
+          <Link to="/about" className={linkClass}>Om oss</Link>
+          <Link to="/faq" className={linkClass}>FAQ</Link>
           <a
-            href="https://instagram.com/skraqp"
+            href="https://www.instagram.com/stuckholm.se/"
             target="_blank"
             rel="noreferrer"
-            className="hover:opacity-70 transition-opacity"
+            className={linkClass}
           >
             Instagram
           </a>
-        </div>
-
-        <div className="flex flex-col gap-1 leading-tight">
-          <span className="text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1">
-            Contact
-          </span>
-          <a
-            href="mailto:stuck@stuckholm.se"
-            className="hover:opacity-70 transition-opacity break-words"
-          >
-            stuck@stuckholm.se
-          </a>
-          <a
-            href="tel:+46768771123"
-            className="hover:opacity-70 transition-opacity"
-          >
-            +46 76 877 11 23
-          </a>
-        </div>
-
-        <div className="flex flex-col gap-1 leading-tight">
-          <span className="text-black/40 uppercase tracking-wide text-xs sm:text-sm mb-1">
-            Shipping
-          </span>
-          <Link
-            to="/shipping"
-            className="hover:opacity-70 transition-opacity"
-          >
-            Shipping
-          </Link>
         </div>
       </div>
 
