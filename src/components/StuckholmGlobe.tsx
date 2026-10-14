@@ -70,7 +70,7 @@ function createBlobFromModel(scene: THREE.Object3D) {
     color: INK,
     side: THREE.BackSide,
   });
-  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER });
+  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide });
   const letterEdge = new THREE.LineBasicMaterial({ color: PAPER });
 
   const letterMeshes: THREE.Mesh[] = [];
@@ -227,11 +227,34 @@ function SceneBackground({ progress }: { progress: number }) {
   return null;
 }
 
-// Small star dots spread through depth, like a night sky. Most are tiny and
-// dim; a smaller number are bigger and shine brighter. They twinkle, sway
-// slowly, and fade out as scroll progresses.
-const DIM_STAR_COUNT = 700;
-const BRIGHT_STAR_COUNT = 90;
+// How many stars there are in the sky. About 1 in 10 is a small dot instead
+// of an outlined sparkle.
+const SPARKLE_COUNT = 350;
+const DOT_COUNT = Math.round(SPARKLE_COUNT * 0.1);
+const OUTLINE_COUNT = SPARKLE_COUNT - DOT_COUNT;
+
+function sparkleOutline(size: number, pinch = 0.12, segments = 10) {
+  const TIPS = 8;
+  const tips: THREE.Vector2[] = [];
+  for (let i = 0; i < TIPS; i++) {
+    const angle = (i / TIPS) * Math.PI * 2 + Math.PI / 2;
+    const length = size * (i % 2 === 0 ? 1 : 0.45);
+    tips.push(
+      new THREE.Vector2(Math.cos(angle) * length, Math.sin(angle) * length)
+    );
+  }
+  const points: THREE.Vector3[] = [];
+  for (let i = 0; i < TIPS; i++) {
+    const a = tips[i];
+    const b = tips[(i + 1) % TIPS];
+    const control = a.clone().add(b).multiplyScalar(0.5 * pinch);
+    const curve = new THREE.QuadraticBezierCurve(a, control, b);
+    for (const p of curve.getPoints(segments)) {
+      points.push(new THREE.Vector3(p.x, p.y, 0));
+    }
+  }
+  return points;
+}
 
 type StarLayer = {
   geometry: THREE.BufferGeometry;
@@ -279,40 +302,58 @@ function twinkle(layer: StarLayer, t: number) {
   layer.colors.needsUpdate = true;
 }
 
+
+// Thin-outline sparkles spread through depth, like a night sky. Far stars are
+// scaled up so they stay visible, and every star keeps a minimum brightness.
+// They twinkle, drift slowly, and fade out only as scroll progresses.
 function Starfield({ progress }: { progress: number }) {
   const groupRef = React.useRef<THREE.Group>(null);
+  const lineRefs = React.useRef<(THREE.LineLoop | null)[]>([]);
   const progressRef = React.useRef(progress);
 
   React.useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
-  const dim = React.useMemo(() => makeStarLayer(DIM_STAR_COUNT, false), []);
-  const bright = React.useMemo(() => makeStarLayer(BRIGHT_STAR_COUNT, true), []);
+  const geometry = React.useMemo(
+    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1)),
+    []
+  );
 
-  const dimMaterial = React.useMemo(
+  const stars = React.useMemo(
     () =>
-      new THREE.PointsMaterial({
-        color: STAR,
-        size: 1.5,
-        sizeAttenuation: false,
-        vertexColors: true,
-        transparent: true,
-        depthWrite: false,
+      Array.from({ length: OUTLINE_COUNT }, () => {
+        // Depth: most stars are far away, a few are closer.
+        const depth = 18 + Math.pow(Math.random(), 1.6) * 140;
+        // Brightness: most stars are fairly bright, a few shine the brightest.
+        const brightness = 0.45 + Math.pow(Math.random(), 2) * 0.55;
+        return {
+          x: (Math.random() * 2 - 1) * depth * 1.1,
+          y: (Math.random() * 2 - 1) * depth * 0.64,
+          z: -depth,
+          // Size grows with distance, so far stars are still big enough to see.
+          size: (0.12 + Math.random() * 0.1) * (depth / 25),
+          brightness,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.6 + Math.random() * 1.2,
+        };
       }),
     []
   );
-  const brightMaterial = React.useMemo(
+
+  // One material per star, so each star can have its own brightness.
+  const materials = React.useMemo(
     () =>
-      new THREE.PointsMaterial({
-        color: STAR,
-        size: 3.2,
-        sizeAttenuation: false,
-        vertexColors: true,
-        transparent: true,
-        depthWrite: false,
-      }),
-    []
+      stars.map(
+        (s) =>
+          new THREE.LineBasicMaterial({
+            color: STAR,
+            transparent: true,
+            depthWrite: false,
+            opacity: s.brightness,
+          })
+      ),
+    [stars]
   );
 
   useFrame((state) => {
@@ -323,19 +364,54 @@ function Starfield({ progress }: { progress: number }) {
       // Sway back and forth instead of spinning forever.
       groupRef.current.rotation.y = Math.sin(t * 0.05) * 0.06;
     }
-    dimMaterial.opacity = fade;
-    brightMaterial.opacity = fade;
-    twinkle(dim, t);
-    twinkle(bright, t);
+
+    dotMaterial.opacity = fade;
+    twinkle(dots, t);
+
+    stars.forEach((s, i) => {
+      // Gentle twinkle: stays between 70% and 100% of its brightness.
+      const twinkle = 0.85 + 0.15 * Math.sin(t * s.speed + s.phase);
+      materials[i].opacity = s.brightness * twinkle * fade;
+
+      const line = lineRefs.current[i];
+      if (line) {
+        line.scale.setScalar(s.size * (0.95 + 0.05 * Math.sin(t * s.speed + s.phase)));
+      }
+    });
   });
+
+  const dots = React.useMemo(() => makeStarLayer(DOT_COUNT, false), []);
+  const dotMaterial = React.useMemo(
+    () =>
+      new THREE.PointsMaterial({
+        color: STAR,
+        size: 2.2,
+        sizeAttenuation: false,
+        vertexColors: true,
+        transparent: true,
+        depthWrite: false,
+      }),
+    []
+  );
 
   return (
     <group ref={groupRef}>
-      <points geometry={dim.geometry} material={dimMaterial} />
-      <points geometry={bright.geometry} material={brightMaterial} />
+      <points geometry={dots.geometry} material={dotMaterial} />
+      {stars.map((s, i) => (
+        <lineLoop
+          key={i}
+          ref={(el: THREE.LineLoop | null) => {
+            lineRefs.current[i] = el;
+          }}
+          geometry={geometry}
+          material={materials[i]}
+          position={[s.x, s.y, s.z]}
+        />
+      ))}
     </group>
   );
 }
+
 
 // Moves the camera back on narrow screens (phones), so the whole globe and its
 // letter ring fit the width instead of being cut off at the sides. Wide
