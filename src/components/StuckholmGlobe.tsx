@@ -5,7 +5,7 @@ import * as THREE from "three";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
-const BLOB_MODEL_URL = "/models/globe_for_home_fixed.glb";
+export const BLOB_MODEL_URL = "/models/globe_for_home_fixed.glb";
 const BLOB_RADIUS = 4.0;
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
@@ -36,7 +36,7 @@ function isLetter(name: string) {
 
 // Splits the GLB into the blob (sits at the origin) and the letter ring
 // (returned separately so it can orbit on its own).
-function createBlobFromModel(scene: THREE.Object3D) {
+export function createBlobFromModel(scene: THREE.Object3D) {
   const root = scene.clone(true);
 
   // Size and centre come from the blob parts only, so the letters don't

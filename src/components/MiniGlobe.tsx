@@ -3,37 +3,26 @@ import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Bounds } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
+import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe";
 
-const BLOB_MODEL_URL = "/models/globee.glb";
-
+// Same model and look as the home globe: grey blob, white letter ring. It
+// turns the same way as the home globe (negative Y).
 function SpinningBlob() {
   const gltf = useGLTF(BLOB_MODEL_URL);
   const groupRef = React.useRef<THREE.Group>(null);
-
-  // Copy the model and give every mesh the same dark, matte grey material,
-  // so the globe looks the same regardless of the colours in the .glb file.
-  const scene = React.useMemo(() => {
-    const copy = gltf.scene.clone(true);
-    copy.traverse((obj) => {
-      const mesh = obj as THREE.Mesh;
-      if (mesh.isMesh) {
-        mesh.material = new THREE.MeshStandardMaterial({
-          color: "#6b6b6b",
-          roughness: 1,
-          metalness: 0,
-        });
-      }
-    });
-    return copy;
-  }, [gltf.scene]);
+  const { blob, letters } = React.useMemo(
+    () => createBlobFromModel(gltf.scene),
+    [gltf.scene]
+  );
 
   useFrame((_, delta) => {
-    if (groupRef.current) groupRef.current.rotation.y += delta * 0.5;
+    if (groupRef.current) groupRef.current.rotateY(-delta * 0.3);
   });
 
   return (
     <group ref={groupRef}>
-      <primitive object={scene} />
+      <primitive object={blob} />
+      <primitive object={letters} />
     </group>
   );
 }
