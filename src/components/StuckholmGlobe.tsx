@@ -187,7 +187,7 @@ function DriftingGlobe({
   // rotationIntensity 0 stops Float's small wobble, which tilted the globe
   // around the z axis. Float still bobs the whole thing up and down.
   return (
-    <group ref={groupRef} scale={0.9}>
+    <group ref={groupRef} scale={1.08}>
       <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
         <primitive object={blob} />
         <group ref={ringRef}>
