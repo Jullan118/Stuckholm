@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
 import { HeaderBar } from "@/components/HeaderBar";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { CartCorner } from "@/components/CartCorner";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
@@ -26,6 +27,7 @@ function App() {
     <BrowserRouter>
       <CartProvider>
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
+        <ScrollToTop />
         <HeaderBar />
         <MiniGlobe />
         <MainNav />
