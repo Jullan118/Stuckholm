@@ -69,8 +69,8 @@ export function Refund() {
       </h2>
       <p className="mb-10">
         Orders can be canceled within 12 hours of purchase. Cancellations requested
-        after this window may be subject to a $250 administrative fee if the item
-        has not yet entered production. Once an item is in production, cancellations
+        after this window are accepted only if the item has not yet entered
+        production, and no fee applies. Once an item is in production, cancellations
         are no longer permitted.
       </p>
 
