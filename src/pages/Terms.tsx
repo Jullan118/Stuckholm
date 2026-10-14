@@ -2,7 +2,7 @@ export function Terms() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-[11px] sm:text-xs leading-snug">
       <h1 className="text-base sm:text-lg font-light mb-5">Terms of Use</h1>
-      <p className="mb-5 text-black/50">Last updated: xxx</p>
+      <p className="mb-5 text-black/50">Last updated: 10 October 2026</p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">1. About us</h2>
       <p className="mb-2">
@@ -10,11 +10,11 @@ export function Terms() {
         “Website”), operated by:
       </p>
       <p className="mb-5">
-        Company name: xxx
+        Company name: Sturm und Drang AB
         <br />
-        Organisation number: xxx
+        Organisation number: 5592733009
         <br />
-        Address: xxx
+        Address: Metargatan 5, 116 66 Stockholm
         <br />
         Email: stuck@stuckholm.se
       </p>
