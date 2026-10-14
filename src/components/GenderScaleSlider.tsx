@@ -1,5 +1,6 @@
 import * as React from "react";
 import { GENDER_SCALE_MAX, GENDER_SCALE_MIN, GENDER_SCALE_NEUTRAL } from "@/lib/garments";
+import { AppleHandle } from "@/components/AppleHandle";
 
 const STEPS = GENDER_SCALE_MAX - GENDER_SCALE_MIN + 1; // 5
 
@@ -151,28 +152,16 @@ export function GenderScaleSlider({
             style={{ left: `${(i / (STEPS - 1)) * 100}%` }}
           />
         ))}
-        {/* The handle — a running stick figure standing in for the plain
-            dot, per her sketch — dragged/tapped along the track above. */}
-        <svg
-          viewBox="0 0 100 90"
+        {/* The handle — a line-drawn apple, dragged/tapped along the track. */}
+        <AppleHandle
           className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 ${
-            compact ? "w-7 h-7" : "w-9 h-9"
+            compact ? "h-7 w-auto" : "h-10 w-auto"
           }`}
           style={{
             left: `${pos * 100}%`,
             transition: dragging ? "none" : "left 200ms ease",
           }}
-        >
-          <circle cx="52" cy="16" r="12" fill="none" stroke="black" strokeWidth="8" />
-          <path
-            d="M52 29 L49 46 M49 33 L27 42 M49 33 L72 39 M49 46 L23 63 L18 68 M49 46 L74 60 L79 55"
-            stroke="black"
-            strokeWidth="7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </svg>
+        />
       </div>
     </div>
   );
