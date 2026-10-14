@@ -23,8 +23,6 @@ const SKY_WHITE = new THREE.Color("#ffffff");
 // Stars are white so they stay visible on the dark background.
 const STAR = "#ffffff";
 
-// Orbit speed of the letter ring around the globe's vertical axis, in rad/s.
-const TEXT_ORBIT_SPEED = 0.08;
 
 useGLTF.preload(BLOB_MODEL_URL);
 
@@ -167,10 +165,8 @@ function DriftingGlobe({
       group.rotateY(-delta * spinSpeed);
     }
 
-    // The letter ring's own orbit, running whether or not the globe is dragged.
-    if (ringRef.current) {
-      ringRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
-    }
+    // The letter ring has no spin of its own: it turns with the globe, in the
+    // same direction and speed, and follows drag too.
 
     // Starts at 80% opacity and fades out with the rest as you scroll.
     const opacity = GLOBE_START_OPACITY * (1 - THREE.MathUtils.clamp(progressRef.current, 0, 1));
@@ -191,7 +187,7 @@ function DriftingGlobe({
   // rotationIntensity 0 stops Float's small wobble, which tilted the globe
   // around the z axis. Float still bobs the whole thing up and down.
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={0.9}>
       <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
         <primitive object={blob} />
         <group ref={ringRef}>
