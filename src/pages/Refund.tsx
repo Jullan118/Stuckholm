@@ -5,7 +5,7 @@ export function Refund() {
       <h1 className="text-xl sm:text-2xl font-light mb-2 text-center">
         Return &amp; Refund Policy
       </h1>
-      <p className="mb-10 text-black/50">Effective Date: Nov 04, 2026</p>
+      <p className="mb-10 text-black/50">Effective Date: October 14, 2026</p>
 
       <h2 className="text-sm sm:text-base font-light mb-4">Returns &amp; Exchanges</h2>
       <p className="mb-3">
@@ -27,8 +27,9 @@ export function Refund() {
       </h2>
       <p className="mb-3">
         All second-hand items are final sale. The condition of each item is shown
-        with photos on our website. Not every visible defect is necessarily listed
-        in the description, but we show each item as completely as possible.
+        as good as possible with photos and text on our website. Not every visible
+        defect is necessarily listed in the description, but we show each item as
+        completely as possible.
       </p>
       <p className="mb-10">
         Please look carefully at the photos before ordering.
@@ -39,7 +40,6 @@ export function Refund() {
       </h2>
       <p className="mb-3">We may offer a refund or replacement only if:</p>
       <ul className="list-none space-y-1 mb-10">
-        <li>– The product is damaged</li>
         <li>– There is a printing defect</li>
         <li>– The wrong item was shipped</li>
       </ul>
@@ -89,7 +89,7 @@ export function Refund() {
         >
           stuck@stuckholm.se
         </a>
-        . We’ll work with you to resolve any issues and ensure customer satisfaction.
+.
       </p>
     </div>
   );
