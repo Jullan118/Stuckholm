@@ -16,7 +16,8 @@ export function SiteFooter() {
 
   return (
     <footer className="w-full font-manrope text-black mt-64 mb-14">
-      <div className="w-full border-t border-black/20">
+      <div className="w-full">
+        <div className="ml-4 border-t border-black/20" />
         <div className="px-4 pt-6 pb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-32 text-xs sm:text-sm">
           <div className="flex flex-col gap-3 leading-tight">
             <span className={headingClass}>Info</span>
