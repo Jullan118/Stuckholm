@@ -16,7 +16,7 @@ const PAPER = "#ffffff";
 // How opaque the globe is at the top of the page (1 = solid).
 const GLOBE_START_OPACITY = 0.8;
 // Light grey for the globe body.
-const GLOBE_GREY = "#d4d7da";
+const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#04050c");
 const SKY_WHITE = new THREE.Color("#ffffff");
@@ -25,9 +25,6 @@ const STAR = "#ffffff";
 
 // Orbit speed of the letter ring around the globe's vertical axis, in rad/s.
 const TEXT_ORBIT_SPEED = 0.08;
-
-// How many stars there are in the sky.
-const SPARKLE_COUNT = 350;
 
 useGLTF.preload(BLOB_MODEL_URL);
 
@@ -74,6 +71,7 @@ function createBlobFromModel(scene: THREE.Object3D) {
     side: THREE.BackSide,
   });
   const letterInk = new THREE.MeshBasicMaterial({ color: PAPER });
+  const letterEdge = new THREE.LineBasicMaterial({ color: PAPER });
 
   const letterMeshes: THREE.Mesh[] = [];
   const blobMeshes: THREE.Mesh[] = [];
@@ -106,8 +104,12 @@ function createBlobFromModel(scene: THREE.Object3D) {
   });
 
   // Creases and edges: lines where the surface turns sharply.
-  [...blobMeshes, ...letterMeshes].forEach((mesh) => {
+  blobMeshes.forEach((mesh) => {
     mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), ink));
+  });
+  // The orbiting letters get white edges so the wordmark reads as white.
+  letterMeshes.forEach((mesh) => {
+    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), letterEdge));
   });
 
   return { blob: root, letters };
@@ -153,14 +155,14 @@ function DriftingGlobe({
     const drag = dragRef.current;
     if (drag.dragging) {
       // About one radian per ~320px of sideways mouse travel.
-      dragQuat.setFromAxisAngle(YAW_AXIS, drag.deltaX * 0.0032);
+      dragQuat.setFromAxisAngle(YAW_AXIS, -drag.deltaX * 0.0032);
       group.quaternion.premultiply(dragQuat);
       drag.deltaX = 0;
       drag.deltaY = 0;
     } else {
       // Idle spin around the globe's own (possibly tilted) vertical axis.
       const spinSpeed = 0.07 + progressRef.current * 0.18;
-      group.rotateY(delta * spinSpeed);
+      group.rotateY(-delta * spinSpeed);
     }
 
     // The letter ring's own orbit, running whether or not the globe is dragged.
@@ -200,29 +202,6 @@ function DriftingGlobe({
 
 // Outline of an eight-point compass sparkle: long spikes on the main axes,
 // shorter ones on the diagonals, and concave sides between them.
-function sparkleOutline(size: number, pinch = 0.12, segments = 10) {
-  const TIPS = 8;
-  const tips: THREE.Vector2[] = [];
-  for (let i = 0; i < TIPS; i++) {
-    const angle = (i / TIPS) * Math.PI * 2 + Math.PI / 2;
-    const length = size * (i % 2 === 0 ? 1 : 0.45);
-    tips.push(
-      new THREE.Vector2(Math.cos(angle) * length, Math.sin(angle) * length)
-    );
-  }
-  const points: THREE.Vector3[] = [];
-  for (let i = 0; i < TIPS; i++) {
-    const a = tips[i];
-    const b = tips[(i + 1) % TIPS];
-    const control = a.clone().add(b).multiplyScalar(0.5 * pinch);
-    const curve = new THREE.QuadraticBezierCurve(a, control, b);
-    for (const p of curve.getPoints(segments)) {
-      points.push(new THREE.Vector3(p.x, p.y, 0));
-    }
-  }
-  return points;
-}
-
 // Fades the background from night-sky navy to white as scroll progresses.
 function SceneBackground({ progress }: { progress: number }) {
   const { scene } = useThree();
@@ -248,57 +227,92 @@ function SceneBackground({ progress }: { progress: number }) {
   return null;
 }
 
-// Thin-outline sparkles spread through depth, like a night sky. Far stars are
-// scaled up so they stay visible, and every star keeps a minimum brightness.
-// They twinkle, drift slowly, and fade out only as scroll progresses.
+// Small star dots spread through depth, like a night sky. Most are tiny and
+// dim; a smaller number are bigger and shine brighter. They twinkle, sway
+// slowly, and fade out as scroll progresses.
+const DIM_STAR_COUNT = 700;
+const BRIGHT_STAR_COUNT = 90;
+
+type StarLayer = {
+  geometry: THREE.BufferGeometry;
+  colors: THREE.BufferAttribute;
+  base: Float32Array;
+  phases: Float32Array;
+  speeds: Float32Array;
+};
+
+function makeStarLayer(count: number, bright: boolean): StarLayer {
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const base = new Float32Array(count);
+  const phases = new Float32Array(count);
+  const speeds = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    // Depth: most stars are far away, a few are closer.
+    const depth = 18 + Math.pow(Math.random(), 1.6) * 140;
+    positions[i * 3] = (Math.random() * 2 - 1) * depth * 1.1;
+    positions[i * 3 + 1] = (Math.random() * 2 - 1) * depth * 0.64;
+    positions[i * 3 + 2] = -depth;
+    base[i] = bright
+      ? 0.8 + Math.random() * 0.2
+      : 0.25 + Math.pow(Math.random(), 2) * 0.45;
+    phases[i] = Math.random() * Math.PI * 2;
+    speeds[i] = 0.6 + Math.random() * 1.2;
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  const colorAttr = new THREE.BufferAttribute(colors, 3);
+  geometry.setAttribute("color", colorAttr);
+  return { geometry, colors: colorAttr, base, phases, speeds };
+}
+
+function twinkle(layer: StarLayer, t: number) {
+  const arr = layer.colors.array as Float32Array;
+  for (let i = 0; i < layer.base.length; i++) {
+    // Stays between 70% and 100% of its brightness.
+    const v =
+      layer.base[i] * (0.85 + 0.15 * Math.sin(t * layer.speeds[i] + layer.phases[i]));
+    arr[i * 3] = v;
+    arr[i * 3 + 1] = v;
+    arr[i * 3 + 2] = v;
+  }
+  layer.colors.needsUpdate = true;
+}
+
 function Starfield({ progress }: { progress: number }) {
   const groupRef = React.useRef<THREE.Group>(null);
-  const lineRefs = React.useRef<(THREE.LineLoop | null)[]>([]);
   const progressRef = React.useRef(progress);
 
   React.useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
-  const geometry = React.useMemo(
-    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1)),
-    []
-  );
+  const dim = React.useMemo(() => makeStarLayer(DIM_STAR_COUNT, false), []);
+  const bright = React.useMemo(() => makeStarLayer(BRIGHT_STAR_COUNT, true), []);
 
-  const stars = React.useMemo(
+  const dimMaterial = React.useMemo(
     () =>
-      Array.from({ length: SPARKLE_COUNT }, () => {
-        // Depth: most stars are far away, a few are closer.
-        const depth = 18 + Math.pow(Math.random(), 1.6) * 140;
-        // Brightness: most stars are fairly bright, a few shine the brightest.
-        const brightness = 0.45 + Math.pow(Math.random(), 2) * 0.55;
-        return {
-          x: (Math.random() * 2 - 1) * depth * 1.1,
-          y: (Math.random() * 2 - 1) * depth * 0.64,
-          z: -depth,
-          // Size grows with distance, so far stars are still big enough to see.
-          size: (0.12 + Math.random() * 0.1) * (depth / 25),
-          brightness,
-          phase: Math.random() * Math.PI * 2,
-          speed: 0.6 + Math.random() * 1.2,
-        };
+      new THREE.PointsMaterial({
+        color: STAR,
+        size: 1.5,
+        sizeAttenuation: false,
+        vertexColors: true,
+        transparent: true,
+        depthWrite: false,
       }),
     []
   );
-
-  // One material per star, so each star can have its own brightness.
-  const materials = React.useMemo(
+  const brightMaterial = React.useMemo(
     () =>
-      stars.map(
-        (s) =>
-          new THREE.LineBasicMaterial({
-            color: STAR,
-            transparent: true,
-            depthWrite: false,
-            opacity: s.brightness,
-          })
-      ),
-    [stars]
+      new THREE.PointsMaterial({
+        color: STAR,
+        size: 3.2,
+        sizeAttenuation: false,
+        vertexColors: true,
+        transparent: true,
+        depthWrite: false,
+      }),
+    []
   );
 
   useFrame((state) => {
@@ -309,32 +323,16 @@ function Starfield({ progress }: { progress: number }) {
       // Sway back and forth instead of spinning forever.
       groupRef.current.rotation.y = Math.sin(t * 0.05) * 0.06;
     }
-
-    stars.forEach((s, i) => {
-      // Gentle twinkle: stays between 70% and 100% of its brightness.
-      const twinkle = 0.85 + 0.15 * Math.sin(t * s.speed + s.phase);
-      materials[i].opacity = s.brightness * twinkle * fade;
-
-      const line = lineRefs.current[i];
-      if (line) {
-        line.scale.setScalar(s.size * (0.95 + 0.05 * Math.sin(t * s.speed + s.phase)));
-      }
-    });
+    dimMaterial.opacity = fade;
+    brightMaterial.opacity = fade;
+    twinkle(dim, t);
+    twinkle(bright, t);
   });
 
   return (
     <group ref={groupRef}>
-      {stars.map((s, i) => (
-        <lineLoop
-          key={i}
-          ref={(el: THREE.LineLoop | null) => {
-            lineRefs.current[i] = el;
-          }}
-          geometry={geometry}
-          material={materials[i]}
-          position={[s.x, s.y, s.z]}
-        />
-      ))}
+      <points geometry={dim.geometry} material={dimMaterial} />
+      <points geometry={bright.geometry} material={brightMaterial} />
     </group>
   );
 }
