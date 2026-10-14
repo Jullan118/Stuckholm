@@ -17,6 +17,7 @@ import { Cookies } from "@/pages/Cookies";
 import { Terms } from "@/pages/Terms";
 import { Shipping } from "@/pages/Shipping";
 import { Returns } from "@/pages/Returns";
+import { Refund } from "@/pages/Refund";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
 import { TrashUpload } from "@/pages/TrashUpload";
@@ -45,6 +46,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/shipping" element={<Shipping />} />
           <Route path="/returns" element={<Returns />} />
+          <Route path="/refund" element={<Refund />} />
           <Route path="/payments" element={<InfoPage title="Betalning" />} />
           <Route path="/faq" element={<InfoPage title="FAQ" />} />
           <Route path="/privacy" element={<InfoPage title="Integritetspolicy" />} />

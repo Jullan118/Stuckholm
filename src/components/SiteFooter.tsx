@@ -23,6 +23,7 @@ export function SiteFooter() {
             <Link to="/faq" className={linkClass}>FAQ</Link>
             <Link to="/shipping" className={linkClass}>Shipping</Link>
             <Link to="/returns" className={linkClass}>Returns</Link>
+            <Link to="/refund" className={linkClass}>Refund</Link>
           </div>
 
           <div className="flex flex-col gap-3 leading-tight">
