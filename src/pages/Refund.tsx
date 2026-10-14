@@ -23,6 +23,18 @@ export function Refund() {
       </p>
 
       <h2 className="text-sm sm:text-base font-light mb-4">
+        Second-Hand (Preloved) Items
+      </h2>
+      <p className="mb-3">
+        All second-hand items are final sale. The condition of each item is shown
+        with photos on our website. Not every visible defect is necessarily listed
+        in the description, but we show each item as completely as possible.
+      </p>
+      <p className="mb-10">
+        Please look carefully at the photos before ordering.
+      </p>
+
+      <h2 className="text-sm sm:text-base font-light mb-4">
         Acceptable Reasons for Refund or Replacement
       </h2>
       <p className="mb-3">We may offer a refund or replacement only if:</p>
