@@ -21,7 +21,7 @@ export function MainNav() {
   return (
     <nav
       className={`fixed -top-2 right-4 sm:right-8 z-20 h-16 flex flex-wrap items-center gap-6 sm:gap-10 ${
-        isHome ? "left-4 sm:left-8" : "left-24 sm:left-28"
+        isHome ? "left-4 sm:left-8" : "left-24"
       }`}    
     >
       {LINKS.map((link) => (
