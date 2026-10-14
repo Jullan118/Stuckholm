@@ -7,5 +7,5 @@ import { useLocation } from "react-router-dom";
 export function HeaderBar() {
   const { pathname } = useLocation();
   if (pathname === "/") return null;
-  return <div aria-hidden="true" className="fixed inset-x-0 top-0 h-20 z-10 bg-white" />;
+  return <div aria-hidden="true" className="fixed inset-x-0 top-0 h-20 z-[15] bg-white" />;
 }
