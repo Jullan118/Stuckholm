@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 const LINKS = [
   { label: "Shop", to: "/in-stock" },
-  { label: "Preloved", to: "/trash" },
+  { label: "Trash", to: "/trash" },
 ];
 
 // Always-visible horizontal category row (replaces the old hamburger menu).
