@@ -79,3 +79,343 @@ function createBlobFromModel(scene: THREE.Object3D) {
   const blobMeshes: THREE.Mesh[] = [];
   root.traverse((child) => {
     const mesh = child as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    // Geometry is shared with the cached GLTF, so work on a copy.
+    mesh.geometry = mesh.geometry.clone();
+    if (isLetter(mesh.name)) {
+      mesh.material = letterInk;
+      letterMeshes.push(mesh);
+    } else {
+      mesh.material = fill;
+      blobMeshes.push(mesh);
+    }
+  });
+
+  // Move the letters out of the blob after the walk, so the tree isn't
+  // changing while it is being traversed.
+  letterMeshes.forEach((mesh) => {
+    root.remove(mesh);
+    letters.add(mesh);
+  });
+
+  // Silhouette: a slightly larger black back-face shell behind each blob part.
+  blobMeshes.forEach((mesh) => {
+    const hull = new THREE.Mesh(mesh.geometry, inkHull);
+    hull.scale.setScalar(1.008);
+    mesh.add(hull);
+  });
+
+  // Creases and edges: lines where the surface turns sharply.
+  [...blobMeshes, ...letterMeshes].forEach((mesh) => {
+    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), ink));
+  });
+
+  return { blob: root, letters };
+}
+
+type DragState = { dragging: boolean; deltaX: number; deltaY: number };
+
+// Drag only turns the globe sideways, around the world vertical (Y) axis. It
+// stays upright and never tips over, no matter how you drag.
+const YAW_AXIS = new THREE.Vector3(0, 1, 0);
+const dragQuat = new THREE.Quaternion();
+
+// The globe and its letter ring share one drag group, so the ring turns with
+// the globe. Its own orbit spin is layered on top.
+//
+// At rest the globe slowly spins; the spin picks up pace as you scroll. Drag
+// with the mouse to rotate it freely. As scroll progresses, everything fades
+// out in place (opacity -> 0) rather than flying away.
+function DriftingGlobe({
+  scrollProgress,
+  dragRef,
+}: {
+  scrollProgress: number;
+  dragRef: React.MutableRefObject<DragState>;
+}) {
+  const groupRef = React.useRef<THREE.Group>(null);
+  const ringRef = React.useRef<THREE.Group>(null);
+  const progressRef = React.useRef(0);
+  const gltf = useGLTF(BLOB_MODEL_URL);
+  const { blob, letters } = React.useMemo(
+    () => createBlobFromModel(gltf.scene),
+    [gltf.scene]
+  );
+
+  React.useEffect(() => {
+    progressRef.current = scrollProgress;
+  }, [scrollProgress]);
+
+  useFrame((_, delta) => {
+    const group = groupRef.current;
+    if (!group) return;
+
+    const drag = dragRef.current;
+    if (drag.dragging) {
+      // About one radian per ~320px of sideways mouse travel.
+      dragQuat.setFromAxisAngle(YAW_AXIS, drag.deltaX * 0.0032);
+      group.quaternion.premultiply(dragQuat);
+      drag.deltaX = 0;
+      drag.deltaY = 0;
+    } else {
+      // Idle spin around the globe's own (possibly tilted) vertical axis.
+      const spinSpeed = 0.07 + progressRef.current * 0.18;
+      group.rotateY(delta * spinSpeed);
+    }
+
+    // The letter ring's own orbit, running whether or not the globe is dragged.
+    if (ringRef.current) {
+      ringRef.current.rotation.y += delta * TEXT_ORBIT_SPEED;
+    }
+
+    // Starts at 80% opacity and fades out with the rest as you scroll.
+    const opacity = GLOBE_START_OPACITY * (1 - THREE.MathUtils.clamp(progressRef.current, 0, 1));
+    group.traverse((child) => {
+      const mat = (child as THREE.Mesh).material as
+        | THREE.Material
+        | THREE.Material[]
+        | undefined;
+      if (!mat) return;
+      const mats = Array.isArray(mat) ? mat : [mat];
+      for (const m of mats) {
+        m.transparent = true;
+        m.opacity = opacity;
+      }
+    });
+  });
+
+  // rotationIntensity 0 stops Float's small wobble, which tilted the globe
+  // around the z axis. Float still bobs the whole thing up and down.
+  return (
+    <group ref={groupRef}>
+      <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
+        <primitive object={blob} />
+        <group ref={ringRef}>
+          <primitive object={letters} />
+        </group>
+      </Float>
+    </group>
+  );
+}
+
+// Outline of an eight-point compass sparkle: long spikes on the main axes,
+// shorter ones on the diagonals, and concave sides between them.
+function sparkleOutline(size: number, pinch = 0.12, segments = 10) {
+  const TIPS = 8;
+  const tips: THREE.Vector2[] = [];
+  for (let i = 0; i < TIPS; i++) {
+    const angle = (i / TIPS) * Math.PI * 2 + Math.PI / 2;
+    const length = size * (i % 2 === 0 ? 1 : 0.45);
+    tips.push(
+      new THREE.Vector2(Math.cos(angle) * length, Math.sin(angle) * length)
+    );
+  }
+  const points: THREE.Vector3[] = [];
+  for (let i = 0; i < TIPS; i++) {
+    const a = tips[i];
+    const b = tips[(i + 1) % TIPS];
+    const control = a.clone().add(b).multiplyScalar(0.5 * pinch);
+    const curve = new THREE.QuadraticBezierCurve(a, control, b);
+    for (const p of curve.getPoints(segments)) {
+      points.push(new THREE.Vector3(p.x, p.y, 0));
+    }
+  }
+  return points;
+}
+
+// Fades the background from night-sky navy to white as scroll progresses.
+function SceneBackground({ progress }: { progress: number }) {
+  const { scene } = useThree();
+  const colorRef = React.useRef(new THREE.Color().copy(SKY_DARK));
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  React.useEffect(() => {
+    scene.background = colorRef.current;
+  }, [scene]);
+
+  useFrame(() => {
+    colorRef.current.lerpColors(
+      SKY_DARK,
+      SKY_WHITE,
+      THREE.MathUtils.clamp(progressRef.current, 0, 1)
+    );
+  });
+
+  return null;
+}
+
+// Thin-outline sparkles spread through depth, like a night sky. Far stars are
+// scaled up so they stay visible, and every star keeps a minimum brightness.
+// They twinkle, drift slowly, and fade out only as scroll progresses.
+function Starfield({ progress }: { progress: number }) {
+  const groupRef = React.useRef<THREE.Group>(null);
+  const lineRefs = React.useRef<(THREE.LineLoop | null)[]>([]);
+  const progressRef = React.useRef(progress);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  const geometry = React.useMemo(
+    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1)),
+    []
+  );
+
+  const stars = React.useMemo(
+    () =>
+      Array.from({ length: SPARKLE_COUNT }, () => {
+        // Depth: most stars are far away, a few are closer.
+        const depth = 18 + Math.pow(Math.random(), 1.6) * 140;
+        // Brightness: most stars are fairly bright, a few shine the brightest.
+        const brightness = 0.45 + Math.pow(Math.random(), 2) * 0.55;
+        return {
+          x: (Math.random() * 2 - 1) * depth * 1.1,
+          y: (Math.random() * 2 - 1) * depth * 0.64,
+          z: -depth,
+          // Size grows with distance, so far stars are still big enough to see.
+          size: (0.12 + Math.random() * 0.1) * (depth / 25),
+          brightness,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.6 + Math.random() * 1.2,
+        };
+      }),
+    []
+  );
+
+  // One material per star, so each star can have its own brightness.
+  const materials = React.useMemo(
+    () =>
+      stars.map(
+        (s) =>
+          new THREE.LineBasicMaterial({
+            color: STAR,
+            transparent: true,
+            depthWrite: false,
+            opacity: s.brightness,
+          })
+      ),
+    [stars]
+  );
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    const fade = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+
+    if (groupRef.current) {
+      // Sway back and forth instead of spinning forever.
+      groupRef.current.rotation.y = Math.sin(t * 0.05) * 0.06;
+    }
+
+    stars.forEach((s, i) => {
+      // Gentle twinkle: stays between 70% and 100% of its brightness.
+      const twinkle = 0.85 + 0.15 * Math.sin(t * s.speed + s.phase);
+      materials[i].opacity = s.brightness * twinkle * fade;
+
+      const line = lineRefs.current[i];
+      if (line) {
+        line.scale.setScalar(s.size * (0.95 + 0.05 * Math.sin(t * s.speed + s.phase)));
+      }
+    });
+  });
+
+  return (
+    <group ref={groupRef}>
+      {stars.map((s, i) => (
+        <lineLoop
+          key={i}
+          ref={(el: THREE.LineLoop | null) => {
+            lineRefs.current[i] = el;
+          }}
+          geometry={geometry}
+          material={materials[i]}
+          position={[s.x, s.y, s.z]}
+        />
+      ))}
+    </group>
+  );
+}
+
+// Moves the camera back on narrow screens (phones), so the whole globe and its
+// letter ring fit the width instead of being cut off at the sides. Wide
+// screens keep the normal distance of 8.
+function FitCamera() {
+  const size = useThree((state) => state.size);
+  const camera = useThree((state) => state.camera);
+
+  React.useEffect(() => {
+    const aspect = size.width / size.height;
+    const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
+    // 4 = how many world units wide the view must be to hold the letter ring.
+    const fit = 4 / (halfTan * aspect);
+    camera.position.z = Math.max(8, fit);
+  }, [size, camera]);
+
+  return null;
+}
+
+export function StuckholmGlobe({
+  scrollProgress = 0,
+}: {
+  scrollProgress?: number;
+}) {
+  const dragRef = React.useRef<DragState>({
+    dragging: false,
+    deltaX: 0,
+    deltaY: 0,
+  });
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = true;
+    dragRef.current.deltaX = 0;
+    dragRef.current.deltaY = 0;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDragging(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.dragging) return;
+    dragRef.current.deltaX += e.movementX;
+    dragRef.current.deltaY += e.movementY;
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    dragRef.current.dragging = false;
+    setIsDragging(false);
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  return (
+    <div
+      className="w-full h-full"
+      style={{
+        cursor: isDragging ? "grabbing" : "grab",
+        // "pan-y" keeps vertical swipes for page scrolling on touch screens,
+        // while horizontal swipes still drive the globe.
+        touchAction: "pan-y",
+      }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerLeave={endDrag}
+      onPointerCancel={endDrag}
+    >
+      {/* No tone mapping: it would grey out the pure white and darken the ink. */}
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 45 }}
+        gl={{ toneMapping: THREE.NoToneMapping }}
+      >
+        <SceneBackground progress={scrollProgress} />
+        <FitCamera />
+        <Starfield progress={scrollProgress} />
+        <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
+      </Canvas>
+    </div>
+  );
+}
