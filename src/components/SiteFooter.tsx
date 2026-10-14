@@ -16,7 +16,7 @@ export function SiteFooter() {
 
   return (
     <footer className="w-full font-manrope text-black mt-64 mb-14">
-      <div className="w-full px-4">
+      <div className="w-full px-4 sm:px-8">
         <div className="border-t border-black/20 pt-6 pb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-32 text-xs sm:text-sm">
           <div className="flex flex-col gap-3 leading-tight">
             <span className={headingClass}>Info</span>
@@ -48,7 +48,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="px-4 py-4 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-1 text-xs sm:text-sm text-black/50 w-full">
+      <div className="px-4 sm:px-8 py-4 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-1 text-xs sm:text-sm text-black/50 w-full">
         <span>© {year} Stuck in Stuckholm — all rights reserved</span>
         <div className="flex flex-col items-center sm:items-end gap-1">
           <Link

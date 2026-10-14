@@ -98,7 +98,7 @@ export function GenderScaleSlider({
   }
 
   return (
-    <div className={compact ? "w-full" : "relative w-full px-6 sm:px-10 pt-2 pb-10"}>
+    <div className={compact ? "w-full" : "relative w-full px-4 sm:px-8 pt-2 pb-10"}>
       {onReset && resetLabel && (
         <div className="mb-1">
           <button

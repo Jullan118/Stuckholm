@@ -61,7 +61,7 @@ export function InStockProduct() {
 
   if (notFound || !product) {
     return (
-      <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 text-center">
+      <div className="relative z-10 w-full max-w-3xl px-4 sm:px-8 pt-28 pb-16 text-center">
         <h1 className="text-3xl sm:text-4xl font-manrope font-light text-black mb-6">
           Not found
         </h1>
@@ -83,7 +83,7 @@ export function InStockProduct() {
   }
 
   return (
-    <div className="relative z-10 w-full max-w-5xl px-6 pt-28 pb-16">
+    <div className="relative z-10 w-full max-w-5xl px-4 sm:px-8 pt-28 pb-16">
       <Link
         to="/in-stock"
         className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"

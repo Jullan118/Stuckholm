@@ -2,8 +2,8 @@ import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const LINKS = [
-  { label: "In Stock", to: "/in-stock" },
-  { label: "Trash", to: "/trash" },
+  { label: "Shop", to: "/in-stock" },
+  { label: "Preloved", to: "/trash" },
 ];
 
 // Always-visible horizontal category row (replaces the old hamburger menu).
@@ -20,7 +20,7 @@ export function MainNav() {
 
   return (
     <nav
-      className={`${isHome ? "fixed" : "absolute"} -top-2 right-4 z-20 h-16 flex flex-wrap items-center gap-6 sm:gap-10 ${
+      className={`${isHome ? "fixed" : "absolute"} -top-2 right-4 sm:right-8 z-20 h-16 flex flex-wrap items-center gap-6 sm:gap-10 ${
         isHome ? "left-4 sm:left-8" : "left-24 sm:left-28"
       }`}    
     >

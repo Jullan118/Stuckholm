@@ -1,6 +1,6 @@
 export function Terms() {
   return (
-    <div className="relative z-10 w-full max-w-3xl px-6 pt-28 pb-16 font-manrope text-black text-center text-xs sm:text-sm leading-snug">
+    <div className="relative z-10 w-full max-w-3xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-xs sm:text-sm leading-snug">
       <h1 className="text-lg sm:text-xl font-light mb-2">Terms of Use</h1>
       <p className="mb-10 text-black/50">Last updated: xxx</p>
 
