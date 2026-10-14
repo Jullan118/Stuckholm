@@ -31,7 +31,7 @@ useGLTF.preload(BLOB_MODEL_URL);
 // The 16 "Raven" meshes are the letters; everything else is the blob.
 // three.js turns spaces into underscores, so match on the prefix.
 function isLetter(name: string) {
-  return name.startsWith("Raven") || name.startsWith("Skissbokstav");
+  return name.startsWith("Raven") || name.startsWith("SVG bandtext");
 }
 
 // Splits the GLB into the blob (sits at the origin) and the letter ring
