@@ -20,7 +20,6 @@ export function SiteFooter() {
         <div className="border-t border-black/20 pt-6 pb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-32 text-xs sm:text-sm">
           <div className="flex flex-col gap-3 leading-tight">
             <span className={headingClass}>Info</span>
-            <Link to="/faq" className={linkClass}>FAQ</Link>
             <Link to="/shipping" className={linkClass}>Shipping</Link>
             <Link to="/refund" className={linkClass}>Refund</Link>
           </div>
