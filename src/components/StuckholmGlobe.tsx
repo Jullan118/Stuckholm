@@ -36,7 +36,7 @@ function isLetter(name: string) {
 
 // Splits the GLB into the blob (sits at the origin) and the letter ring
 // (returned separately so it can orbit on its own).
-export function createBlobFromModel(scene: THREE.Object3D) {
+export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = GLOBE_GREY) {
   const root = scene.clone(true);
 
   // Size and centre come from the blob parts only, so the letters don't
@@ -60,7 +60,7 @@ export function createBlobFromModel(scene: THREE.Object3D) {
   // White fill that hides what's behind it. Pushed slightly back in depth so
   // the ink lines sit on top of it instead of flickering against it.
   const fill = new THREE.MeshBasicMaterial({
-    color: GLOBE_GREY,
+    color: fillColor,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1,
