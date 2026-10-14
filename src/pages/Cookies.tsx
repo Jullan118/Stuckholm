@@ -1,7 +1,7 @@
 export function Cookies() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-[11px] sm:text-xs leading-snug">
-      <h1 className="text-base sm:text-lg font-light mb-5">Cookies</h1>
+      <h1 className="text-xl sm:text-2xl font-light mb-2">Cookies</h1>
 
       <p className="mb-5">
         Cookies are small pieces of information that a website stores in your
