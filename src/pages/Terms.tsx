@@ -167,7 +167,7 @@ export function Terms() {
         <br />
         stuck@stuckholm.se
         <br />
-        xxx (address)
+        Metargatan 5, 116 66 Stockholm
       </p>
     </div>
   );
