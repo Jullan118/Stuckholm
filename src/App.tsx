@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
 import { HeaderBar } from "@/components/HeaderBar";
@@ -16,7 +16,6 @@ import { InfoPage } from "@/pages/InfoPage";
 import { Cookies } from "@/pages/Cookies";
 import { Terms } from "@/pages/Terms";
 import { Shipping } from "@/pages/Shipping";
-import { Returns } from "@/pages/Returns";
 import { Refund } from "@/pages/Refund";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
@@ -45,7 +44,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/shipping" element={<Shipping />} />
-          <Route path="/returns" element={<Returns />} />
+          <Route path="/returns" element={<Navigate to="/refund" replace />} />
           <Route path="/refund" element={<Refund />} />
           <Route path="/payments" element={<InfoPage title="Betalning" />} />
           <Route path="/faq" element={<InfoPage title="FAQ" />} />
