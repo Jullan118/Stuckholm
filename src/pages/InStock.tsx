@@ -43,7 +43,7 @@ export function InStock() {
   }, []);
 
   return (
-    <div className="relative z-10 w-full pt-40 pb-16">
+    <div className="relative z-10 w-full pt-24 pb-16">
       {usingExamples && (
         <p className="text-center text-black/50 text-sm mb-6">
           Showing example products — add your own below and these will disappear.
