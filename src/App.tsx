@@ -12,6 +12,7 @@ import { InStock } from "@/pages/InStock";
 import { InStockProduct } from "@/pages/InStockProduct";
 import { InStockUpload } from "@/pages/InStockUpload";
 import { About } from "@/pages/About";
+import { Login } from "@/pages/Login";
 import { Contact } from "@/pages/Contact";
 import { InfoPage } from "@/pages/InfoPage";
 import { Cookies } from "@/pages/Cookies";
@@ -44,6 +45,7 @@ function App() {
           <Route path="/trash/edit/:slug" element={<TrashUpload />} />
           <Route path="/trash/:slug" element={<TrashProduct />} />
           <Route path="/about" element={<About />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/shipping" element={<Shipping />} />
           <Route path="/returns" element={<Navigate to="/refund" replace />} />

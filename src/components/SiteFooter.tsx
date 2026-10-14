@@ -51,7 +51,7 @@ export function SiteFooter() {
         <span>© {year} Stuck in Stuckholm — all rights reserved</span>
         <div className="flex flex-col items-center sm:items-end gap-1">
           <Link
-            to="/about"
+            to="/login"
             className="text-black/50 hover:text-black uppercase tracking-wide transition-colors"
           >
             Login
