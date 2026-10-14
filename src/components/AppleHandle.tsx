@@ -16,7 +16,7 @@ export function AppleHandle({
       style={style}
       fill="none"
       stroke="black"
-      strokeWidth={1.6}
+      strokeWidth={1}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
