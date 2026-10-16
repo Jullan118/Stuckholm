@@ -188,13 +188,17 @@ function DriftingGlobe({
   // rotationIntensity 0 stops Float's small wobble, which tilted the globe
   // around the z axis. Float still bobs the whole thing up and down.
   return (
-    <group ref={groupRef} scale={1.08}>
-      <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
-        <primitive object={blob} />
-        <group ref={ringRef}>
-          <primitive object={letters} />
-        </group>
-      </Float>
+    // Outer group: the lean (30 degrees to the right) and 10 % larger size.
+    // The inner group keeps the drag and spin.
+    <group rotation={[0, 0, -Math.PI / 6]} scale={1.19}>
+      <group ref={groupRef} scale={1.08}>
+        <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
+          <primitive object={blob} />
+          <group ref={ringRef}>
+            <primitive object={letters} />
+          </group>
+        </Float>
+      </group>
     </group>
   );
 }
@@ -424,9 +428,9 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(8, fit);
-    // Titta lite ner så att det horisontella nätet syns under globen.
-    camera.position.y = 3.2;
+    camera.position.z = Math.max(11, fit);
+    // Titta ner så att det horisontella nätet syns under globen.
+    camera.position.y = 4.2;
     camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
@@ -484,7 +488,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 3.2, 8], fov: 45 }}
+        camera={{ position: [0, 4.2, 11], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
@@ -492,11 +496,11 @@ export function StuckholmGlobe({
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
-          size={24}
-          divisions={50}
+          size={36}
+          divisions={60}
           depth={3.5}
           falloff={3}
-          position={[0, 0.4, 0]}
+          position={[0, 1.0, 0]}
           rotation={[0, 0, 0]}
           opacity={1 - scrollProgress}
         />
