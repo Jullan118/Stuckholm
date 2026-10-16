@@ -33,7 +33,7 @@ export default function GravityGrid({
   color = '#ffffff',
   opacity = 1,
   lineWidth = 2.2,
-  farBrightness = 0.12,
+  farBrightness = 0.06,
   position = [0, 0.4, 0],
   rotation = [0, 0, 0],
 }: GravityGridProps) {
@@ -51,17 +51,24 @@ export default function GravityGrid({
       const z = -half + j * step;
       return [x, heightAt(x, z), z] as [number, number, number];
     };
-    // Brightness from 0..1 based on depth: z = +half is closest to the camera
-    const shade = (z: number) => {
+    // Brightness 0..1. Lines are lit near the globe (the mass) and near the
+    // camera, and fade into the dark further away, like the reference image.
+    const shade = (x: number, z: number) => {
       const t = (z + half) / size;
-      return farBrightness + (1 - farBrightness) * Math.pow(t, 1.4);
+      const depthT = Math.pow(t, 1.4);
+      const r2 = x * x + z * z;
+      const glow = Math.exp(-r2 / (2 * (falloff * 1.3) * (falloff * 1.3)));
+      const v = 0.6 * glow + 0.4 * depthT;
+      return farBrightness + (1 - farBrightness) * Math.min(1, v);
     };
 
     const pts: [number, number, number][] = [];
     const cols: [number, number, number][] = [];
     const pushSeg = (a: [number, number, number], b: [number, number, number]) => {
       pts.push(a, b);
-      cols.push([shade(a[2]), shade(a[2]), shade(a[2])], [shade(b[2]), shade(b[2]), shade(b[2])]);
+      const sa = shade(a[0], a[2]);
+      const sb = shade(b[0], b[2]);
+      cols.push([sa, sa, sa], [sb, sb, sb]);
     };
 
     for (let i = 0; i < n; i++) {
