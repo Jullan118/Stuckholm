@@ -497,12 +497,12 @@ export function StuckholmGlobe({
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
           size={80}
-          divisions={110}
-          depth={4.2}
-          falloff={3.6}
+          divisions={80}
+          depth={5.25}
+          falloff={4.5}
           position={[0, 1.0, 0]}
           rotation={[0, 0, 0]}
-          opacity={1 - scrollProgress}
+          opacity={0.8 * (1 - scrollProgress)}
         />
       </Canvas>
     </div>

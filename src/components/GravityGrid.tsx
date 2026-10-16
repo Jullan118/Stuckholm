@@ -35,7 +35,7 @@ export default function GravityGrid({
   color = '#ffffff',
   opacity = 1,
   lineWidth = 1.5,
-  farBrightness = 0.25,
+  farBrightness = 0.15,
   clearRadius = 0,
   position = [0, 0.4, 0],
   rotation = [0, 0, 0],
