@@ -11,6 +11,13 @@ const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
 
+// Fragmentation: gap between parts, and how broken the band looks.
+const PART_GAP = 0.08; // fraction of the globe's half-size
+const BAND_HEIGHT = 0.25; // parts this close to the equator count as band
+const BAND_EVERY = 2; // every third band part is broken
+const BAND_BREAK = 0.12; // how far a broken band part is shifted sideways
+const BAND_TWIST = 0.25; // radians a broken band part is turned
+
 // Line-drawing look: white fill, anthracite grey (RAL 7016) for all details.
 const INK = "#383e42";
 const PAPER = "#ffffff";
@@ -98,6 +105,30 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
   letterMeshes.forEach((mesh) => {
     root.remove(mesh);
     letters.add(mesh);
+  });
+
+  // Fragmentation: every blob part is pushed a little away from the globe's
+  // centre, which opens the seams between parts into gaps. Parts near the
+  // band (the equator) are also shifted sideways and turned, so the band
+  // looks broken. Values are fractions of the globe's half-size.
+  const halfSize = halfDiagonal;
+  blobMeshes.forEach((mesh, index) => {
+    mesh.geometry.computeBoundingBox();
+    const local = mesh.geometry.boundingBox!.getCenter(new THREE.Vector3());
+    mesh.updateMatrix();
+    const inRoot = local.applyMatrix4(mesh.matrix);
+    const dir = inRoot.clone().sub(center);
+    if (dir.lengthSq() === 0) return;
+    dir.normalize();
+    mesh.position.addScaledVector(dir, halfSize * PART_GAP);
+
+    const nearBand = Math.abs(inRoot.y - center.y) < halfSize * BAND_HEIGHT;
+    if (nearBand && index % BAND_EVERY === 0) {
+      const tangent = new THREE.Vector3(-dir.z, 0, dir.x).normalize();
+      mesh.position.addScaledVector(tangent, halfSize * BAND_BREAK);
+      mesh.rotation.y += BAND_TWIST;
+    }
+    mesh.updateMatrix();
   });
 
   // Silhouette: a slightly larger black back-face shell behind each blob part.
