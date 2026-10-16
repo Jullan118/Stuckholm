@@ -22,7 +22,7 @@ const SCENE_SIZE = 1.782; // 35 % större än 1.32
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
-const SKY_DARK = new THREE.Color("#1c1d21"); // gråaktig, inte helsvart
+const SKY_DARK = new THREE.Color("#000000"); // helsvart
 const SKY_WHITE = new THREE.Color("#ffffff");
 // Stars are white so they stay visible on the dark background.
 const STAR = "#ffffff";
