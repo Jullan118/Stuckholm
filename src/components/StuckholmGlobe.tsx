@@ -15,7 +15,7 @@ const LETTER_SCALE = 1;
 const INK = "#383e42";
 const PAPER = "#ffffff";
 // How opaque the globe is at the top of the page (1 = solid).
-const GLOBE_START_OPACITY = 1; // helt ogenomskinlig
+const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -190,7 +190,7 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[0, 1.14, 1.9]} rotation={[0, 0, -Math.PI / 6]} scale={2.17}>
+    <group position={[0, 1.14, 1.9]} rotation={[0, 0, -Math.PI / 6]} scale={2.39}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
