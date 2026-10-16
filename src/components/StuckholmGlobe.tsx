@@ -15,7 +15,7 @@ const LETTER_SCALE = 1;
 const INK = "#383e42";
 const PAPER = "#ffffff";
 // How opaque the globe is at the top of the page (1 = solid).
-const GLOBE_START_OPACITY = 0.9; // knappt genomskinlig, nätet ses svagt genom globen
+const GLOBE_START_OPACITY = 0.55; // 55 % synlig
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -428,9 +428,9 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(11, fit);
+    camera.position.z = Math.max(14, fit);
     // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 7;
+    camera.position.y = 5;
     camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
@@ -488,7 +488,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 7, 11], fov: 45 }}
+        camera={{ position: [0, 5, 14], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
