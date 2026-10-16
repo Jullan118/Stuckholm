@@ -428,9 +428,9 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(14, fit);
+    camera.position.z = Math.max(12, fit);
     // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 8;
+    camera.position.y = 7;
     camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
@@ -488,7 +488,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 8, 14], fov: 45 }}
+        camera={{ position: [0, 7, 12], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
@@ -498,8 +498,8 @@ export function StuckholmGlobe({
         <GravityGrid
           size={80}
           divisions={80}
-          depth={5.25}
-          falloff={4.5}
+          depth={6.5}
+          falloff={5}
           position={[0.8, 1.0, 0]}
           rotation={[0, 0, 0]}
           opacity={0.8 * (1 - scrollProgress)}
