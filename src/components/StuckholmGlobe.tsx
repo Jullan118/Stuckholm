@@ -15,7 +15,7 @@ const LETTER_SCALE = 1;
 const INK = "#383e42";
 const PAPER = "#ffffff";
 // How opaque the globe is at the top of the page (1 = solid).
-const GLOBE_START_OPACITY = 0.55; // 55 % synlig
+const GLOBE_START_OPACITY = 1; // helt ogenomskinlig
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
