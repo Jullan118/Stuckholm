@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, useGLTF } from "@react-three/drei";
+import GravityGrid from "./GravityGrid";
 import * as THREE from "three";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
@@ -487,6 +488,16 @@ export function StuckholmGlobe({
         <FitCamera />
         <Starfield progress={scrollProgress} />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
+        {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
+        <GravityGrid
+          size={40}
+          divisions={70}
+          depth={3}
+          falloff={3.5}
+          position={[0, -5, 0]}
+          rotation={[-0.6, 0, 0]}
+          opacity={0.55 * (1 - scrollProgress)}
+        />
       </Canvas>
     </div>
   );
