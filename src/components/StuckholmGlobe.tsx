@@ -18,7 +18,7 @@ const PAPER = "#ffffff";
 const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // One number for the size of the globe AND the grid, so they change together.
 // 1 = the size before the last +10 % step.
-const SCENE_SIZE = 1.32; // 20 % större än 1.1
+const SCENE_SIZE = 1.584; // 20 % större än 1.32
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
