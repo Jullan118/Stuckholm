@@ -430,7 +430,7 @@ function FitCamera() {
     const fit = 4 / (halfTan * aspect);
     camera.position.z = Math.max(12, fit);
     // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 6;
+    camera.position.y = 5;
     camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
@@ -488,7 +488,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 6, 12], fov: 45 }}
+        camera={{ position: [0, 5, 12], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
@@ -502,6 +502,16 @@ export function StuckholmGlobe({
           falloff={5}
           position={[0.8, 1.0, 0]}
           rotation={[0, 0, 0]}
+          opacity={0.8 * (1 - scrollProgress)}
+        />
+        {/* Grovt yttre nät som fyller resten av skärmen (ingen grop) */}
+        <GravityGrid
+          size={400}
+          divisions={40}
+          depth={0}
+          falloff={1}
+          position={[0.8, 1.0, 0]}
+          clearHalf={50}
           opacity={0.8 * (1 - scrollProgress)}
         />
       </Canvas>

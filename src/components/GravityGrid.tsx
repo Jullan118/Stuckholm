@@ -19,6 +19,8 @@ type GravityGridProps = {
   farBrightness?: number;
   /** Leaves an open ring around the centre (world units). Gives a gap between grid and globe */
   clearRadius?: number;
+  /** Leaves out lines that lie fully inside a square of this half-width (for a coarse outer grid) */
+  clearHalf?: number;
   position?: [number, number, number];
   rotation?: [number, number, number];
 };
@@ -37,6 +39,7 @@ export default function GravityGrid({
   lineWidth = 1.5,
   farBrightness = 0.15,
   clearRadius = 0,
+  clearHalf = 0,
   position = [0, 0.4, 0],
   rotation = [0, 0, 0],
 }: GravityGridProps) {
@@ -69,8 +72,11 @@ export default function GravityGrid({
     const cols: [number, number, number][] = [];
     const inside = (p: [number, number, number]) =>
       p[0] * p[0] + p[2] * p[2] < clearRadius * clearRadius;
+    const inBox = (p: [number, number, number]) =>
+      Math.abs(p[0]) < clearHalf && Math.abs(p[2]) < clearHalf;
     const pushSeg = (a: [number, number, number], b: [number, number, number]) => {
       if (clearRadius > 0 && inside(a) && inside(b)) return;
+      if (clearHalf > 0 && inBox(a) && inBox(b)) return;
       pts.push(a, b);
       const sa = shade(a[0], a[2]);
       const sb = shade(b[0], b[2]);
@@ -85,7 +91,7 @@ export default function GravityGrid({
       }
     }
     return { points: pts, colors: cols };
-  }, [size, divisions, depth, falloff, farBrightness, clearRadius]);
+  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearHalf]);
 
   return (
     <Line
