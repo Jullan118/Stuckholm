@@ -498,7 +498,7 @@ export function StuckholmGlobe({
         <GravityGrid
           size={240}
           divisions={160}
-          depth={6.5}
+          depth={8}
           falloff={5}
           position={[0, 1.0, 4.5]}
           rotation={[0, 0, 0]}
