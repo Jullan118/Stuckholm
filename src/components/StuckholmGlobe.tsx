@@ -500,7 +500,7 @@ export function StuckholmGlobe({
           divisions={160}
           depth={8}
           falloff={5}
-          position={[0, 1.0, 0]}
+          position={[0, 1.0, -1.5]}
           rotation={[0, 0, 0]}
           opacity={0.8 * (1 - scrollProgress)}
         />
