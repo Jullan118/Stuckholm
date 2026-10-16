@@ -190,7 +190,7 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[0.8, 0.9, 0]} rotation={[0, 0, -Math.PI / 6]} scale={1.72}>
+    <group position={[0, 0.9, 0]} rotation={[0, 0, -Math.PI / 6]} scale={1.72}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
@@ -428,7 +428,7 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(12, fit);
+    camera.position.z = Math.max(15, fit);
     // Titta ner så att det horisontella nätet syns under globen.
     camera.position.y = 5;
     camera.lookAt(0, -0.6, 0);
@@ -488,7 +488,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 5, 12], fov: 45 }}
+        camera={{ position: [0, 5, 15], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
@@ -500,7 +500,7 @@ export function StuckholmGlobe({
           divisions={100}
           depth={6.5}
           falloff={5}
-          position={[0.8, 1.0, 0]}
+          position={[0, 1.0, 0]}
           rotation={[0, 0, 0]}
           opacity={0.8 * (1 - scrollProgress)}
         />
@@ -510,7 +510,7 @@ export function StuckholmGlobe({
           divisions={40}
           depth={0}
           falloff={1}
-          position={[0.8, 1.0, 0]}
+          position={[0, 1.0, 0]}
           clearHalf={50}
           opacity={0.8 * (1 - scrollProgress)}
         />
