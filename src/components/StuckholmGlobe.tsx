@@ -16,6 +16,9 @@ const INK = "#383e42";
 const PAPER = "#ffffff";
 // How opaque the globe is at the top of the page (1 = solid).
 const GLOBE_START_OPACITY = 0.95; // 5 % transparent
+// One number for the size of the globe AND the grid, so they change together.
+// 1 = the size before the last +10 % step.
+const SCENE_SIZE = 1.1;
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -190,7 +193,7 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[0, 1.14, 1.9]} rotation={[0, 0, -Math.PI / 6]} scale={2.39}>
+    <group position={[0, 1.14, 1.9]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
@@ -496,11 +499,11 @@ export function StuckholmGlobe({
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
-          size={303.6}
+          size={303.6 * SCENE_SIZE}
           divisions={176}
-          depth={10.12}
-          falloff={6.33}
-          position={[0, 1.27, -1.9]}
+          depth={10.12 * SCENE_SIZE}
+          falloff={6.33 * SCENE_SIZE}
+          position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
           rotation={[0, 0, 0]}
           opacity={0.8 * (1 - scrollProgress)}
         />
