@@ -489,7 +489,6 @@ export function StuckholmGlobe({
       >
         <SceneBackground progress={scrollProgress} />
         <FitCamera />
-        <Starfield progress={scrollProgress} />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
@@ -499,7 +498,7 @@ export function StuckholmGlobe({
           falloff={3}
           position={[0, 0.4, 0]}
           rotation={[0, 0, 0]}
-          opacity={0.9 * (1 - scrollProgress)}
+          opacity={1 - scrollProgress}
         />
       </Canvas>
     </div>
