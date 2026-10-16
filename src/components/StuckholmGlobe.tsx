@@ -190,7 +190,7 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[0, 0.9, 4.5]} rotation={[0, 0, -Math.PI / 6]} scale={1.72}>
+    <group position={[0, 0.9, 1.5]} rotation={[0, 0, -Math.PI / 6]} scale={1.72}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
@@ -500,7 +500,7 @@ export function StuckholmGlobe({
           divisions={160}
           depth={8}
           falloff={5}
-          position={[0, 1.0, 4.5]}
+          position={[0, 1.0, 1.5]}
           rotation={[0, 0, 0]}
           opacity={0.8 * (1 - scrollProgress)}
         />
