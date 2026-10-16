@@ -7,7 +7,7 @@ import * as THREE from "three";
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
 export const BLOB_MODEL_URL = "/models/globe_for_home_fixed.glb";
-const BLOB_RADIUS = 4.0;
+const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
 
@@ -425,6 +425,9 @@ function FitCamera() {
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
     camera.position.z = Math.max(8, fit);
+    // Titta lite ner så att det horisontella nätet syns under globen.
+    camera.position.y = 3.2;
+    camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
   return null;
@@ -481,7 +484,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 0, 8], fov: 45 }}
+        camera={{ position: [0, 3.2, 8], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
@@ -493,9 +496,9 @@ export function StuckholmGlobe({
           size={20}
           divisions={40}
           depth={3}
-          falloff={3.5}
-          position={[0, -3, 0]}
-          rotation={[-1.1, 0, 0]}
+          falloff={2.4}
+          position={[0, -1.2, 0]}
+          rotation={[0, 0, 0]}
           opacity={0.9 * (1 - scrollProgress)}
         />
       </Canvas>
