@@ -433,7 +433,7 @@ function FitCamera() {
     const fit = 4 / (halfTan * aspect);
     camera.position.z = Math.max(28.5, fit);
     // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 8;
+    camera.position.y = 16;
     camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
@@ -491,7 +491,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 8, 28.5], fov: 45 }}
+        camera={{ position: [0, 16, 28.5], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
