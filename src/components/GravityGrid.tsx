@@ -17,6 +17,8 @@ type GravityGridProps = {
   lineWidth?: number;
   /** How dim the far side of the grid is (0 = invisible, 1 = as bright as near) */
   farBrightness?: number;
+  /** Leaves an open ring around the centre (world units). Gives a gap between grid and globe */
+  clearRadius?: number;
   position?: [number, number, number];
   rotation?: [number, number, number];
 };
@@ -34,6 +36,7 @@ export default function GravityGrid({
   opacity = 1,
   lineWidth = 2.2,
   farBrightness = 0.06,
+  clearRadius = 0,
   position = [0, 0.4, 0],
   rotation = [0, 0, 0],
 }: GravityGridProps) {
@@ -64,7 +67,10 @@ export default function GravityGrid({
 
     const pts: [number, number, number][] = [];
     const cols: [number, number, number][] = [];
+    const inside = (p: [number, number, number]) =>
+      p[0] * p[0] + p[2] * p[2] < clearRadius * clearRadius;
     const pushSeg = (a: [number, number, number], b: [number, number, number]) => {
+      if (clearRadius > 0 && inside(a) && inside(b)) return;
       pts.push(a, b);
       const sa = shade(a[0], a[2]);
       const sb = shade(b[0], b[2]);
@@ -79,7 +85,7 @@ export default function GravityGrid({
       }
     }
     return { points: pts, colors: cols };
-  }, [size, divisions, depth, falloff, farBrightness]);
+  }, [size, divisions, depth, falloff, farBrightness, clearRadius]);
 
   return (
     <Line
