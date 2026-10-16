@@ -496,22 +496,12 @@ export function StuckholmGlobe({
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
-          size={100}
-          divisions={100}
+          size={240}
+          divisions={160}
           depth={6.5}
           falloff={5}
           position={[0, 1.0, 0]}
           rotation={[0, 0, 0]}
-          opacity={0.8 * (1 - scrollProgress)}
-        />
-        {/* Grovt yttre nät som fyller resten av skärmen (ingen grop) */}
-        <GravityGrid
-          size={400}
-          divisions={40}
-          depth={0}
-          falloff={1}
-          position={[0, 1.0, 0]}
-          clearHalf={50}
           opacity={0.8 * (1 - scrollProgress)}
         />
       </Canvas>
