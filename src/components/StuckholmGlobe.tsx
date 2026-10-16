@@ -19,7 +19,7 @@ const GLOBE_START_OPACITY = 0.9; // knappt genomskinlig, nätet ses svagt genom 
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
-const SKY_DARK = new THREE.Color("#04050c");
+const SKY_DARK = new THREE.Color("#1c1d21"); // gråaktig, inte helsvart
 const SKY_WHITE = new THREE.Color("#ffffff");
 // Stars are white so they stay visible on the dark background.
 const STAR = "#ffffff";
