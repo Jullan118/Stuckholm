@@ -553,7 +553,7 @@ export function StuckholmGlobe({
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
           size={303.6 * SCENE_SIZE}
-          divisions={176}
+          divisions={88}
           depth={10.12 * SCENE_SIZE * DIP_DEPTH_SCALE}
           falloff={11.4 * SCENE_SIZE * DIP_SCALE}
           position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
