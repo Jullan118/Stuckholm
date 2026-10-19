@@ -6,7 +6,7 @@ import { formatMoney } from "@/lib/commerce";
 // Slide-in cart panel from the right. Opens from the bag icon (CartCorner)
 // and automatically after "Add to cart".
 export function CartDrawer() {
-  const { lines, isOpen, closeCart, updateQuantity, removeLine, subtotal, checkout } =
+  const { lines, isOpen, error, closeCart, updateQuantity, removeLine, subtotal, checkout } =
     useCart();
 
   // Close on Escape, and stop the page behind from scrolling while open.
@@ -146,6 +146,7 @@ export function CartDrawer() {
                 <span>{subtotal}</span>
               </div>
             )}
+            {error && <p className="text-sm text-[#d51f26]">{error}</p>}
             <p className="text-xs text-black/50">Shipping calculated at checkout.</p>
             <button
               type="button"

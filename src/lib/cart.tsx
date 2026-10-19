@@ -1,27 +1,23 @@
 // The shopping cart, shared by the whole site through React context.
 //
-// Right now the cart lives in the visitor's browser (localStorage) and
-// "Checkout" sends the order by email. When Shopify is connected, the same
-// functions will call Shopify's Cart API instead (cartCreate / cartLinesAdd /
-// cartLinesUpdate / cartLinesRemove), and checkout() will redirect to the
-// cart's checkoutUrl. Components only use useCart(), so they stay unchanged.
+// The cart lives in Shopify (Storefront API). Its id is remembered in the
+// visitor's browser, so the cart survives a page reload. Checkout sends the
+// visitor to the cart's checkoutUrl, which is Shopify's checkout.
 import * as React from "react";
+import { formatMoney, type CommerceProduct, type Money, type ProductVariant } from "@/lib/commerce";
 import {
-  DEFAULT_VARIANT_TITLE,
-  formatMoney,
-  formatTotal,
-  type CommerceProduct,
-  type Money,
-  type ProductVariant,
-} from "@/lib/commerce";
+  addCartLines,
+  createCart,
+  fetchCart,
+  updateCartLines,
+  type ShopifyCart,
+} from "@/lib/shopify";
 
-// Where orders go until Shopify checkout is live.
-export const ORDER_EMAIL = "hello.stuckholm@gmail.com";
-
-const STORAGE_KEY = "stuckholm-cart-v1";
+const CART_ID_KEY = "stuckholm-cart-id";
 
 export type CartLine = {
-  merchandiseId: string; // the variant id (Shopify: cartLinesAdd merchandiseId)
+  lineId: string; // Shopify's line id, needed to change quantity
+  merchandiseId: string; // the variant id
   quantity: number;
   productTitle: string;
   variantTitle: string; // "M", or "" when the product has no options
@@ -36,6 +32,7 @@ type CartContextValue = {
   totalQuantity: number;
   subtotal: string;
   isOpen: boolean;
+  error: string | null;
   openCart: () => void;
   closeCart: () => void;
   addLine: (product: CommerceProduct, variant: ProductVariant, quantity?: number) => void;
@@ -47,113 +44,136 @@ type CartContextValue = {
 
 const CartContext = React.createContext<CartContextValue | null>(null);
 
-function loadLines(): CartLine[] {
+function readStoredCartId(): string | null {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    return window.localStorage.getItem(CART_ID_KEY);
   } catch {
-    return [];
+    return null;
   }
 }
 
-function saveLines(lines: CartLine[]) {
+function storeCartId(id: string | null) {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
+    if (id) window.localStorage.setItem(CART_ID_KEY, id);
+    else window.localStorage.removeItem(CART_ID_KEY);
   } catch {
-    // Private mode / blocked storage: the cart still works for this visit.
+    // Blocked storage: the cart still works until the page is reloaded.
   }
 }
 
-function clampQuantity(quantity: number, max: number | null) {
-  const q = Math.max(0, Math.floor(quantity));
-  return max === null ? q : Math.min(q, max);
+function linesFrom(cart: ShopifyCart | null): CartLine[] {
+  if (!cart) return [];
+  return cart.lines.nodes.map((line) => {
+    const m = line.merchandise;
+    const isTrash = m.product.tags.some((t) => t.toLowerCase() === "trash");
+    const price = m.price ? { amount: Number(m.price.amount), currencyCode: m.price.currencyCode } : null;
+    return {
+      lineId: line.id,
+      merchandiseId: m.id,
+      quantity: line.quantity,
+      productTitle: m.product.title,
+      variantTitle: m.title === "Default Title" ? "" : m.title,
+      href: `${isTrash ? "/trash" : "/in-stock"}/${m.product.handle}`,
+      image: m.image?.url ?? "",
+      price,
+      maxQuantity: null,
+    };
+  });
 }
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [lines, setLines] = React.useState<CartLine[]>(loadLines);
+  const [cart, setCart] = React.useState<ShopifyCart | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  // Mirrors the cart id so that quick successive clicks don't use a stale one.
+  const cartIdRef = React.useRef<string | null>(null);
 
-  React.useEffect(() => saveLines(lines), [lines]);
+  const applyCart = React.useCallback((next: ShopifyCart | null) => {
+    cartIdRef.current = next?.id ?? null;
+    storeCartId(next?.id ?? null);
+    setCart(next);
+  }, []);
 
-  const addLine = React.useCallback(
-    (product: CommerceProduct, variant: ProductVariant, quantity = 1) => {
-      setLines((prev) => {
-        const existing = prev.find((l) => l.merchandiseId === variant.id);
-        if (existing) {
-          return prev.map((l) =>
-            l.merchandiseId === variant.id
-              ? { ...l, quantity: clampQuantity(l.quantity + quantity, l.maxQuantity) }
-              : l
-          );
-        }
-        return [
-          ...prev,
-          {
-            merchandiseId: variant.id,
-            quantity: clampQuantity(quantity, variant.quantityAvailable),
-            productTitle: product.title,
-            variantTitle: variant.title === DEFAULT_VARIANT_TITLE ? "" : variant.title,
-            href: product.href,
-            image: product.image,
-            price: variant.price,
-            maxQuantity: variant.quantityAvailable,
-          },
-        ];
-      });
-      setIsOpen(true);
+  // Restore the saved cart on load. An old or expired cart id is dropped.
+  React.useEffect(() => {
+    const saved = readStoredCartId();
+    if (!saved) return;
+    cartIdRef.current = saved;
+    fetchCart(saved)
+      .then((c) => applyCart(c))
+      .catch(() => applyCart(null));
+  }, [applyCart]);
+
+  const run = React.useCallback(
+    async (action: (id: string | null) => Promise<ShopifyCart>) => {
+      try {
+        setError(null);
+        const next = await action(cartIdRef.current);
+        applyCart(next);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong with the cart.");
+      }
     },
-    []
+    [applyCart]
   );
 
-  const updateQuantity = React.useCallback((merchandiseId: string, quantity: number) => {
-    setLines((prev) =>
-      prev
-        .map((l) =>
-          l.merchandiseId === merchandiseId
-            ? { ...l, quantity: clampQuantity(quantity, l.maxQuantity) }
-            : l
-        )
-        .filter((l) => l.quantity > 0)
-    );
-  }, []);
+  const addLine = React.useCallback(
+    (_product: CommerceProduct, variant: ProductVariant, quantity = 1) => {
+      setIsOpen(true);
+      void run(async (id) => {
+        const lines = [{ merchandiseId: variant.id, quantity }];
+        if (!id) return createCart(lines);
+        try {
+          return await addCartLines(id, lines);
+        } catch {
+          // The saved cart may have expired on Shopify's side: start a new one.
+          return createCart(lines);
+        }
+      });
+    },
+    [run]
+  );
 
-  const removeLine = React.useCallback((merchandiseId: string) => {
-    setLines((prev) => prev.filter((l) => l.merchandiseId !== merchandiseId));
-  }, []);
+  const updateQuantity = React.useCallback(
+    (merchandiseId: string, quantity: number) => {
+      const line = linesFrom(cart).find((l) => l.merchandiseId === merchandiseId);
+      if (!line || !cartIdRef.current) return;
+      const next = Math.max(0, Math.floor(quantity));
+      void run((id) => updateCartLines(id!, [{ id: line.lineId, quantity: next }]));
+    },
+    [cart, run]
+  );
+
+  const removeLine = React.useCallback(
+    (merchandiseId: string) => updateQuantity(merchandiseId, 0),
+    [updateQuantity]
+  );
+
+  const lines = React.useMemo(() => linesFrom(cart), [cart]);
 
   const quantityInCart = React.useCallback(
-    (merchandiseId: string) =>
-      lines.find((l) => l.merchandiseId === merchandiseId)?.quantity ?? 0,
+    (merchandiseId: string) => lines.find((l) => l.merchandiseId === merchandiseId)?.quantity ?? 0,
     [lines]
   );
 
-  const subtotal = formatTotal(lines);
+  const subtotal = cart?.cost.subtotalAmount
+    ? formatMoney({
+        amount: Number(cart.cost.subtotalAmount.amount),
+        currencyCode: cart.cost.subtotalAmount.currencyCode,
+      })
+    : "";
 
-  // Temporary checkout: opens an email with the whole order filled in.
   const checkout = React.useCallback(() => {
-    if (lines.length === 0) return;
-    const body = [
-      "Hi Stuckholm, I'd like to order:",
-      "",
-      ...lines.map((l) => {
-        const variant = l.variantTitle ? ` (size ${l.variantTitle})` : "";
-        const price = l.price ? ` — ${formatMoney(l.price)}` : "";
-        return `${l.quantity} × ${l.productTitle}${variant}${price}`;
-      }),
-      "",
-      `Total: ${subtotal}`,
-    ].join("\n");
-    window.location.href = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent(
-      "Order from stuckholm.se"
-    )}&body=${encodeURIComponent(body)}`;
-  }, [lines, subtotal]);
+    if (!cart?.checkoutUrl) return;
+    window.location.href = cart.checkoutUrl;
+  }, [cart]);
 
   const value: CartContextValue = {
     lines,
-    totalQuantity: lines.reduce((sum, l) => sum + l.quantity, 0),
+    totalQuantity: cart?.totalQuantity ?? 0,
     subtotal,
     isOpen,
+    error,
     openCart: () => setIsOpen(true),
     closeCart: () => setIsOpen(false),
     addLine,

@@ -10,7 +10,6 @@ import { CartProvider } from "@/lib/cart";
 import { Home } from "@/pages/Home";
 import { InStock } from "@/pages/InStock";
 import { InStockProduct } from "@/pages/InStockProduct";
-import { InStockUpload } from "@/pages/InStockUpload";
 import { About } from "@/pages/About";
 import { Login } from "@/pages/Login";
 import { Contact } from "@/pages/Contact";
@@ -21,7 +20,6 @@ import { Shipping } from "@/pages/Shipping";
 import { Refund } from "@/pages/Refund";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
-import { TrashUpload } from "@/pages/TrashUpload";
 
 function App() {
   return (
@@ -37,12 +35,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/in-stock" element={<InStock />} />
-          <Route path="/in-stock/upload" element={<InStockUpload />} />
-          <Route path="/in-stock/edit/:slug" element={<InStockUpload />} />
           <Route path="/in-stock/:slug" element={<InStockProduct />} />
           <Route path="/trash" element={<Trash />} />
-          <Route path="/trash/upload" element={<TrashUpload />} />
-          <Route path="/trash/edit/:slug" element={<TrashUpload />} />
           <Route path="/trash/:slug" element={<TrashProduct />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
