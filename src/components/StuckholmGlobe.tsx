@@ -28,7 +28,7 @@ const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 const SCENE_SIZE = 1.782; // 35 % större än 1.32
 // Open ring between the grid and the globe, in world units.
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
-const GRID_GAP = 2;
+const GRID_GAP = 1;
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -548,6 +548,7 @@ export function StuckholmGlobe({
           rotation={[0, 0, 0]}
           clearRadius={GLOBE_WORLD_RADIUS + GRID_GAP}
           clearCenter={[0, 3.8 * SCENE_SIZE]}
+          clearFade={8}
           opacity={0.45 * (1 - scrollProgress)}
         />
       </Canvas>

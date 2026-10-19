@@ -21,6 +21,8 @@ type GravityGridProps = {
   clearRadius?: number;
   /** Centre of the open ring, in the grid's own x/z (default: the grid centre) */
   clearCenter?: [number, number];
+  /** Width (world units) of a soft fade just outside the open ring. 0 = hard edge */
+  clearFade?: number;
   /** Leaves out lines that lie fully inside a square of this half-width (for a coarse outer grid) */
   clearHalf?: number;
   position?: [number, number, number];
@@ -42,6 +44,7 @@ export default function GravityGrid({
   farBrightness = 0.15,
   clearRadius = 0,
   clearCenter = [0, 0],
+  clearFade = 0,
   clearHalf = 0,
   position = [0, 0.4, 0],
   rotation = [0, 0, 0],
@@ -77,12 +80,19 @@ export default function GravityGrid({
       (p[0] - clearCenter[0]) ** 2 + (p[2] - clearCenter[1]) ** 2 < clearRadius * clearRadius;
     const inBox = (p: [number, number, number]) =>
       Math.abs(p[0]) < clearHalf && Math.abs(p[2]) < clearHalf;
+    // 0 right at the open ring, rising smoothly to 1 at clearFade beyond it.
+    const fadeAt = (p: [number, number, number]) => {
+      if (clearRadius <= 0 || clearFade <= 0) return 1;
+      const d = Math.hypot(p[0] - clearCenter[0], p[2] - clearCenter[1]);
+      const t = Math.min(1, Math.max(0, (d - clearRadius) / clearFade));
+      return t * t * (3 - 2 * t);
+    };
     const pushSeg = (a: [number, number, number], b: [number, number, number]) => {
       if (clearRadius > 0 && inside(a) && inside(b)) return;
       if (clearHalf > 0 && inBox(a) && inBox(b)) return;
       pts.push(a, b);
-      const sa = shade(a[0], a[2]);
-      const sb = shade(b[0], b[2]);
+      const sa = shade(a[0], a[2]) * fadeAt(a);
+      const sb = shade(b[0], b[2]) * fadeAt(b);
       cols.push([sa, sa, sa], [sb, sb, sb]);
     };
 
@@ -94,7 +104,7 @@ export default function GravityGrid({
       }
     }
     return { points: pts, colors: cols };
-  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearHalf]);
+  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearCenter, clearFade, clearHalf]);
 
   return (
     <Line
