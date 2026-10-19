@@ -28,6 +28,7 @@ const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 const SCENE_SIZE = 1.782; // 35 % större än 1.32
 // Open ring between the grid and the globe, in world units.
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
+const WELL_CENTER: [number, number] = [0, 3.8 * SCENE_SIZE]; // under the globe, in grid space
 const GRID_GAP = -1; // negative: the grid stops just inside the globe's edge
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
@@ -546,8 +547,9 @@ export function StuckholmGlobe({
           falloff={6.33 * SCENE_SIZE}
           position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
           rotation={[0, 0, 0]}
-          clearRadius={GLOBE_WORLD_RADIUS + GRID_GAP}
-          clearCenter={[0, 3.8 * SCENE_SIZE]}
+          clearRadius={0}
+          clearCenter={WELL_CENTER}
+          wellCenter={WELL_CENTER}
           clearFade={0}
           opacity={0.45 * (1 - scrollProgress)}
         />

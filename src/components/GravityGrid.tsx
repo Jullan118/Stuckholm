@@ -21,6 +21,8 @@ type GravityGridProps = {
   clearRadius?: number;
   /** Centre of the open ring, in the grid's own x/z (default: the grid centre) */
   clearCenter?: [number, number];
+  /** Centre of the well (the dip), in the grid's own x/z. Default: the grid centre */
+  wellCenter?: [number, number];
   /** Width (world units) of a soft fade just outside the open ring. 0 = hard edge */
   clearFade?: number;
   /** Leaves out lines that lie fully inside a square of this half-width (for a coarse outer grid) */
@@ -44,6 +46,7 @@ export default function GravityGrid({
   farBrightness = 0.15,
   clearRadius = 0,
   clearCenter = [0, 0],
+  wellCenter = [0, 0],
   clearFade = 0,
   clearHalf = 0,
   position = [0, 0.4, 0],
@@ -55,7 +58,9 @@ export default function GravityGrid({
     const n = divisions + 1;
 
     const heightAt = (x: number, z: number) => {
-      const r2 = x * x + z * z;
+      const dx = x - wellCenter[0];
+      const dz = z - wellCenter[1];
+      const r2 = dx * dx + dz * dz;
       return -depth / Math.pow(1 + r2 / (falloff * falloff), 1.5);
     };
     const vertex = (i: number, j: number) => {
@@ -68,9 +73,9 @@ export default function GravityGrid({
     const shade = (x: number, z: number) => {
       const t = (z + half) / size;
       const depthT = Math.pow(t, 1.4);
-      const r2 = x * x + z * z;
-      const glow = Math.exp(-r2 / (2 * (falloff * 1.3) * (falloff * 1.3)));
-      const v = 0.6 * glow + 0.4 * depthT;
+      // How far the grid has sunk here: 0 at the rim, 1 at the bottom of the well.
+      const sink = Math.min(1, Math.max(0, -heightAt(x, z) / depth));
+      const v = 0.85 * sink + 0.25 * depthT;
       return farBrightness + (1 - farBrightness) * Math.min(1, v);
     };
 
@@ -104,7 +109,7 @@ export default function GravityGrid({
       }
     }
     return { points: pts, colors: cols };
-  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearCenter, clearFade, clearHalf]);
+  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearCenter, clearFade, clearHalf, wellCenter]);
 
   return (
     <Line
