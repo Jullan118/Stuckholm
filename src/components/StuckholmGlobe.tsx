@@ -27,8 +27,9 @@ const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // 1 = the size before the last +10 % step.
 // Extra size for the globe and its letter ring only (2.86875 = 1.5x the previous 1.9125).
 const GLOBE_SIZE = 2.86875;
-// The dip under the globe, 1.5x bigger than before (depth and width).
+// The dip under the globe: width 1.5x the previous one, depth 2.4x (deeper, so it reads clearly).
 const DIP_SCALE = 1.5;
+const DIP_DEPTH_SCALE = 2.4;
 const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all scale with it
 // Open ring between the grid and the globe, in world units.
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
@@ -553,7 +554,7 @@ export function StuckholmGlobe({
         <GravityGrid
           size={303.6 * SCENE_SIZE}
           divisions={176}
-          depth={10.12 * SCENE_SIZE * DIP_SCALE}
+          depth={10.12 * SCENE_SIZE * DIP_DEPTH_SCALE}
           falloff={11.4 * SCENE_SIZE * DIP_SCALE}
           position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
           rotation={[0, 0, 0]}
