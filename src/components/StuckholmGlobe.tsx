@@ -25,7 +25,22 @@ const PAPER = "#ffffff";
 const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // One number for the size of the globe AND the grid, so they change together.
 // 1 = the size before the last +10 % step.
-const SCENE_SIZE = 1.782; // 35 % större än 1.32
+// Extra size for the globe and its letter ring only (2.86875 = 1.5x the previous 1.9125).
+const GLOBE_SIZE = 2.86875;
+// The dip under the globe: wider (2.25x the previous width) and shallower (1.6x the previous depth).
+const DIP_SCALE = 2.25;
+const DIP_DEPTH_SCALE = 1.6;
+const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all scale with it
+// Open ring between the grid and the globe, in world units.
+const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
+const WELL_CENTER: [number, number] = [0, 3.8 * SCENE_SIZE]; // under the globe, in grid space
+const GRID_GAP = -1; // negative: the grid stops just inside the globe's edge
+
+// Camera: low and level, with the horizon visible behind the globe (the version the user preferred).
+const CAM_X = 0;
+const CAM_Y = 26.4; // 10 % higher than before (24 -> 26.4)
+const CAM_Z = 189; // 10 % further back than before (172 -> 189)
+const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -152,10 +167,10 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
 
 type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
-// Drag only turns the globe sideways, around the world vertical (Y) axis. It
-// stays upright and never tips over, no matter how you drag.
-const YAW_AXIS = new THREE.Vector3(0, 1, 0);
-const dragQuat = new THREE.Quaternion();
+// Sideways drag spins the globe around its vertical axis (no limit). Vertical
+// drag tilts it, but never past this angle, so it can't end up upside down.
+const PITCH_LIMIT = 0.9; // radians, about 50 degrees
+const DRAG_SPEED = 0.0032; // radians per pixel of mouse travel
 
 // The globe and its letter ring share one drag group, so the ring turns with
 // the globe. Its own orbit spin is layered on top.
@@ -173,6 +188,8 @@ function DriftingGlobe({
   const groupRef = React.useRef<THREE.Group>(null);
   const ringRef = React.useRef<THREE.Group>(null);
   const progressRef = React.useRef(0);
+  const yawRef = React.useRef(0);
+  const pitchRef = React.useRef(0);
   const gltf = useGLTF(BLOB_MODEL_URL);
   const { blob, letters } = React.useMemo(
     () => createBlobFromModel(gltf.scene),
@@ -189,16 +206,21 @@ function DriftingGlobe({
 
     const drag = dragRef.current;
     if (drag.dragging) {
-      // About one radian per ~320px of sideways mouse travel.
-      dragQuat.setFromAxisAngle(YAW_AXIS, -drag.deltaX * 0.0032);
-      group.quaternion.premultiply(dragQuat);
+      yawRef.current += drag.deltaX * DRAG_SPEED;
+      pitchRef.current = THREE.MathUtils.clamp(
+        pitchRef.current + drag.deltaY * DRAG_SPEED,
+        -PITCH_LIMIT,
+        PITCH_LIMIT
+      );
       drag.deltaX = 0;
       drag.deltaY = 0;
     } else {
       // Idle spin around the globe's own (possibly tilted) vertical axis.
       const spinSpeed = 0.07 + progressRef.current * 0.18;
-      group.rotateY(-delta * spinSpeed);
+      yawRef.current -= delta * spinSpeed;
     }
+    // Tilt first, then spin around the vertical axis, so the globe stays upright.
+    group.rotation.set(pitchRef.current, yawRef.current, 0, "YXZ");
 
     // The letter ring has no spin of its own: it turns with the globe, in the
     // same direction and speed, and follows drag too.
@@ -224,7 +246,7 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[0, 1.14, 1.9]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE}>
+    <group position={[6.5, 14, 3.8]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE * GLOBE_SIZE}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
@@ -462,10 +484,9 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(28.5, fit);
-    // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 16;
-    camera.lookAt(0, -0.6, 0);
+    camera.position.set(CAM_X, CAM_Y, Math.max(CAM_Z, fit));
+    // Titta ner så att nätet fyller hela bilden ända ut till kanten.
+    camera.lookAt(CAM_TARGET[0], CAM_TARGET[1], CAM_TARGET[2]);
   }, [size, camera]);
 
   return null;
@@ -522,7 +543,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 16, 28.5], fov: 45 }}
+        camera={{ position: [CAM_X, CAM_Y, CAM_Z], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
@@ -531,12 +552,16 @@ export function StuckholmGlobe({
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
           size={303.6 * SCENE_SIZE}
-          divisions={176}
-          depth={10.12 * SCENE_SIZE}
-          falloff={6.33 * SCENE_SIZE}
+          divisions={88}
+          depth={10.12 * SCENE_SIZE * DIP_DEPTH_SCALE}
+          falloff={11.4 * SCENE_SIZE * DIP_SCALE}
           position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
           rotation={[0, 0, 0]}
-          opacity={0.8 * (1 - scrollProgress)}
+          clearRadius={0}
+          clearCenter={WELL_CENTER}
+          wellCenter={WELL_CENTER}
+          clearFade={0}
+          opacity={0.45 * (1 - scrollProgress)}
         />
       </Canvas>
     </div>

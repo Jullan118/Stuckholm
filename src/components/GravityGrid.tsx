@@ -19,6 +19,12 @@ type GravityGridProps = {
   farBrightness?: number;
   /** Leaves an open ring around the centre (world units). Gives a gap between grid and globe */
   clearRadius?: number;
+  /** Centre of the open ring, in the grid's own x/z (default: the grid centre) */
+  clearCenter?: [number, number];
+  /** Centre of the well (the dip), in the grid's own x/z. Default: the grid centre */
+  wellCenter?: [number, number];
+  /** Width (world units) of a soft fade just outside the open ring. 0 = hard edge */
+  clearFade?: number;
   /** Leaves out lines that lie fully inside a square of this half-width (for a coarse outer grid) */
   clearHalf?: number;
   position?: [number, number, number];
@@ -39,6 +45,9 @@ export default function GravityGrid({
   lineWidth = 1.5,
   farBrightness = 0.15,
   clearRadius = 0,
+  clearCenter = [0, 0],
+  wellCenter = [0, 0],
+  clearFade = 0,
   clearHalf = 0,
   position = [0, 0.4, 0],
   rotation = [0, 0, 0],
@@ -49,7 +58,9 @@ export default function GravityGrid({
     const n = divisions + 1;
 
     const heightAt = (x: number, z: number) => {
-      const r2 = x * x + z * z;
+      const dx = x - wellCenter[0];
+      const dz = z - wellCenter[1];
+      const r2 = dx * dx + dz * dz;
       return -depth / Math.pow(1 + r2 / (falloff * falloff), 1.5);
     };
     const vertex = (i: number, j: number) => {
@@ -62,24 +73,31 @@ export default function GravityGrid({
     const shade = (x: number, z: number) => {
       const t = (z + half) / size;
       const depthT = Math.pow(t, 1.4);
-      const r2 = x * x + z * z;
-      const glow = Math.exp(-r2 / (2 * (falloff * 1.3) * (falloff * 1.3)));
-      const v = 0.6 * glow + 0.4 * depthT;
+      // How far the grid has sunk here: 0 at the rim, 1 at the bottom of the well.
+      const sink = Math.min(1, Math.max(0, -heightAt(x, z) / depth));
+      const v = 0.85 * sink + 0.25 * depthT;
       return farBrightness + (1 - farBrightness) * Math.min(1, v);
     };
 
     const pts: [number, number, number][] = [];
     const cols: [number, number, number][] = [];
     const inside = (p: [number, number, number]) =>
-      p[0] * p[0] + p[2] * p[2] < clearRadius * clearRadius;
+      (p[0] - clearCenter[0]) ** 2 + (p[2] - clearCenter[1]) ** 2 < clearRadius * clearRadius;
     const inBox = (p: [number, number, number]) =>
       Math.abs(p[0]) < clearHalf && Math.abs(p[2]) < clearHalf;
+    // 0 right at the open ring, rising smoothly to 1 at clearFade beyond it.
+    const fadeAt = (p: [number, number, number]) => {
+      if (clearRadius <= 0 || clearFade <= 0) return 1;
+      const d = Math.hypot(p[0] - clearCenter[0], p[2] - clearCenter[1]);
+      const t = Math.min(1, Math.max(0, (d - clearRadius) / clearFade));
+      return t * t * (3 - 2 * t);
+    };
     const pushSeg = (a: [number, number, number], b: [number, number, number]) => {
       if (clearRadius > 0 && inside(a) && inside(b)) return;
       if (clearHalf > 0 && inBox(a) && inBox(b)) return;
       pts.push(a, b);
-      const sa = shade(a[0], a[2]);
-      const sb = shade(b[0], b[2]);
+      const sa = shade(a[0], a[2]) * fadeAt(a);
+      const sb = shade(b[0], b[2]) * fadeAt(b);
       cols.push([sa, sa, sa], [sb, sb, sb]);
     };
 
@@ -91,7 +109,7 @@ export default function GravityGrid({
       }
     }
     return { points: pts, colors: cols };
-  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearHalf]);
+  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearCenter, clearFade, clearHalf, wellCenter]);
 
   return (
     <Line
