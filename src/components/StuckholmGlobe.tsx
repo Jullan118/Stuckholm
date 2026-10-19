@@ -12,11 +12,11 @@ const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 const LETTER_SCALE = 1;
 
 // Fragmentation: gap between parts, and how broken the band looks.
-const PART_GAP = 0.08; // fraction of the globe's half-size
+const PART_GAP = 0; // fraction of the globe's half-size
 const BAND_HEIGHT = 0.25; // parts this close to the equator count as band
 const BAND_EVERY = 2; // every third band part is broken
-const BAND_BREAK = 0.12; // how far a broken band part is shifted sideways
-const BAND_TWIST = 0.25; // radians a broken band part is turned
+const BAND_BREAK = 0; // how far a broken band part is shifted sideways
+const BAND_TWIST = 0; // radians a broken band part is turned
 
 // Line-drawing look: white fill, anthracite grey (RAL 7016) for all details.
 const INK = "#383e42";
