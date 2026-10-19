@@ -39,7 +39,7 @@ const GRID_GAP = -1; // negative: the grid stops just inside the globe's edge
 // Camera: low and level, with the horizon visible behind the globe (the version the user preferred).
 const CAM_X = 0;
 const CAM_Y = 24;
-const CAM_Z = 136.4;
+const CAM_Z = 157; // 15 % further back than before (136.4 -> 157)
 const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
