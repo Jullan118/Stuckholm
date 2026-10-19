@@ -27,9 +27,9 @@ const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // 1 = the size before the last +10 % step.
 // Extra size for the globe and its letter ring only (2.86875 = 1.5x the previous 1.9125).
 const GLOBE_SIZE = 2.86875;
-// The dip under the globe: width 1.5x the previous one, depth 2.4x (deeper, so it reads clearly).
-const DIP_SCALE = 1.5;
-const DIP_DEPTH_SCALE = 2.4;
+// The dip under the globe: wider (2.25x the previous width) and shallower (1.6x the previous depth).
+const DIP_SCALE = 2.25;
+const DIP_DEPTH_SCALE = 1.6;
 const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all scale with it
 // Open ring between the grid and the globe, in world units.
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
