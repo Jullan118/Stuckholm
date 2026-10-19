@@ -546,7 +546,7 @@ export function StuckholmGlobe({
           size={303.6 * SCENE_SIZE}
           divisions={176}
           depth={10.12 * SCENE_SIZE}
-          falloff={6.33 * SCENE_SIZE}
+          falloff={11.4 * SCENE_SIZE}
           position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
           rotation={[0, 0, 0]}
           clearRadius={0}
