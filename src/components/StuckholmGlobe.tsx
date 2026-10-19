@@ -25,8 +25,6 @@ const PAPER = "#ffffff";
 const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // One number for the size of the globe AND the grid, so they change together.
 // 1 = the size before the last +10 % step.
-// Extra size for the globe and its letter ring only (1.3 = 30 % larger).
-const GLOBE_SIZE = 1.3;
 const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all scale with it
 // Open ring between the grid and the globe, in world units.
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
@@ -237,7 +235,7 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[0, 14, 3.8]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE * GLOBE_SIZE}>
+    <group position={[0, 14, 3.8]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
@@ -475,9 +473,9 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(62, fit);
+    camera.position.z = Math.max(124, fit);
     // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 12;
+    camera.position.y = 24;
     camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
@@ -535,7 +533,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 12, 62], fov: 45 }}
+        camera={{ position: [0, 24, 124], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
