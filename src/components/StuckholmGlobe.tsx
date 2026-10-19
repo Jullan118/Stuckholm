@@ -155,11 +155,10 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
 
 type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
-// Drag rotates the globe freely in any direction, like a trackball: the axis
-// is perpendicular to the drag direction, so sideways drags turn it around Y
-// and vertical drags tip it around X.
-const dragAxis = new THREE.Vector3();
-const dragQuat = new THREE.Quaternion();
+// Sideways drag spins the globe around its vertical axis (no limit). Vertical
+// drag tilts it, but never past this angle, so it can't end up upside down.
+const PITCH_LIMIT = 0.9; // radians, about 50 degrees
+const DRAG_SPEED = 0.0032; // radians per pixel of mouse travel
 
 // The globe and its letter ring share one drag group, so the ring turns with
 // the globe. Its own orbit spin is layered on top.
@@ -177,6 +176,8 @@ function DriftingGlobe({
   const groupRef = React.useRef<THREE.Group>(null);
   const ringRef = React.useRef<THREE.Group>(null);
   const progressRef = React.useRef(0);
+  const yawRef = React.useRef(0);
+  const pitchRef = React.useRef(0);
   const gltf = useGLTF(BLOB_MODEL_URL);
   const { blob, letters } = React.useMemo(
     () => createBlobFromModel(gltf.scene),
@@ -193,20 +194,21 @@ function DriftingGlobe({
 
     const drag = dragRef.current;
     if (drag.dragging) {
-      // About one radian per ~320px of mouse travel.
-      const len = Math.hypot(drag.deltaX, drag.deltaY);
-      if (len > 0) {
-        dragAxis.set(drag.deltaY, drag.deltaX, 0).normalize();
-        dragQuat.setFromAxisAngle(dragAxis, -len * 0.0032);
-        group.quaternion.premultiply(dragQuat);
-      }
+      yawRef.current += drag.deltaX * DRAG_SPEED;
+      pitchRef.current = THREE.MathUtils.clamp(
+        pitchRef.current + drag.deltaY * DRAG_SPEED,
+        -PITCH_LIMIT,
+        PITCH_LIMIT
+      );
       drag.deltaX = 0;
       drag.deltaY = 0;
     } else {
       // Idle spin around the globe's own (possibly tilted) vertical axis.
       const spinSpeed = 0.07 + progressRef.current * 0.18;
-      group.rotateY(-delta * spinSpeed);
+      yawRef.current -= delta * spinSpeed;
     }
+    // Tilt first, then spin around the vertical axis, so the globe stays upright.
+    group.rotation.set(pitchRef.current, yawRef.current, 0, "YXZ");
 
     // The letter ring has no spin of its own: it turns with the globe, in the
     // same direction and speed, and follows drag too.
