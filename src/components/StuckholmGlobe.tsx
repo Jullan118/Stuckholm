@@ -32,6 +32,13 @@ const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all sca
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
 const WELL_CENTER: [number, number] = [0, 3.8 * SCENE_SIZE]; // under the globe, in grid space
 const GRID_GAP = -1; // negative: the grid stops just inside the globe's edge
+
+// Camera: higher and tilted down so the grid reaches the top edge of the screen
+// (no black sky), and shifted sideways so the globe sits like the sun in the reference.
+const CAM_X = 20;
+const CAM_Y = 55;
+const CAM_Z = 136.4;
+const CAM_TARGET: [number, number, number] = [20, -0.6, 40.7];
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -475,10 +482,9 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(136.4, fit);
-    // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 24;
-    camera.lookAt(0, -0.6, 0);
+    camera.position.set(CAM_X, CAM_Y, Math.max(CAM_Z, fit));
+    // Titta ner så att nätet fyller hela bilden ända ut till kanten.
+    camera.lookAt(CAM_TARGET[0], CAM_TARGET[1], CAM_TARGET[2]);
   }, [size, camera]);
 
   return null;
@@ -535,7 +541,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 24, 136.4], fov: 45 }}
+        camera={{ position: [CAM_X, CAM_Y, CAM_Z], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
