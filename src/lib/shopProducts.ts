@@ -49,7 +49,8 @@ export function productFromShopify(p: ShopifyProduct): ShopProduct {
     title: v.title,
     selectedOptions: v.selectedOptions,
     availableForSale: v.availableForSale,
-    quantityAvailable: v.quantityAvailable,
+    // The token has no access to stock counts, so no limit is shown.
+    quantityAvailable: null,
     price: toMoney(v.price),
   }));
   const images = p.images.nodes.map((n) => n.url);

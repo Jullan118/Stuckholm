@@ -33,7 +33,6 @@ const VARIANT_FIELDS = `
   id
   title
   availableForSale
-  quantityAvailable
   price { amount currencyCode }
   selectedOptions { name value }
 `;
@@ -57,7 +56,6 @@ export type ShopifyVariant = {
   id: string;
   title: string;
   availableForSale: boolean;
-  quantityAvailable: number | null;
   price: ShopifyMoney;
   selectedOptions: { name: string; value: string }[];
 };
