@@ -6,17 +6,17 @@ import * as THREE from "three";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
-export const BLOB_MODEL_URL = "/models/globe_for_home_fixed.glb";
+export const BLOB_MODEL_URL = "/models/globe_19oct.glb";
 const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
 
 // Fragmentation: gap between parts, and how broken the band looks.
-const PART_GAP = 0.08; // fraction of the globe's half-size
+const PART_GAP = 0; // fraction of the globe's half-size
 const BAND_HEIGHT = 0.25; // parts this close to the equator count as band
 const BAND_EVERY = 2; // every third band part is broken
-const BAND_BREAK = 0.12; // how far a broken band part is shifted sideways
-const BAND_TWIST = 0.25; // radians a broken band part is turned
+const BAND_BREAK = 0; // how far a broken band part is shifted sideways
+const BAND_TWIST = 0; // radians a broken band part is turned
 
 // Line-drawing look: white fill, anthracite grey (RAL 7016) for all details.
 const INK = "#383e42";
@@ -42,7 +42,7 @@ useGLTF.preload(BLOB_MODEL_URL);
 function isLetter(name: string) {
   // three.js replaces spaces with underscores in node names.
   const clean = name.replace(/ /g, "_");
-  return clean.startsWith("Raven") || clean.startsWith("SVG_bandtext");
+  return clean.startsWith("Raven") || clean.startsWith("SVG_bandtext") || clean.startsWith("Skissbokstav");
 }
 
 // Splits the GLB into the blob (sits at the origin) and the letter ring
