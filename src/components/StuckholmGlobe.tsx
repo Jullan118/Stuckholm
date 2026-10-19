@@ -193,7 +193,7 @@ function DriftingGlobe({
     const drag = dragRef.current;
     if (drag.dragging) {
       // About one radian per ~320px of sideways mouse travel.
-      dragQuat.setFromAxisAngle(YAW_AXIS, -drag.deltaX * 0.0065);
+      dragQuat.setFromAxisAngle(YAW_AXIS, -drag.deltaX * 0.0032);
       group.quaternion.premultiply(dragQuat);
       drag.deltaX = 0;
       drag.deltaY = 0;
