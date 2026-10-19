@@ -19,6 +19,8 @@ type GravityGridProps = {
   farBrightness?: number;
   /** Leaves an open ring around the centre (world units). Gives a gap between grid and globe */
   clearRadius?: number;
+  /** Centre of the open ring, in the grid's own x/z (default: the grid centre) */
+  clearCenter?: [number, number];
   /** Leaves out lines that lie fully inside a square of this half-width (for a coarse outer grid) */
   clearHalf?: number;
   position?: [number, number, number];
@@ -39,6 +41,7 @@ export default function GravityGrid({
   lineWidth = 1.5,
   farBrightness = 0.15,
   clearRadius = 0,
+  clearCenter = [0, 0],
   clearHalf = 0,
   position = [0, 0.4, 0],
   rotation = [0, 0, 0],
@@ -71,7 +74,7 @@ export default function GravityGrid({
     const pts: [number, number, number][] = [];
     const cols: [number, number, number][] = [];
     const inside = (p: [number, number, number]) =>
-      p[0] * p[0] + p[2] * p[2] < clearRadius * clearRadius;
+      (p[0] - clearCenter[0]) ** 2 + (p[2] - clearCenter[1]) ** 2 < clearRadius * clearRadius;
     const inBox = (p: [number, number, number]) =>
       Math.abs(p[0]) < clearHalf && Math.abs(p[2]) < clearHalf;
     const pushSeg = (a: [number, number, number], b: [number, number, number]) => {

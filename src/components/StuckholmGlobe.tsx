@@ -26,6 +26,9 @@ const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // One number for the size of the globe AND the grid, so they change together.
 // 1 = the size before the last +10 % step.
 const SCENE_SIZE = 1.782; // 35 % större än 1.32
+// Open ring between the grid and the globe, in world units.
+const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
+const GRID_GAP = 2;
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -190,7 +193,7 @@ function DriftingGlobe({
     const drag = dragRef.current;
     if (drag.dragging) {
       // About one radian per ~320px of sideways mouse travel.
-      dragQuat.setFromAxisAngle(YAW_AXIS, -drag.deltaX * 0.0032);
+      dragQuat.setFromAxisAngle(YAW_AXIS, -drag.deltaX * 0.0065);
       group.quaternion.premultiply(dragQuat);
       drag.deltaX = 0;
       drag.deltaY = 0;
@@ -462,9 +465,9 @@ function FitCamera() {
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
     // 4 = how many world units wide the view must be to hold the letter ring.
     const fit = 4 / (halfTan * aspect);
-    camera.position.z = Math.max(28.5, fit);
+    camera.position.z = Math.max(34, fit);
     // Titta ner så att det horisontella nätet syns under globen.
-    camera.position.y = 16;
+    camera.position.y = 19;
     camera.lookAt(0, -0.6, 0);
   }, [size, camera]);
 
@@ -522,7 +525,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [0, 16, 28.5], fov: 45 }}
+        camera={{ position: [0, 19, 34], fov: 45 }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
@@ -536,7 +539,9 @@ export function StuckholmGlobe({
           falloff={6.33 * SCENE_SIZE}
           position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
           rotation={[0, 0, 0]}
-          opacity={0.8 * (1 - scrollProgress)}
+          clearRadius={GLOBE_WORLD_RADIUS + GRID_GAP}
+          clearCenter={[0, 3.8 * SCENE_SIZE]}
+          opacity={0.45 * (1 - scrollProgress)}
         />
       </Canvas>
     </div>
