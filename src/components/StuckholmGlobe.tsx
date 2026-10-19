@@ -6,7 +6,7 @@ import * as THREE from "three";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
-export const BLOB_MODEL_URL = "/models/globe_for_home_fixed.glb";
+export const BLOB_MODEL_URL = "/models/globe_19oct.glb";
 const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
@@ -42,7 +42,7 @@ useGLTF.preload(BLOB_MODEL_URL);
 function isLetter(name: string) {
   // three.js replaces spaces with underscores in node names.
   const clean = name.replace(/ /g, "_");
-  return clean.startsWith("Raven") || clean.startsWith("SVG_bandtext");
+  return clean.startsWith("Raven") || clean.startsWith("SVG_bandtext") || clean.startsWith("Skissbokstav");
 }
 
 // Splits the GLB into the blob (sits at the origin) and the letter ring
