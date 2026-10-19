@@ -1,18 +1,15 @@
-// Shop data model, shaped like Shopify's Storefront API on purpose.
+// Shop data model, shaped like Shopify's Storefront API.
 //
-// Today every product still comes from Supabase (Flame = In Stock,
-// Garment = Trash) and gets converted into this shape by the two adapters
-// at the bottom. When the shop moves to Shopify, only those adapters get
-// replaced by a Storefront API fetch. The product pages, size dropdown and
-// cart all read this shape and shouldn't need to change.
+// Products come from Shopify (see shopify.ts and shopProducts.ts), which
+// converts them into this shape. The product pages, size dropdown and cart
+// all read this shape.
 //
 // Shopify terms, for reference:
 //   product  → has `options` (e.g. Size: S, M, L) and `variants`
 //   variant  → one buyable combination (e.g. "M"), with its own id, price and
 //              stock. The variant id is what goes into the cart
 //              (cartLinesAdd → merchandiseId).
-import type { Flame } from "@/lib/flames";
-import { formatPrice, type Garment } from "@/lib/garments";
+import { formatPrice } from "@/lib/garments";
 
 export type Money = {
   amount: number;
@@ -127,74 +124,4 @@ export function isOptionValueAvailable(
 
 export function isSoldOut(product: CommerceProduct): boolean {
   return product.variants.every((v) => !v.availableForSale);
-}
-
-// ---------------------------------------------------------------------------
-// Adapters: current Supabase data → shop shape.
-// Replace these with a Shopify fetch when the store is set up.
-
-export function productFromFlame(flame: Flame): CommerceProduct {
-  const price = toMoney(flame.priceAmount, flame.priceCurrency);
-  const base = {
-    id: `flame:${flame.slug}`,
-    handle: flame.slug,
-    title: flame.name,
-    href: `/in-stock/${flame.slug}`,
-    image: flame.images[0] ?? flame.image,
-  };
-
-  if (flame.sizes.length === 0) {
-    return {
-      ...base,
-      options: [],
-      variants: [
-        {
-          id: `${base.id}`,
-          title: DEFAULT_VARIANT_TITLE,
-          selectedOptions: [],
-          availableForSale: true,
-          quantityAvailable: null,
-          price,
-        },
-      ],
-    };
-  }
-
-  return {
-    ...base,
-    options: [{ name: "Size", values: flame.sizes }],
-    // Supabase doesn't track stock per size, so every listed size counts as
-    // in stock for now. Shopify will fill in availableForSale per size.
-    variants: flame.sizes.map((size) => ({
-      id: `${base.id}:${size}`,
-      title: size,
-      selectedOptions: [{ name: "Size", value: size }],
-      availableForSale: true,
-      quantityAvailable: null,
-      price,
-    })),
-  };
-}
-
-// Secondhand garments are one-offs: a single variant, one in stock.
-export function productFromGarment(garment: Garment): CommerceProduct {
-  const id = `garment:${garment.slug}`;
-  return {
-    id,
-    handle: garment.slug,
-    title: garment.name,
-    href: `/trash/${garment.slug}`,
-    image: garment.images[0] ?? garment.image,
-    options: [],
-    variants: [
-      {
-        id,
-        title: DEFAULT_VARIANT_TITLE,
-        selectedOptions: [],
-        availableForSale: true,
-        quantityAvailable: 1,
-        price: toMoney(garment.priceAmount, garment.priceCurrency),
-      },
-    ],
-  };
 }
