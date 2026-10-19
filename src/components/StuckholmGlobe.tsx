@@ -30,7 +30,7 @@ const GLOBE_SIZE = 2.25;
 const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all scale with it
 // Open ring between the grid and the globe, in world units.
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
-const WELL_CENTER: [number, number] = [0, 3.8 * SCENE_SIZE]; // under the globe, in grid space
+const WELL_CENTER: [number, number] = [2.5, 3.8 * SCENE_SIZE]; // under the globe, in grid space
 const GRID_GAP = -1; // negative: the grid stops just inside the globe's edge
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
@@ -237,7 +237,7 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[0, 14, 3.8]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE * GLOBE_SIZE}>
+    <group position={[2.5, 14, 3.8]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE * GLOBE_SIZE}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
           <primitive object={blob} />
