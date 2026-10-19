@@ -25,8 +25,8 @@ const PAPER = "#ffffff";
 const GLOBE_START_OPACITY = 0.95; // 5 % transparent
 // One number for the size of the globe AND the grid, so they change together.
 // 1 = the size before the last +10 % step.
-// Extra size for the globe and its letter ring only (2.25 = 1.5x the previous 1.5).
-const GLOBE_SIZE = 2.25;
+// Extra size for the globe and its letter ring only (1.9125 = 15 % smaller than 2.25).
+const GLOBE_SIZE = 1.9125;
 const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all scale with it
 // Open ring between the grid and the globe, in world units.
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
