@@ -36,12 +36,11 @@ const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after 
 const WELL_CENTER: [number, number] = [0, 3.8 * SCENE_SIZE]; // under the globe, in grid space
 const GRID_GAP = -1; // negative: the grid stops just inside the globe's edge
 
-// Camera: higher and tilted down so the grid reaches the top edge of the screen
-// (no black sky), and shifted sideways so the globe sits like the sun in the reference.
-const CAM_X = 6.5; // same x as the globe, so it sits in the middle of the view
-const CAM_Y = 80; // higher, so the globe stays inside the frame and the grid still reaches the top
+// Camera: low and level, with the horizon visible behind the globe (the version the user preferred).
+const CAM_X = 0;
+const CAM_Y = 24;
 const CAM_Z = 136.4;
-const CAM_TARGET: [number, number, number] = [6.5, -0.6, -3.2];
+const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
