@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
+
+// Vercel (stuckholm.se) uses normal URLs. The Shopify theme build sets
+// VITE_USE_HASH_ROUTER, because Shopify can only serve the root page.
+const Router = import.meta.env.VITE_USE_HASH_ROUTER ? HashRouter : BrowserRouter;
 import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
 import { HeaderBar } from "@/components/HeaderBar";
@@ -23,7 +27,7 @@ import { TrashProduct } from "@/pages/TrashProduct";
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <CartProvider>
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <ScrollToTop />
@@ -55,7 +59,7 @@ function App() {
       </main>
       <CartDrawer />
       </CartProvider>
-    </BrowserRouter>
+    </Router>
   );
 }
 
