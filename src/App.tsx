@@ -29,7 +29,7 @@ function App() {
   return (
     <Router>
       <CartProvider>
-      <main className="min-h-screen w-full bg-[#f4f0ed] flex flex-col items-center relative">
+      <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <ScrollToTop />
         <HeaderBar />
         <MiniGlobe />
