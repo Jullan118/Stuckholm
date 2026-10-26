@@ -92,24 +92,11 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
   letters.position.copy(root.position).multiplyScalar(LETTER_SCALE);
   letters.scale.setScalar(scale * LETTER_SCALE);
 
-  // White fill that hides what's behind it. Pushed slightly back in depth so
-  // the ink lines sit on top of it instead of flickering against it.
-  const fill = new THREE.MeshBasicMaterial({
-    color: fillColor,
-    polygonOffset: true,
-    polygonOffsetFactor: 1,
-    polygonOffsetUnits: 1,
-  });
   const ink = new THREE.LineBasicMaterial({ color: INK });
   const inkHull = new THREE.MeshBasicMaterial({
     color: INK,
     side: THREE.BackSide,
   });
-  // Letters are hollow: the fill is invisible (depth only) and only the white outline shows.
-  // Only the orbiting "Stuck in" letters are hollow; small handwritten pieces keep a solid fill.
-  const letterHollow = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide, colorWrite: false });
-  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide });
-  const letterEdge = new THREE.LineBasicMaterial({ color: PAPER });
 
   const letterMeshes: THREE.Mesh[] = [];
   const blobMeshes: THREE.Mesh[] = [];
@@ -117,12 +104,11 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     const mesh = child as THREE.Mesh;
     if (!mesh.isMesh) return;
     // Geometry is shared with the cached GLTF, so work on a copy.
+    // Materials are left exactly as they are in the GLB file.
     mesh.geometry = mesh.geometry.clone();
     if (isLetter(mesh.name)) {
-      mesh.material = mesh.name.startsWith("Stuck") ? letterHollow : letterInk;
       letterMeshes.push(mesh);
     } else {
-      mesh.material = fill;
       blobMeshes.push(mesh);
     }
   });
@@ -168,10 +154,6 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
   // Creases and edges: lines where the surface turns sharply.
   blobMeshes.forEach((mesh) => {
     mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), ink));
-  });
-  // The orbiting letters get white edges so the wordmark reads as white.
-  letterMeshes.forEach((mesh) => {
-    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), letterEdge));
   });
 
   return { blob: root, letters };
@@ -240,21 +222,6 @@ function DriftingGlobe({
 
     // The letter ring has no spin of its own: it turns with the globe, in the
     // same direction and speed, and follows drag too.
-
-    // Starts at 80% opacity and fades out with the rest as you scroll.
-    const opacity = GLOBE_START_OPACITY * (1 - THREE.MathUtils.clamp(progressRef.current, 0, 1));
-    group.traverse((child) => {
-      const mat = (child as THREE.Mesh).material as
-        | THREE.Material
-        | THREE.Material[]
-        | undefined;
-      if (!mat) return;
-      const mats = Array.isArray(mat) ? mat : [mat];
-      for (const m of mats) {
-        m.transparent = true;
-        m.opacity = opacity;
-      }
-    });
   });
 
   // rotationIntensity 0 stops Float's small wobble, which tilted the globe
@@ -647,6 +614,8 @@ export function StuckholmGlobe({
         camera={{ position: [CAM_X, CAM_Y, CAM_Z], fov: 45, far: SKY_FAR }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
+        <ambientLight intensity={1.4} />
+        <directionalLight position={[-8, 6, 6]} intensity={2.2} />
         <SceneBackground progress={scrollProgress} />
         <SkyField progress={scrollProgress} />
         <FitCamera />
