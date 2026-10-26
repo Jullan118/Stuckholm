@@ -92,11 +92,6 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
   letters.position.copy(root.position).multiplyScalar(LETTER_SCALE);
   letters.scale.setScalar(scale * LETTER_SCALE);
 
-  const ink = new THREE.LineBasicMaterial({ color: INK });
-  const inkHull = new THREE.MeshBasicMaterial({
-    color: INK,
-    side: THREE.BackSide,
-  });
 
   const letterMeshes: THREE.Mesh[] = [];
   const blobMeshes: THREE.Mesh[] = [];
@@ -144,17 +139,6 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     mesh.updateMatrix();
   });
 
-  // Silhouette: a slightly larger black back-face shell behind each blob part.
-  blobMeshes.forEach((mesh) => {
-    const hull = new THREE.Mesh(mesh.geometry, inkHull);
-    hull.scale.setScalar(1.008);
-    mesh.add(hull);
-  });
-
-  // Creases and edges: lines where the surface turns sharply.
-  blobMeshes.forEach((mesh) => {
-    mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry, 25), ink));
-  });
 
   return { blob: root, letters };
 }
