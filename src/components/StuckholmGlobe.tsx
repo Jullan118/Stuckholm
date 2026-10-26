@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, useGLTF } from "@react-three/drei";
-import GravityGrid from "./GravityGrid";
+import GravityGrid, { dipAt, type Well } from "./GravityGrid";
+import { SpaceBodies, type SpaceBody } from "./SpaceBodies";
 import * as THREE from "three";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
@@ -36,6 +37,39 @@ const SCENE_SIZE = 3.564; // 2x the previous 1.782, globe, grid and well all sca
 const GLOBE_WORLD_RADIUS = 3.2 * 1.08 * 2.17 * SCENE_SIZE; // blob radius after the group scales
 const WELL_CENTER: [number, number] = [0, 3.8 * SCENE_SIZE]; // under the globe, in grid space
 const GRID_GAP = -1; // negative: the grid stops just inside the globe's edge
+
+// The grid sits here. The globe's dip is the main well; the sun and Earth each
+// have their own smaller well, far back in the same net.
+const GRID_POS: [number, number, number] = [0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE];
+const MAIN_WELL: Well = {
+  center: WELL_CENTER,
+  depth: 10.12 * SCENE_SIZE * DIP_DEPTH_SCALE,
+  falloff: 11.4 * SCENE_SIZE * DIP_SCALE,
+};
+// On narrow screens (phones) the sun and Earth move in towards the globe, so
+// both still fit in the picture. spread = 1 on wide screens.
+function spreadFor(width: number, height: number) {
+  return width / height < 1 ? 0.45 : 1;
+}
+function useSpread() {
+  const [spread, setSpread] = React.useState(() => spreadFor(window.innerWidth, window.innerHeight));
+  React.useEffect(() => {
+    const onResize = () => setSpread(spreadFor(window.innerWidth, window.innerHeight));
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  return spread;
+}
+function makeSpaceScene(spread: number) {
+  const sun: SpaceBody = { kind: "sun", x: -150 * spread, z: -170, r: 26 };
+  const earth: SpaceBody = { kind: "earth", x: 170 * spread, z: -200, r: 14 };
+  const wells: Well[] = [
+    MAIN_WELL,
+    { center: [sun.x, sun.z], depth: 7, falloff: 24 },
+    { center: [earth.x, earth.z], depth: 5, falloff: 18 },
+  ];
+  return { bodies: [sun, earth], wells, heightAt: (x: number, z: number) => dipAt(x, z, wells) };
+}
 
 // Camera: low and level, with the horizon visible behind the globe (the version the user preferred).
 const CAM_X = 0;
@@ -487,8 +521,8 @@ function FitCamera() {
   React.useEffect(() => {
     const aspect = size.width / size.height;
     const halfTan = Math.tan(THREE.MathUtils.degToRad(45 / 2));
-    // 4 = how many world units wide the view must be to hold the letter ring.
-    const fit = 4 / (halfTan * aspect);
+    // 75 = half-width (world units) the view must hold: the letter ring and the sun/Earth.
+    const fit = 75 / (halfTan * aspect);
     camera.position.set(CAM_X, CAM_Y, Math.max(CAM_Z, fit));
     // Titta ner så att nätet fyller hela bilden ända ut till kanten.
     camera.lookAt(CAM_TARGET[0], CAM_TARGET[1], CAM_TARGET[2]);
@@ -586,6 +620,8 @@ export function StuckholmGlobe({
 }: {
   scrollProgress?: number;
 }) {
+  const spread = useSpread();
+  const scene = React.useMemo(() => makeSpaceScene(spread), [spread]);
   const dragRef = React.useRef<DragState>({
     dragging: false,
     deltaX: 0,
@@ -632,6 +668,7 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
+        dpr={[1, 1.5]}
         camera={{ position: [CAM_X, CAM_Y, CAM_Z], fov: 45, far: SKY_FAR }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
@@ -640,12 +677,19 @@ export function StuckholmGlobe({
         <FitCamera />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
+        <SpaceBodies
+          progress={scrollProgress}
+          gridPos={GRID_POS}
+          heightAt={scene.heightAt}
+          bodies={scene.bodies}
+        />
         <GravityGrid
+          wells={scene.wells}
           size={303.6 * SCENE_SIZE}
           divisions={88}
           depth={10.12 * SCENE_SIZE * DIP_DEPTH_SCALE}
           falloff={11.4 * SCENE_SIZE * DIP_SCALE}
-          position={[0, 1.27 * SCENE_SIZE, -1.9 * SCENE_SIZE]}
+          position={GRID_POS}
           rotation={[0, 0, 0]}
           clearRadius={0}
           clearCenter={WELL_CENTER}

@@ -1,6 +1,28 @@
 import { useMemo } from 'react';
 import { Line } from '@react-three/drei';
 
+/** One dip in the grid. Several can sit side by side, each pulling the net down. */
+export type Well = {
+  /** Centre of the dip, in the grid's own x/z */
+  center: [number, number];
+  /** How far the centre sinks below the plane */
+  depth: number;
+  /** Width of the dip. Smaller = steeper */
+  falloff: number;
+};
+
+/** Total height of the grid at (x, z) for a list of wells (0 = flat). */
+export function dipAt(x: number, z: number, wells: Well[]): number {
+  let h = 0;
+  for (const w of wells) {
+    const dx = x - w.center[0];
+    const dz = z - w.center[1];
+    const r2 = dx * dx + dz * dz;
+    h -= w.depth / Math.pow(1 + r2 / (w.falloff * w.falloff), 1.5);
+  }
+  return h;
+}
+
 type GravityGridProps = {
   /** Width and depth of the grid plane (world units) */
   size?: number;
@@ -23,6 +45,8 @@ type GravityGridProps = {
   clearCenter?: [number, number];
   /** Centre of the well (the dip), in the grid's own x/z. Default: the grid centre */
   wellCenter?: [number, number];
+  /** Several dips at once. When given, these replace the single well above */
+  wells?: Well[];
   /** Width (world units) of a soft fade just outside the open ring. 0 = hard edge */
   clearFade?: number;
   /** Leaves out lines that lie fully inside a square of this half-width (for a coarse outer grid) */
@@ -47,6 +71,7 @@ export default function GravityGrid({
   clearRadius = 0,
   clearCenter = [0, 0],
   wellCenter = [0, 0],
+  wells,
   clearFade = 0,
   clearHalf = 0,
   position = [0, 0.4, 0],
@@ -58,6 +83,7 @@ export default function GravityGrid({
     const n = divisions + 1;
 
     const heightAt = (x: number, z: number) => {
+      if (wells) return dipAt(x, z, wells);
       const dx = x - wellCenter[0];
       const dz = z - wellCenter[1];
       const r2 = dx * dx + dz * dz;
@@ -109,7 +135,7 @@ export default function GravityGrid({
       }
     }
     return { points: pts, colors: cols };
-  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearCenter, clearFade, clearHalf, wellCenter]);
+  }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearCenter, clearFade, clearHalf, wellCenter, wells]);
 
   return (
     <Line
