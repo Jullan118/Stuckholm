@@ -12,7 +12,7 @@ export function TrashProduct() {
   if (state.status === "error" || !state.data) {
     return (
       <div className="relative z-10 w-full max-w-3xl px-4 sm:px-8 pt-28 pb-16 text-center">
-        <h1 className="text-3xl sm:text-4xl font-manrope font-light text-black mb-6">
+        <h1 className="text-3xl sm:text-4xl font-cormorant font-light text-black mb-6">
           {state.status === "error" ? "Couldn't load this item" : "Not found"}
         </h1>
         <Link to="/trash" className="text-black underline">

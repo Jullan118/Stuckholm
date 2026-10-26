@@ -16,7 +16,7 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
               )}
             </div>
           </Link>
-          <div className="flex items-baseline justify-between font-manrope font-light px-4 py-3">
+          <div className="flex items-baseline justify-between font-cormorant font-light px-4 py-3">
             <Link to={product.href}>
               <span className="text-black">{product.title}</span>
             </Link>
