@@ -94,7 +94,7 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
 
   // White fill that hides what's behind it. Pushed slightly back in depth so
   // the ink lines sit on top of it instead of flickering against it.
-  const fill = new THREE.MeshLambertMaterial({
+  const fill = new THREE.MeshBasicMaterial({
     color: fillColor,
     polygonOffset: true,
     polygonOffsetFactor: 1,
@@ -646,9 +646,6 @@ export function StuckholmGlobe({
       >
         <SceneBackground progress={scrollProgress} />
         <SkyField progress={scrollProgress} />
-        {/* The light comes from the left: the right side of the bodies and the globe falls into shadow. */}
-        <ambientLight intensity={0.12} />
-        <directionalLight position={[-300, 120, 140]} intensity={2.2} />
         <FitCamera />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
