@@ -2,11 +2,9 @@ import * as React from "react";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 
-// A sun and an Earth as real 3D spheres, lit from one side and turning slowly
-// on their own axis. They get the same white line-art as the globe: a graticule
-// of lines and a white rim. They sit in their own dips of the grid, so the net
-// sinks under them. Colours follow the background: dark with white lines at the
-// top of the page, light with dark ink lines as you scroll down.
+// A sun and an Earth as solid grey 3D spheres, lit from one side and turning
+// slowly on their own axis, like the globe. They sit in their own dips of the
+// grid, so the net sinks under them.
 
 export type SpaceBody = {
   kind: "sun" | "earth";
@@ -17,30 +15,7 @@ export type SpaceBody = {
   r: number;
 };
 
-const FILL_DARK = new THREE.Color("#1f2327");
-const FILL_LIGHT = new THREE.Color("#ffffff");
-const LINE_LIGHT = new THREE.Color("#ffffff");
-const INK = new THREE.Color("#383e42");
-
-// Latitude circles and meridians of a unit sphere, as line segments.
-function graticule(latitudes = [-60, -30, 0, 30, 60], meridians = 6, steps = 48) {
-  const pts: THREE.Vector3[] = [];
-  const addLoop = (point: (t: number) => THREE.Vector3) => {
-    for (let i = 0; i < steps; i++) {
-      pts.push(point((i / steps) * Math.PI * 2), point(((i + 1) / steps) * Math.PI * 2));
-    }
-  };
-  for (const deg of latitudes) {
-    const lat = THREE.MathUtils.degToRad(deg);
-    addLoop((t) => new THREE.Vector3(Math.cos(t) * Math.cos(lat), Math.sin(lat), Math.sin(t) * Math.cos(lat)));
-  }
-  for (let m = 0; m < meridians; m++) {
-    const phi = (m / meridians) * Math.PI;
-    // A meridian is a great circle through both poles.
-    addLoop((t) => new THREE.Vector3(Math.cos(t) * Math.cos(phi), Math.sin(t), Math.cos(t) * Math.sin(phi)));
-  }
-  return new THREE.BufferGeometry().setFromPoints(pts);
-}
+const BODY_GREY = "#b4b8bd"; // the same grey as the globe body
 
 type Props = {
   progress: number;
@@ -59,14 +34,9 @@ export function SpaceBodies({ progress, gridPos, heightAt, bodies }: Props) {
     progressRef.current = progress;
   }, [progress]);
 
-  const fill = React.useMemo(() => new THREE.MeshLambertMaterial({ color: "#1f2327" }), []);
-  const line = React.useMemo(() => new THREE.LineBasicMaterial({ color: "#ffffff" }), []);
-  const rim = React.useMemo(
-    () => new THREE.MeshBasicMaterial({ color: "#ffffff", side: THREE.BackSide }),
-    []
-  );
-  const sphere = React.useMemo(() => new THREE.SphereGeometry(1, 40, 28), []);
-  const lines = React.useMemo(() => graticule(), []);
+  // Solid grey spheres, the same grey as the globe body.
+  const fill = React.useMemo(() => new THREE.MeshLambertMaterial({ color: BODY_GREY }), []);
+  const sphere = React.useMemo(() => new THREE.SphereGeometry(1, 48, 32), []);
 
   // Place each body in its dip, sunk partly into the net.
   const placements = React.useMemo(
@@ -80,9 +50,6 @@ export function SpaceBodies({ progress, gridPos, heightAt, bodies }: Props) {
 
   useFrame((_, delta) => {
     const p = THREE.MathUtils.clamp(progressRef.current, 0, 1);
-    fill.color.lerpColors(FILL_DARK, FILL_LIGHT, p);
-    line.color.lerpColors(LINE_LIGHT, INK, p);
-    rim.color.copy(line.color);
     // Turn each body on its own axis: the Earth a bit faster than the Sun.
     bodies.forEach((b, i) => {
       const g = spinRefs.current[i];
@@ -104,8 +71,6 @@ export function SpaceBodies({ progress, gridPos, heightAt, bodies }: Props) {
             rotation={[0, 0, b.kind === "earth" ? 0.41 : 0.12]}
           >
             <mesh geometry={sphere} material={fill} />
-            <mesh geometry={sphere} material={rim} scale={1.02} />
-            <lineSegments geometry={lines} material={line} />
           </group>
         </group>
       ))}

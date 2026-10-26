@@ -61,11 +61,11 @@ function useSpread() {
   return spread;
 }
 function makeSpaceScene(spread: number) {
-  const sun: SpaceBody = { kind: "sun", x: -200 * spread, z: -320, r: 40 };
+  const sun: SpaceBody = { kind: "sun", x: -200 * spread, z: -320, r: 60 };
   const earth: SpaceBody = { kind: "earth", x: 230 * spread, z: -380, r: 16 };
   const wells: Well[] = [
     MAIN_WELL,
-    { center: [sun.x, sun.z], depth: 9, falloff: 34 },
+    { center: [sun.x, sun.z], depth: 12, falloff: 44 },
     { center: [earth.x, earth.z], depth: 6, falloff: 22 },
   ];
   return { bodies: [sun, earth], wells, heightAt: (x: number, z: number) => dipAt(x, z, wells) };
