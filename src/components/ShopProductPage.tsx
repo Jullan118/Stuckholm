@@ -125,7 +125,7 @@ export function ShopProductPage({
         {/* Name, price, options, add to cart, and the product copy */}
         <div className="w-full md:w-2/5 flex flex-col gap-3">
           <div className="flex items-baseline justify-between gap-4">
-            <h1 className="text-2xl sm:text-3xl font-cormorant font-light text-black">
+            <h1 className="text-2xl sm:text-3xl font-manrope font-light text-black">
               {product.title}
             </h1>
             {product.priceText && (
