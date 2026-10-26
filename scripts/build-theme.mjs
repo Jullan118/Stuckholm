@@ -7,7 +7,7 @@ import path from "node:path";
 // The globe model is served from GitHub through jsDelivr, because theme
 // assets cannot hold a .glb file. The repo must stay public and the file on main.
 const GLOBE_URL =
-  "https://raw.githubusercontent.com/Jullan118/Stuckholm/main/public/models/globe_19oct.glb";
+  "https://raw.githubusercontent.com/Jullan118/Stuckholm/main/public/models/globe_26oct.glb";
 
 execSync("npx vite build --config vite.theme.config.ts", {
   stdio: "inherit",
