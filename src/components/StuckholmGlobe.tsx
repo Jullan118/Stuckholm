@@ -531,9 +531,9 @@ function SkyField({ progress }: { progress: number }) {
 
   const sparkles = React.useMemo(
     () =>
-      Array.from({ length: SKY_SPARKLE_COUNT }, () => ({
+      Array.from({ length: SKY_SPARKLE_COUNT }, (_, i) => ({
         pos: skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45),
-        size: 10 + Math.random() * 8,
+        size: i < 50 ? 10 + Math.random() * 8 : 6 + Math.random() * 5,
       })),
     []
   );
