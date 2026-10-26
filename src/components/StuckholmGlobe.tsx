@@ -501,7 +501,7 @@ function FitCamera() {
 const SKY_DISTANCE = 1500;
 const SKY_FAR = 5000; // camera far plane, so the sky isn't clipped
 const SKY_STAR_COUNT = 420;
-const SKY_SPARKLE_COUNT = 40;
+const SKY_SPARKLE_COUNT = 70;
 
 // Direction from the scene centre. -Z is into the scene, where the camera looks.
 function skyPoint(az: number, el: number) {
@@ -533,7 +533,7 @@ function SkyField({ progress }: { progress: number }) {
     () =>
       Array.from({ length: SKY_SPARKLE_COUNT }, () => ({
         pos: skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45),
-        size: 6 + Math.random() * 5,
+        size: 10 + Math.random() * 8,
       })),
     []
   );
