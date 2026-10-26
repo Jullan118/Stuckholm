@@ -106,7 +106,9 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     side: THREE.BackSide,
   });
   // Letters are hollow: the fill is invisible (depth only) and only the white outline shows.
-  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide, colorWrite: false });
+  // Only the orbiting "Stuck in" letters are hollow; small handwritten pieces keep a solid fill.
+  const letterHollow = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide, colorWrite: false });
+  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide });
   const letterEdge = new THREE.LineBasicMaterial({ color: PAPER });
 
   const letterMeshes: THREE.Mesh[] = [];
@@ -117,7 +119,7 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     // Geometry is shared with the cached GLTF, so work on a copy.
     mesh.geometry = mesh.geometry.clone();
     if (isLetter(mesh.name)) {
-      mesh.material = letterInk;
+      mesh.material = mesh.name.startsWith("Stuck") ? letterHollow : letterInk;
       letterMeshes.push(mesh);
     } else {
       mesh.material = fill;
