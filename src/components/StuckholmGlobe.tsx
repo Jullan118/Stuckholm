@@ -166,7 +166,7 @@ type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 const PITCH_LIMIT = 0.9; // radians, about 50 degrees
 // Resting tilt: the globe's top leans slightly away from the viewer (about 17
 // degrees), so the letter ring sits a bit above the centre, as in the 22 Oct reference.
-const GLOBE_BASE_PITCH = -0.4; // radians; negative = top leans back
+const GLOBE_BASE_PITCH = 0; // radians; no lean (upright, as in the GLB)
 const DRAG_SPEED = 0.0032; // radians per pixel of mouse travel
 
 // The globe and its letter ring share one drag group, so the ring turns with
@@ -229,14 +229,14 @@ function DriftingGlobe({
   return (
     // Outer group: the lean (30 degrees to the right) and 10 % larger size.
     // The inner group keeps the drag and spin.
-    <group position={[6.5, 14, 3.8]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE * GLOBE_SIZE}>
+    <group position={[6.5, 14, 3.8]} rotation={[0, 0, 0]} scale={2.17 * SCENE_SIZE * GLOBE_SIZE}>
       <group ref={groupRef} scale={1.08}>
-        <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
+        <group>
           <primitive object={blob} />
           <group ref={ringRef}>
             <primitive object={letters} />
           </group>
-        </Float>
+        </group>
       </group>
     </group>
   );
