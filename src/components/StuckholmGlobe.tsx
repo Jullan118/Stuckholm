@@ -54,7 +54,7 @@ const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 const GLOBE_GREY = "#b4b8bd";
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#000000"); // helsvart
-const SKY_WHITE = new THREE.Color("#ffffff");
+const SKY_WHITE = new THREE.Color("#f4f0ed");
 // Stars are white so they stay visible on the dark background.
 const STAR = "#ffffff";
 
