@@ -61,12 +61,12 @@ function useSpread() {
   return spread;
 }
 function makeSpaceScene(spread: number) {
-  const sun: SpaceBody = { kind: "sun", x: -200 * spread, z: -320, r: 60 };
-  const earth: SpaceBody = { kind: "earth", x: 230 * spread, z: -380, r: 16 };
+  const sun: SpaceBody = { kind: "sun", x: -250 * spread, z: -420, r: 75 };
+  const earth: SpaceBody = { kind: "earth", x: 230 * spread, z: -380, r: 22 };
   const wells: Well[] = [
     MAIN_WELL,
-    { center: [sun.x, sun.z], depth: 12, falloff: 44 },
-    { center: [earth.x, earth.z], depth: 6, falloff: 22 },
+    { center: [sun.x, sun.z], depth: 20, falloff: 80 },
+    { center: [earth.x, earth.z], depth: 12, falloff: 50 },
   ];
   return { bodies: [sun, earth], wells, heightAt: (x: number, z: number) => dipAt(x, z, wells) };
 }
@@ -120,7 +120,7 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
 
   // White fill that hides what's behind it. Pushed slightly back in depth so
   // the ink lines sit on top of it instead of flickering against it.
-  const fill = new THREE.MeshBasicMaterial({
+  const fill = new THREE.MeshLambertMaterial({
     color: fillColor,
     polygonOffset: true,
     polygonOffsetFactor: 1,
@@ -674,6 +674,9 @@ export function StuckholmGlobe({
       >
         <SceneBackground progress={scrollProgress} />
         <SkyField progress={scrollProgress} />
+        {/* The light comes from the left: the right side of the bodies and the globe falls into shadow. */}
+        <ambientLight intensity={0.12} />
+        <directionalLight position={[-300, 120, 140]} intensity={2.2} />
         <FitCamera />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
