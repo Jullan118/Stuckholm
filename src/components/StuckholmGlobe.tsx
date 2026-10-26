@@ -171,6 +171,9 @@ type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 // Sideways drag spins the globe around its vertical axis (no limit). Vertical
 // drag tilts it, but never past this angle, so it can't end up upside down.
 const PITCH_LIMIT = 0.9; // radians, about 50 degrees
+// Resting tilt: the globe's top leans slightly away from the viewer (about 17
+// degrees), so the letter ring sits a bit above the centre, as in the 22 Oct reference.
+const GLOBE_BASE_PITCH = -0.4; // radians; negative = top leans back
 const DRAG_SPEED = 0.0032; // radians per pixel of mouse travel
 
 // The globe and its letter ring share one drag group, so the ring turns with
@@ -221,7 +224,7 @@ function DriftingGlobe({
       yawRef.current -= delta * spinSpeed;
     }
     // Tilt first, then spin around the vertical axis, so the globe stays upright.
-    group.rotation.set(pitchRef.current, yawRef.current, 0, "YXZ");
+    group.rotation.set(GLOBE_BASE_PITCH + pitchRef.current, yawRef.current, 0, "YXZ");
 
     // The letter ring has no spin of its own: it turns with the globe, in the
     // same direction and speed, and follows drag too.
@@ -493,6 +496,134 @@ function FitCamera() {
   return null;
 }
 
+// The far sky. Everything sits at SKY_DISTANCE, above the grid's horizon, so
+// nothing lands on the net. Stars are tiny fixed-size dots and sparkles; the
+// sun and planet are flat discs turned to face the camera.
+const SKY_DISTANCE = 1500;
+const SKY_FAR = 5000; // camera far plane, so the sky isn't clipped
+const SKY_STAR_COUNT = 420;
+const SKY_SPARKLE_COUNT = 40;
+
+// Direction from the scene centre. -Z is into the scene, where the camera looks.
+function skyPoint(az: number, el: number) {
+  return new THREE.Vector3(
+    Math.sin(az) * Math.cos(el),
+    Math.sin(el),
+    -Math.cos(az) * Math.cos(el)
+  ).multiplyScalar(SKY_DISTANCE);
+}
+
+function circleLine(rx: number, ry: number, segments = 64) {
+  const pts: THREE.Vector3[] = [];
+  for (let i = 0; i <= segments; i++) {
+    const a = (i / segments) * Math.PI * 2;
+    pts.push(new THREE.Vector3(Math.cos(a) * rx, Math.sin(a) * ry, 0));
+  }
+  return new THREE.BufferGeometry().setFromPoints(pts);
+}
+
+function SkyField({ progress }: { progress: number }) {
+  const { camera } = useThree();
+  const progressRef = React.useRef(progress);
+  const sunRef = React.useRef<THREE.Group>(null);
+  const planetRef = React.useRef<THREE.Group>(null);
+
+  React.useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  const dotGeometry = React.useMemo(() => {
+    const arr = new Float32Array(SKY_STAR_COUNT * 3);
+    for (let i = 0; i < SKY_STAR_COUNT; i++) {
+      const p = skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45);
+      arr.set([p.x, p.y, p.z], i * 3);
+    }
+    return new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(arr, 3));
+  }, []);
+
+  const sparkles = React.useMemo(
+    () =>
+      Array.from({ length: SKY_SPARKLE_COUNT }, () => ({
+        pos: skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45),
+        size: 6 + Math.random() * 5,
+      })),
+    []
+  );
+  const sparkleGeometry = React.useMemo(
+    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1)),
+    []
+  );
+
+  const materials = React.useMemo(
+    () => ({
+      dots: new THREE.PointsMaterial({
+        color: "#ffffff",
+        size: 1.8,
+        sizeAttenuation: false,
+        transparent: true,
+        depthWrite: false,
+      }),
+      line: new THREE.LineBasicMaterial({ color: "#ffffff", transparent: true }),
+      white: new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true }),
+      ink: new THREE.MeshBasicMaterial({ color: INK, transparent: true }),
+    }),
+    []
+  );
+
+  const sunPos = React.useMemo(() => skyPoint(-0.42, 0.2), []);
+  const planetPos = React.useMemo(() => skyPoint(0.55, 0.12), []);
+  const sunRays = React.useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * 44, Math.sin(a) * 44, 0));
+      pts.push(new THREE.Vector3(Math.cos(a) * 58, Math.sin(a) * 58, 0));
+    }
+    return new THREE.BufferGeometry().setFromPoints(pts);
+  }, []);
+  const planetOutline = React.useMemo(() => circleLine(16, 16), []);
+  const planetRing = React.useMemo(() => circleLine(34, 9), []);
+
+  useFrame(() => {
+    const fade = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
+    materials.dots.opacity = fade;
+    materials.line.opacity = fade;
+    materials.white.opacity = fade;
+    materials.ink.opacity = fade;
+    // Turn the discs to face the camera.
+    sunRef.current?.lookAt(camera.position);
+    planetRef.current?.lookAt(camera.position);
+  });
+
+  return (
+    <group>
+      <points geometry={dotGeometry} material={materials.dots} />
+      {sparkles.map((s, i) => (
+        <lineLoop
+          key={i}
+          geometry={sparkleGeometry}
+          material={materials.line}
+          position={s.pos}
+          scale={s.size}
+        />
+      ))}
+      <group ref={sunRef} position={sunPos}>
+        <mesh material={materials.white}>
+          <circleGeometry args={[35, 64]} />
+        </mesh>
+        <lineSegments geometry={sunRays} material={materials.line} />
+      </group>
+      <group ref={planetRef} position={planetPos}>
+        <mesh material={materials.ink}>
+          <circleGeometry args={[16, 48]} />
+        </mesh>
+        <lineLoop geometry={planetOutline} material={materials.line} />
+        <lineLoop geometry={planetRing} material={materials.line} rotation={[0, 0, -0.25]} />
+      </group>
+    </group>
+  );
+}
+
 export function StuckholmGlobe({
   scrollProgress = 0,
 }: {
@@ -544,10 +675,11 @@ export function StuckholmGlobe({
     >
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
-        camera={{ position: [CAM_X, CAM_Y, CAM_Z], fov: 45 }}
+        camera={{ position: [CAM_X, CAM_Y, CAM_Z], fov: 45, far: SKY_FAR }}
         gl={{ toneMapping: THREE.NoToneMapping }}
       >
         <SceneBackground progress={scrollProgress} />
+        <SkyField progress={scrollProgress} />
         <FitCamera />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
