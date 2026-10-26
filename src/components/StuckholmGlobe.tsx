@@ -497,8 +497,7 @@ function FitCamera() {
 }
 
 // The far sky. Everything sits at SKY_DISTANCE, above the grid's horizon, so
-// nothing lands on the net. Stars are tiny fixed-size dots and sparkles; the
-// sun and planet are flat discs turned to face the camera.
+// nothing lands on the net. Stars are tiny fixed-size dots and sparkles.
 const SKY_DISTANCE = 1500;
 const SKY_FAR = 5000; // camera far plane, so the sky isn't clipped
 const SKY_STAR_COUNT = 420;
@@ -513,20 +512,9 @@ function skyPoint(az: number, el: number) {
   ).multiplyScalar(SKY_DISTANCE);
 }
 
-function circleLine(rx: number, ry: number, segments = 64) {
-  const pts: THREE.Vector3[] = [];
-  for (let i = 0; i <= segments; i++) {
-    const a = (i / segments) * Math.PI * 2;
-    pts.push(new THREE.Vector3(Math.cos(a) * rx, Math.sin(a) * ry, 0));
-  }
-  return new THREE.BufferGeometry().setFromPoints(pts);
-}
-
 function SkyField({ progress }: { progress: number }) {
   const { camera } = useThree();
   const progressRef = React.useRef(progress);
-  const sunRef = React.useRef<THREE.Group>(null);
-  const planetRef = React.useRef<THREE.Group>(null);
 
   React.useEffect(() => {
     progressRef.current = progress;
@@ -564,35 +552,16 @@ function SkyField({ progress }: { progress: number }) {
         depthWrite: false,
       }),
       line: new THREE.LineBasicMaterial({ color: "#ffffff", transparent: true }),
-      white: new THREE.MeshBasicMaterial({ color: "#ffffff", transparent: true }),
-      ink: new THREE.MeshBasicMaterial({ color: INK, transparent: true }),
     }),
     []
   );
 
-  const sunPos = React.useMemo(() => skyPoint(-0.42, 0.2), []);
-  const planetPos = React.useMemo(() => skyPoint(0.55, 0.12), []);
-  const sunRays = React.useMemo(() => {
-    const pts: THREE.Vector3[] = [];
-    for (let i = 0; i < 12; i++) {
-      const a = (i / 12) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a) * 44, Math.sin(a) * 44, 0));
-      pts.push(new THREE.Vector3(Math.cos(a) * 58, Math.sin(a) * 58, 0));
-    }
-    return new THREE.BufferGeometry().setFromPoints(pts);
-  }, []);
-  const planetOutline = React.useMemo(() => circleLine(16, 16), []);
-  const planetRing = React.useMemo(() => circleLine(34, 9), []);
 
   useFrame(() => {
     const fade = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
     materials.dots.opacity = fade;
     materials.line.opacity = fade;
-    materials.white.opacity = fade;
-    materials.ink.opacity = fade;
     // Turn the discs to face the camera.
-    sunRef.current?.lookAt(camera.position);
-    planetRef.current?.lookAt(camera.position);
   });
 
   return (
@@ -607,19 +576,6 @@ function SkyField({ progress }: { progress: number }) {
           scale={s.size}
         />
       ))}
-      <group ref={sunRef} position={sunPos}>
-        <mesh material={materials.white}>
-          <circleGeometry args={[35, 64]} />
-        </mesh>
-        <lineSegments geometry={sunRays} material={materials.line} />
-      </group>
-      <group ref={planetRef} position={planetPos}>
-        <mesh material={materials.ink}>
-          <circleGeometry args={[16, 48]} />
-        </mesh>
-        <lineLoop geometry={planetOutline} material={materials.line} />
-        <lineLoop geometry={planetRing} material={materials.line} rotation={[0, 0, -0.25]} />
-      </group>
     </group>
   );
 }
