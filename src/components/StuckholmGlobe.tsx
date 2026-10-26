@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, useGLTF } from "@react-three/drei";
-import GravityGrid, { dipAt, type Well } from "./GravityGrid";
-import { SpaceBodies, type SpaceBody } from "./SpaceBodies";
+import GravityGrid, { type Well } from "./GravityGrid";
 import * as THREE from "three";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
@@ -46,31 +45,6 @@ const MAIN_WELL: Well = {
   depth: 10.12 * SCENE_SIZE * DIP_DEPTH_SCALE,
   falloff: 11.4 * SCENE_SIZE * DIP_SCALE,
 };
-// On narrow screens (phones) the sun and Earth move in towards the globe, so
-// both still fit in the picture. spread = 1 on wide screens.
-function spreadFor(width: number, height: number) {
-  return width / height < 1 ? 0.45 : 1;
-}
-function useSpread() {
-  const [spread, setSpread] = React.useState(() => spreadFor(window.innerWidth, window.innerHeight));
-  React.useEffect(() => {
-    const onResize = () => setSpread(spreadFor(window.innerWidth, window.innerHeight));
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
-  return spread;
-}
-function makeSpaceScene(spread: number) {
-  const sun: SpaceBody = { kind: "sun", x: -250 * spread, z: -420, r: 75 };
-  const earth: SpaceBody = { kind: "earth", x: 230 * spread, z: -380, r: 22 };
-  const wells: Well[] = [
-    MAIN_WELL,
-    { center: [sun.x, sun.z], depth: 20, falloff: 80 },
-    { center: [earth.x, earth.z], depth: 12, falloff: 50 },
-  ];
-  return { bodies: [sun, earth], wells, heightAt: (x: number, z: number) => dipAt(x, z, wells) };
-}
-
 // Camera: low and level, with the horizon visible behind the globe (the version the user preferred).
 const CAM_X = 0;
 const CAM_Y = 26.4; // 10 % higher than before (24 -> 26.4)
@@ -620,8 +594,6 @@ export function StuckholmGlobe({
 }: {
   scrollProgress?: number;
 }) {
-  const spread = useSpread();
-  const scene = React.useMemo(() => makeSpaceScene(spread), [spread]);
   const dragRef = React.useRef<DragState>({
     dragging: false,
     deltaX: 0,
@@ -680,14 +652,8 @@ export function StuckholmGlobe({
         <FitCamera />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
-        <SpaceBodies
-          progress={scrollProgress}
-          gridPos={GRID_POS}
-          heightAt={scene.heightAt}
-          bodies={scene.bodies}
-        />
         <GravityGrid
-          wells={scene.wells}
+          wells={[MAIN_WELL]}
           size={303.6 * SCENE_SIZE}
           divisions={88}
           depth={10.12 * SCENE_SIZE * DIP_DEPTH_SCALE}
