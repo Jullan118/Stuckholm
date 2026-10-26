@@ -7,7 +7,7 @@ import * as THREE from "three";
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
 export const BLOB_MODEL_URL: string =
-  (import.meta.env.VITE_BLOB_MODEL_URL as string | undefined) || "/models/globe_26oct.glb";
+  (import.meta.env.VITE_BLOB_MODEL_URL as string | undefined) || "/models/globe_2610.glb";
 const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
@@ -223,8 +223,9 @@ function DriftingGlobe({
       const spinSpeed = 0.07 + progressRef.current * 0.18;
       yawRef.current -= delta * spinSpeed;
     }
-    // Tilt first, then spin around the vertical axis, so the globe stays upright.
-    group.rotation.set(GLOBE_BASE_PITCH + pitchRef.current, yawRef.current, 0, "YXZ");
+    // Spin around the globe's own axis (its Y, which runs bottom to cross). Order XYZ
+    // keeps that axis tilted but fixed while it turns, so the globe never wobbles.
+    group.rotation.set(GLOBE_BASE_PITCH + pitchRef.current, yawRef.current, 0, "XYZ");
 
     // The letter ring has no spin of its own: it turns with the globe, in the
     // same direction and speed, and follows drag too.
