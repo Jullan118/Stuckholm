@@ -1,11 +1,12 @@
 import * as React from "react";
 import * as THREE from "three";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 
-// A sun and an Earth, drawn in the same line-art style as the globe. Each sits
-// in its own dip of the grid, so the net sinks a little under it. They turn to
-// face the camera and follow the background: black with white lines at the top
-// of the page, white with dark ink lines as you scroll down.
+// A sun and an Earth as real 3D spheres, lit from one side and turning slowly
+// on their own axis. They get the same white line-art as the globe: a graticule
+// of lines and a white rim. They sit in their own dips of the grid, so the net
+// sinks under them. Colours follow the background: dark with white lines at the
+// top of the page, light with dark ink lines as you scroll down.
 
 export type SpaceBody = {
   kind: "sun" | "earth";
@@ -16,27 +17,27 @@ export type SpaceBody = {
   r: number;
 };
 
-const DARK = new THREE.Color("#000000");
-const LIGHT = new THREE.Color("#ffffff");
+const FILL_DARK = new THREE.Color("#1f2327");
+const FILL_LIGHT = new THREE.Color("#ffffff");
+const LINE_LIGHT = new THREE.Color("#ffffff");
 const INK = new THREE.Color("#383e42");
 
-// A circle, or an ellipse with half-widths rx and ry, as a closed line loop.
-function ellipse(rx: number, ry: number, segments = 64) {
+// Latitude circles and meridians of a unit sphere, as line segments.
+function graticule(latitudes = [-60, -30, 0, 30, 60], meridians = 6, steps = 48) {
   const pts: THREE.Vector3[] = [];
-  for (let i = 0; i <= segments; i++) {
-    const a = (i / segments) * Math.PI * 2;
-    pts.push(new THREE.Vector3(Math.cos(a) * rx, Math.sin(a) * ry, 0));
+  const addLoop = (point: (t: number) => THREE.Vector3) => {
+    for (let i = 0; i < steps; i++) {
+      pts.push(point((i / steps) * Math.PI * 2), point(((i + 1) / steps) * Math.PI * 2));
+    }
+  };
+  for (const deg of latitudes) {
+    const lat = THREE.MathUtils.degToRad(deg);
+    addLoop((t) => new THREE.Vector3(Math.cos(t) * Math.cos(lat), Math.sin(lat), Math.sin(t) * Math.cos(lat)));
   }
-  return new THREE.BufferGeometry().setFromPoints(pts);
-}
-
-// Short rays around a sun, from radius r1 to r2.
-function rays(r1: number, r2: number, count = 12) {
-  const pts: THREE.Vector3[] = [];
-  for (let i = 0; i < count; i++) {
-    const a = (i / count) * Math.PI * 2;
-    pts.push(new THREE.Vector3(Math.cos(a) * r1, Math.sin(a) * r1, 0));
-    pts.push(new THREE.Vector3(Math.cos(a) * r2, Math.sin(a) * r2, 0));
+  for (let m = 0; m < meridians; m++) {
+    const phi = (m / meridians) * Math.PI;
+    // A meridian is a great circle through both poles.
+    addLoop((t) => new THREE.Vector3(Math.cos(t) * Math.cos(phi), Math.sin(t), Math.cos(t) * Math.sin(phi)));
   }
   return new THREE.BufferGeometry().setFromPoints(pts);
 }
@@ -51,23 +52,21 @@ type Props = {
 };
 
 export function SpaceBodies({ progress, gridPos, heightAt, bodies }: Props) {
-  const { camera } = useThree();
   const progressRef = React.useRef(progress);
-  const groupRefs = React.useRef<(THREE.Group | null)[]>([]);
+  const spinRefs = React.useRef<(THREE.Group | null)[]>([]);
 
   React.useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
 
-  const fill = React.useMemo(() => new THREE.MeshBasicMaterial({ color: "#000000" }), []);
+  const fill = React.useMemo(() => new THREE.MeshLambertMaterial({ color: "#1f2327" }), []);
   const line = React.useMemo(() => new THREE.LineBasicMaterial({ color: "#ffffff" }), []);
-
-  // Unit shapes; each body scales them to its own radius.
-  const disc = React.useMemo(() => new THREE.CircleGeometry(1, 48), []);
-  const outline = React.useMemo(() => ellipse(1, 1), []);
-  const sunRays = React.useMemo(() => rays(1.6, 2.2), []);
-  const meridian = React.useMemo(() => ellipse(0.45, 1), []);
-  const parallel = React.useMemo(() => ellipse(1, 0.25), []);
+  const rim = React.useMemo(
+    () => new THREE.MeshBasicMaterial({ color: "#ffffff", side: THREE.BackSide }),
+    []
+  );
+  const sphere = React.useMemo(() => new THREE.SphereGeometry(1, 40, 28), []);
+  const lines = React.useMemo(() => graticule(), []);
 
   // Place each body in its dip, sunk partly into the net.
   const placements = React.useMemo(
@@ -79,34 +78,35 @@ export function SpaceBodies({ progress, gridPos, heightAt, bodies }: Props) {
     [bodies, gridPos, heightAt]
   );
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const p = THREE.MathUtils.clamp(progressRef.current, 0, 1);
-    fill.color.lerpColors(DARK, LIGHT, p);
-    line.color.lerpColors(LIGHT, INK, p);
-    groupRefs.current.forEach((g) => g?.lookAt(camera.position));
+    fill.color.lerpColors(FILL_DARK, FILL_LIGHT, p);
+    line.color.lerpColors(LINE_LIGHT, INK, p);
+    rim.color.copy(line.color);
+    // Turn each body on its own axis: the Earth a bit faster than the Sun.
+    bodies.forEach((b, i) => {
+      const g = spinRefs.current[i];
+      if (g) g.rotation.y += delta * (b.kind === "earth" ? 0.25 : 0.06);
+    });
   });
 
   return (
     <group>
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[-150, 220, 160]} intensity={1.4} />
       {bodies.map((b, i) => (
-        <group
-          key={b.kind + i}
-          ref={(el: THREE.Group | null) => {
-            groupRefs.current[i] = el;
-          }}
-          position={placements[i]}
-          scale={b.r}
-        >
-          <mesh geometry={disc} material={fill} />
-          <lineLoop geometry={outline} material={line} />
-          {b.kind === "sun" ? (
-            <lineSegments geometry={sunRays} material={line} />
-          ) : (
-            <>
-              <lineLoop geometry={meridian} material={line} />
-              <lineLoop geometry={parallel} material={line} />
-            </>
-          )}
+        <group key={b.kind + i} position={placements[i]} scale={b.r}>
+          {/* Tilt: the Earth's axis leans about 23 degrees, the Sun's a little. */}
+          <group
+            ref={(el: THREE.Group | null) => {
+              spinRefs.current[i] = el;
+            }}
+            rotation={[0, 0, b.kind === "earth" ? 0.41 : 0.12]}
+          >
+            <mesh geometry={sphere} material={fill} />
+            <mesh geometry={sphere} material={rim} scale={1.02} />
+            <lineSegments geometry={lines} material={line} />
+          </group>
         </group>
       ))}
     </group>
