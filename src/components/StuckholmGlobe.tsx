@@ -7,7 +7,7 @@ import * as THREE from "three";
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
 export const BLOB_MODEL_URL: string =
-  (import.meta.env.VITE_BLOB_MODEL_URL as string | undefined) || "/models/globe_2610_v3.glb";
+  (import.meta.env.VITE_BLOB_MODEL_URL as string | undefined) || "/models/globe_2610_v4.glb";
 const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
