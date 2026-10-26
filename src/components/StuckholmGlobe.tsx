@@ -105,7 +105,8 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     color: INK,
     side: THREE.BackSide,
   });
-  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide });
+  // Letters are hollow: the fill is invisible (depth only) and only the white outline shows.
+  const letterInk = new THREE.MeshBasicMaterial({ color: PAPER, side: THREE.DoubleSide, colorWrite: false });
   const letterEdge = new THREE.LineBasicMaterial({ color: PAPER });
 
   const letterMeshes: THREE.Mesh[] = [];
