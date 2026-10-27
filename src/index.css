@@ -22,10 +22,10 @@ html.hero-light .home-ink {
 }
 
 
-/* Glitch on the home globe: every 20 s the whole scene (globe, grid and
-   stars) jerks sideways and turns green for 1 s, then goes back. The 20 s
-   cycle is split into percentages: 1.5 % = 0.3 s. The green is a colour-blend
-   layer on top, so the black sky stays black. */
+/* Glitch on the home globe: every 20 s, for 0.3 s, the scene (globe, grid and
+   stars) jerks sideways, splits into blue and red edges, and gets bright
+   horizontal streaks, like a broken video signal. The 20 s cycle is split
+   into percentages: 1.5 % = 0.3 s. */
 .stuck-glitch {
   position: relative;
   animation: stuck-glitch 20s linear infinite;
@@ -34,43 +34,81 @@ html.hero-light .home-ink {
   content: "";
   position: absolute;
   inset: 0;
-  background: #39ff14;
-  mix-blend-mode: color;
   pointer-events: none;
   opacity: 0;
+  /* Thin bright streaks, drawn in blue-white. */
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 9px,
+    rgba(170, 225, 255, 0.95) 9px,
+    rgba(170, 225, 255, 0.95) 11px,
+    transparent 11px,
+    transparent 23px,
+    rgba(70, 150, 255, 0.8) 23px,
+    rgba(70, 150, 255, 0.8) 24px,
+    transparent 24px,
+    transparent 37px
+  );
+  mix-blend-mode: screen;
+  /* Streaks are strongest on the left, like the reference. */
+  -webkit-mask-image: linear-gradient(to right, black 0%, black 35%, transparent 75%);
+  mask-image: linear-gradient(to right, black 0%, black 35%, transparent 75%);
   animation: stuck-glitch-tint 20s linear infinite;
 }
 @keyframes stuck-glitch {
   0%, 5% {
     transform: translateX(0);
+    filter: none;
   }
   5.1% {
-    transform: translateX(12px);
+    transform: translateX(14px);
+    filter: drop-shadow(5px 0 0 rgba(0, 170, 255, 0.85)) drop-shadow(-5px 0 0 rgba(255, 40, 90, 0.7));
   }
   5.4% {
-    transform: translateX(-9px);
+    transform: translateX(-11px);
+    filter: drop-shadow(5px 0 0 rgba(0, 170, 255, 0.85)) drop-shadow(-5px 0 0 rgba(255, 40, 90, 0.7));
   }
   5.7% {
-    transform: translateX(7px);
+    transform: translateX(8px);
+    filter: drop-shadow(-4px 0 0 rgba(0, 170, 255, 0.85)) drop-shadow(4px 0 0 rgba(255, 40, 90, 0.7));
   }
   6% {
-    transform: translateX(-4px);
+    transform: translateX(-5px);
+    filter: drop-shadow(5px 0 0 rgba(0, 170, 255, 0.85)) drop-shadow(-5px 0 0 rgba(255, 40, 90, 0.7));
   }
   6.3% {
     transform: translateX(2px);
+    filter: none;
   }
   6.5%, 100% {
     transform: translateX(0);
+    filter: none;
   }
 }
 @keyframes stuck-glitch-tint {
   0%, 5% {
     opacity: 0;
+    background-position: 0 0;
   }
-  5.1%, 6.4% {
-    opacity: 0.9;
+  5.1% {
+    opacity: 1;
+    background-position: 60px 0;
+  }
+  5.4% {
+    opacity: 0.5;
+    background-position: -40px 0;
+  }
+  5.7% {
+    opacity: 1;
+    background-position: 30px 0;
+  }
+  6.3% {
+    opacity: 0.6;
+    background-position: -10px 0;
   }
   6.5%, 100% {
     opacity: 0;
+    background-position: 0 0;
   }
 }
