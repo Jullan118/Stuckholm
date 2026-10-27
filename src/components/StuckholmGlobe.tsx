@@ -53,10 +53,7 @@ const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
 const GLOBE_GREY = "#e4e7ea";
 const CRACK_GREY = "#9aa1a6"; // lighter grey for cracks and scratches
-// Once a minute the globe flashes red for a moment (the glitch).
-const GLITCH_RED = "#d51f26";
-const GLITCH_EVERY = 60; // seconds between glitches
-const GLITCH_LENGTH = 0.3; // seconds the red lasts
+
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#000000"); // helsvart
 const SKY_WHITE = new THREE.Color("#ffffff");
@@ -226,30 +223,17 @@ function DriftingGlobe({
     });
     return list;
   }, [blob]);
-  const glitchingRef = React.useRef(false);
 
   useFrame((state, delta) => {
     const group = groupRef.current;
     if (!group) return;
 
-    // Glitch: red for a short moment, once every minute.
-    const elapsed = state.clock.elapsedTime;
-    const glitchOn = elapsed % GLITCH_EVERY < GLITCH_LENGTH && elapsed > 1;
     // Fade the globe out as the page scrolls down to the white part, so it
     // is gone by the time the background is white.
     const fade = 1 - THREE.MathUtils.smoothstep(progressRef.current, 0.2, 0.9);
     bodyMaterials.forEach((mat) => {
       mat.opacity = GLOBE_START_OPACITY * fade;
     });
-
-    if (glitchOn !== glitchingRef.current) {
-      glitchingRef.current = glitchOn;
-      bodyMaterials.forEach((mat) => {
-        mat.color.copy(
-          glitchOn ? new THREE.Color(GLITCH_RED) : (mat.userData.baseColor as THREE.Color)
-        );
-      });
-    }
 
     const drag = dragRef.current;
     if (drag.dragging) {
@@ -647,7 +631,7 @@ export function StuckholmGlobe({
 
   return (
     <div
-      className="w-full h-full"
+      className="w-full h-full stuck-glitch"
       style={{
         cursor: isDragging ? "grabbing" : "grab",
         // "pan-y" keeps vertical swipes for page scrolling on touch screens,
