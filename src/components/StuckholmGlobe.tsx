@@ -53,6 +53,10 @@ const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
 const GLOBE_GREY = "#e4e7ea";
 const CRACK_GREY = "#9aa1a6"; // lighter grey for cracks and scratches
+// Once a minute the globe flashes red for a moment (the glitch).
+const GLITCH_RED = "#d51f26";
+const GLITCH_EVERY = 60; // seconds between glitches
+const GLITCH_LENGTH = 0.3; // seconds the red lasts
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#000000"); // helsvart
 const SKY_WHITE = new THREE.Color("#ffffff");
@@ -165,6 +169,7 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     // their own, lighter grey so they still show against the globe.
     const isCrack = original.color.r < 0.3 && original.color.g < 0.3 && original.color.b < 0.3;
     mat.color = new THREE.Color(isCrack ? CRACK_GREY : GLOBE_GREY);
+    mat.userData.baseColor = mat.color.clone();
     mat.transparent = true;
     mat.opacity = GLOBE_START_OPACITY;
     mat.depthWrite = true;
@@ -212,9 +217,32 @@ function DriftingGlobe({
     progressRef.current = scrollProgress;
   }, [scrollProgress]);
 
-  useFrame((_, delta) => {
+  // Every material on the globe body, collected once so the glitch can recolour them.
+  const bodyMaterials = React.useMemo(() => {
+    const list: THREE.MeshStandardMaterial[] = [];
+    blob.traverse((child) => {
+      const mesh = child as THREE.Mesh;
+      if (mesh.isMesh) list.push(mesh.material as THREE.MeshStandardMaterial);
+    });
+    return list;
+  }, [blob]);
+  const glitchingRef = React.useRef(false);
+
+  useFrame((state, delta) => {
     const group = groupRef.current;
     if (!group) return;
+
+    // Glitch: red for a short moment, once every minute.
+    const elapsed = state.clock.elapsedTime;
+    const glitchOn = elapsed % GLITCH_EVERY < GLITCH_LENGTH && elapsed > 1;
+    if (glitchOn !== glitchingRef.current) {
+      glitchingRef.current = glitchOn;
+      bodyMaterials.forEach((mat) => {
+        mat.color.copy(
+          glitchOn ? new THREE.Color(GLITCH_RED) : (mat.userData.baseColor as THREE.Color)
+        );
+      });
+    }
 
     const drag = dragRef.current;
     if (drag.dragging) {
