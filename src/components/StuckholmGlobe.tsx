@@ -51,7 +51,7 @@ const CAM_Y = 26.4; // 10 % higher than before (24 -> 26.4)
 const CAM_Z = 189; // 10 % further back than before (172 -> 189)
 const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
-const GLOBE_GREY = "#b4b8bd";
+const GLOBE_GREY = "#d2d6da";
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#000000"); // helsvart
 const SKY_WHITE = new THREE.Color("#ffffff");
