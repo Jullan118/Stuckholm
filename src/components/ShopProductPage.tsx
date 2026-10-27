@@ -123,8 +123,8 @@ export function ShopProductPage({
         )}
 
         {/* Name, price, options, add to cart, and the product copy */}
-        <div className="w-full md:w-2/5 flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-4">
+        <div className="w-full md:w-2/5 flex flex-col gap-3 text-center">
+          <div className="flex flex-col items-center gap-1">
             <h1 className="text-2xl sm:text-3xl font-manrope font-light text-black">
               {product.title}
             </h1>
@@ -133,14 +133,16 @@ export function ShopProductPage({
             )}
           </div>
 
-          <AddToCart product={product} />
+          <div className="flex justify-center">
+            <AddToCart product={product} />
+          </div>
 
           {product.description && (
             <p className="text-black/80 mt-2 whitespace-pre-line">{product.description}</p>
           )}
 
           {meta.length > 0 && (
-            <dl className="text-black/70 text-sm grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 mt-2">
+            <dl className="text-black/70 text-sm flex flex-col items-center gap-1 mt-2">
               {meta.map(([label, value]) => (
                 <React.Fragment key={label}>
                   <dt className="text-black/50">{label}</dt>
