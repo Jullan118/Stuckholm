@@ -51,9 +51,7 @@ html.hero-light .home-ink {
     transparent 37px
   );
   mix-blend-mode: screen;
-  /* Streaks are strongest on the left, like the reference. */
-  -webkit-mask-image: linear-gradient(to right, black 0%, black 35%, transparent 75%);
-  mask-image: linear-gradient(to right, black 0%, black 35%, transparent 75%);
+  /* Streaks cover the whole width of the scene. */
   animation: stuck-glitch-tint 20s linear infinite;
 }
 @keyframes stuck-glitch {
