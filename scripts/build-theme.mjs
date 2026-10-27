@@ -10,7 +10,7 @@ import path from "node:path";
 // theme can ship a new globe before that file is merged into main.
 const GLOBE_URL =
   process.env.THEME_GLOBE_URL ||
-  "https://raw.githubusercontent.com/Jullan118/Stuckholm/main/public/models/globe_2610_v4.glb";
+  "https://raw.githubusercontent.com/Jullan118/Stuckholm/main/public/models/globe_2610_v5.glb";
 
 execSync("npx vite build --config vite.theme.config.ts", {
   stdio: "inherit",
