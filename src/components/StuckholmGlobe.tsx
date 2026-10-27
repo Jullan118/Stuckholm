@@ -311,12 +311,12 @@ const SPARKLE_COUNT = 350;
 const DOT_COUNT = Math.round(SPARKLE_COUNT * 0.1);
 const OUTLINE_COUNT = SPARKLE_COUNT - DOT_COUNT;
 
-function sparkleOutline(size: number, pinch = 0.12, segments = 10) {
+function sparkleOutline(size: number, pinch = 0.12, segments = 10, diagonal = 0.45) {
   const TIPS = 8;
   const tips: THREE.Vector2[] = [];
   for (let i = 0; i < TIPS; i++) {
     const angle = (i / TIPS) * Math.PI * 2 + Math.PI / 2;
-    const length = size * (i % 2 === 0 ? 1 : 0.45);
+    const length = size * (i % 2 === 0 ? 1 : diagonal);
     tips.push(
       new THREE.Vector2(Math.cos(angle) * length, Math.sin(angle) * length)
     );
@@ -575,7 +575,8 @@ function SkyField({ progress }: { progress: number }) {
     );
   }, [sparkles]);
   const sparkleGeometry = React.useMemo(
-    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1)),
+    // Sky sparkles: four long points with deep concave sides, like the reference.
+    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1, 0.04, 14, 0.08)),
     []
   );
 
@@ -649,8 +650,7 @@ function SkyField({ progress }: { progress: number }) {
       <points geometry={dotGeometries.big} material={materials.dots} />
       <points geometry={dotGeometries.small} material={materials.dotsSmall} />
       <points geometry={dotGeometries.faint} material={materials.faintDots} />
-      <points geometry={smallSparkleGeometry} material={materials.sparkleDots} />
-      {sparkles.map((s, i) => i % 2 === 0 && (
+      {sparkles.map((s, i) => (
         <lineLoop
           key={i}
           geometry={sparkleGeometry}
