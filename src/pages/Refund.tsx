@@ -14,7 +14,7 @@ function Mail() {
 
 export function Refund() {
   return (
-    <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-sm sm:text-lg leading-snug">
+    <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-[11px] sm:text-xs leading-snug">
       <h1 className="text-xl sm:text-2xl font-light mb-2 text-center">
         Return &amp; Refund Policy
       </h1>
