@@ -1,25 +1,68 @@
 import * as React from "react";
+import { StuckholmGlobe } from "@/components/StuckholmGlobe";
 
-// About text shown on the home page. Edit this text freely; it is
-// placeholder copy for now.
+// How much extra scrolling (in viewport-heights) it takes for the sky
+// behind the globe to fully fade from the starry night down to white. The
+// hero itself stays pinned (sticky) for that whole stretch; the globe keeps
+// spinning in place the entire time, it never shrinks or flies away.
+const SPIN_AWAY_VH = 120;
+
+// About text shown above the footer, on the home page only. Edit this text
+// freely; it is placeholder copy for now.
 const ABOUT_TEXT =
   "stuckholm is an independent brand. blablabka ";
 
 export function Home() {
-  // The globe hero is removed, so the page is plain white. Switch the header
-  // and corners to black ink for this page.
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = React.useState(0);
+
   React.useEffect(() => {
-    document.documentElement.classList.add("hero-light");
+    function handleScroll() {
+      const el = wrapperRef.current;
+      if (!el) return;
+
+      const scrollable = el.offsetHeight - window.innerHeight;
+      if (scrollable <= 0) {
+        setProgress(0);
+        return;
+      }
+
+      const rect = el.getBoundingClientRect();
+      const scrolled = Math.min(Math.max(-rect.top, 0), scrollable);
+      const next = scrolled / scrollable;
+      setProgress(next);
+      // Once the background has turned mostly white, the header and corners
+      // switch from white to black (see .home-ink in index.css).
+      document.documentElement.classList.toggle("hero-light", next > 0.5);
+    }
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
     return () => {
       document.documentElement.classList.remove("hero-light");
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
     };
   }, []);
 
   return (
-    <section className="w-full px-4 sm:px-8 py-16 pt-32 font-manrope text-black">
-      <p className="mx-auto max-w-3xl text-base sm:text-xl leading-relaxed">
-        {ABOUT_TEXT}
-      </p>
-    </section>
+    <>
+      <div
+        ref={wrapperRef}
+        className="relative w-full"
+        style={{ height: `${100 + SPIN_AWAY_VH}vh` }}
+      >
+        <div className="sticky top-0 left-0 w-full h-screen overflow-hidden bg-[#04050c]">
+          <StuckholmGlobe scrollProgress={progress} />
+        </div>
+      </div>
+
+      <section className="w-full px-4 sm:px-8 py-16 font-manrope text-black">
+        <p className="mx-auto max-w-3xl text-base sm:text-xl leading-relaxed">
+          {ABOUT_TEXT}
+        </p>
+      </section>
+    </>
   );
 }
