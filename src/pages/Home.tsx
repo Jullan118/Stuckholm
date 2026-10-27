@@ -58,7 +58,7 @@ export function Home() {
         </div>
       </div>
 
-      <section className="w-full px-4 sm:px-8 py-16 font-manrope text-black">
+      <section className="w-full px-4 sm:px-8 py-16 font-cormorant text-black">
         <p className="mx-auto max-w-3xl text-base sm:text-xl leading-relaxed">
           {ABOUT_TEXT}
         </p>

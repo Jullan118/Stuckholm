@@ -35,7 +35,6 @@ export function SiteFooter() {
           <div className="flex flex-col gap-3 leading-tight">
             <span className={headingClass}>Stuckholm</span>
             <a href="mailto:stuck@stuckholm.se" className={linkClass}>Contact</a>
-            <Link to="/about" className={linkClass}>About</Link>
             <a
               href="https://www.instagram.com/stuckholm.se/"
               target="_blank"

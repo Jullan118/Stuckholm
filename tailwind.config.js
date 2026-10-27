@@ -15,6 +15,7 @@ export default {
       },
       fontFamily: {
         manrope: ['Manrope', 'sans-serif'],
+        cormorant: ['"Cormorant Garamond"', 'serif'],
       },
     },
   },
