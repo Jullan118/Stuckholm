@@ -23,7 +23,7 @@ const BAND_TWIST = 0; // radians a broken band part is turned
 const INK = "#383e42";
 const PAPER = "#ffffff";
 // How opaque the globe is at the top of the page (1 = solid).
-const GLOBE_START_OPACITY = 0.95; // 5 % transparent
+const GLOBE_START_OPACITY = 0.9; // 10 % transparent
 // One number for the size of the globe AND the grid, so they change together.
 // 1 = the size before the last +10 % step.
 // Extra size for the globe and its letter ring only (2.86875 = 1.5x the previous 1.9125).
@@ -51,7 +51,7 @@ const CAM_Y = 26.4; // 10 % higher than before (24 -> 26.4)
 const CAM_Z = 189; // 10 % further back than before (172 -> 189)
 const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
-const GLOBE_GREY = "#d2d6da";
+const GLOBE_GREY = "#e4e7ea";
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#000000"); // helsvart
 const SKY_WHITE = new THREE.Color("#ffffff");
