@@ -560,17 +560,41 @@ function SkyField({ progress }: { progress: number }) {
       })),
     []
   );
+  // Positions of the small sparkles, drawn as round dots.
+  const smallSparkleGeometry = React.useMemo(() => {
+    const list: number[] = [];
+    sparkles.forEach((s, i) => {
+      if (i % 2 === 1) list.push(s.pos.x, s.pos.y, s.pos.z);
+    });
+    return new THREE.BufferGeometry().setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(list, 3)
+    );
+  }, [sparkles]);
   const sparkleGeometry = React.useMemo(
     () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1)),
     []
   );
 
-  const materials = React.useMemo(
-    () => ({
+  const materials = React.useMemo(() => {
+    // A white disc on a transparent square, so star dots are round, not square.
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.beginPath();
+      ctx.arc(32, 32, 31, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+    }
+    const roundDot = new THREE.CanvasTexture(canvas);
+    return {
       dots: new THREE.PointsMaterial({
         color: "#ffffff",
         size: 1.8 * 2.2,
         sizeAttenuation: false,
+        map: roundDot,
+        alphaTest: 0.5,
         transparent: true,
         depthWrite: false,
       }),
@@ -578,19 +602,31 @@ function SkyField({ progress }: { progress: number }) {
         color: "#ffffff",
         size: 1.8 * 0.6,
         sizeAttenuation: false,
+        map: roundDot,
+        alphaTest: 0.5,
+        transparent: true,
+        depthWrite: false,
+      }),
+      // The small "sparkles" are now round dots too.
+      sparkleDots: new THREE.PointsMaterial({
+        color: "#ffffff",
+        size: 3,
+        sizeAttenuation: false,
+        map: roundDot,
+        alphaTest: 0.5,
         transparent: true,
         depthWrite: false,
       }),
       line: new THREE.LineBasicMaterial({ color: "#ffffff", transparent: true }),
-    }),
-    []
-  );
+    };
+  }, []);
 
 
   useFrame(() => {
     const fade = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
     materials.dots.opacity = fade;
     materials.dotsSmall.opacity = fade;
+    materials.sparkleDots.opacity = fade;
     materials.line.opacity = fade;
     // Turn the discs to face the camera.
   });
@@ -599,7 +635,8 @@ function SkyField({ progress }: { progress: number }) {
     <group>
       <points geometry={dotGeometries.big} material={materials.dots} />
       <points geometry={dotGeometries.small} material={materials.dotsSmall} />
-      {sparkles.map((s, i) => (
+      <points geometry={smallSparkleGeometry} material={materials.sparkleDots} />
+      {sparkles.map((s, i) => i % 2 === 0 && (
         <lineLoop
           key={i}
           geometry={sparkleGeometry}
