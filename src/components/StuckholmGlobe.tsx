@@ -535,20 +535,28 @@ function SkyField({ progress }: { progress: number }) {
     progressRef.current = progress;
   }, [progress]);
 
-  const dotGeometry = React.useMemo(() => {
-    const arr = new Float32Array(SKY_STAR_COUNT * 3);
+  // Half of the dots are bigger, half smaller: two point clouds, one per size.
+  const dotGeometries = React.useMemo(() => {
+    const big: number[] = [];
+    const small: number[] = [];
     for (let i = 0; i < SKY_STAR_COUNT; i++) {
       const p = skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45);
-      arr.set([p.x, p.y, p.z], i * 3);
+      (i % 2 === 0 ? big : small).push(p.x, p.y, p.z);
     }
-    return new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(arr, 3));
+    const make = (list: number[]) =>
+      new THREE.BufferGeometry().setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(list, 3)
+      );
+    return { big: make(big), small: make(small) };
   }, []);
 
   const sparkles = React.useMemo(
     () =>
       Array.from({ length: SKY_SPARKLE_COUNT }, (_, i) => ({
         pos: skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45),
-        size: i < 50 ? 10 + Math.random() * 8 : 6 + Math.random() * 5,
+        // Half of the sparkles are bigger, half smaller.
+        size: (i < 50 ? 10 + Math.random() * 8 : 6 + Math.random() * 5) * (i % 2 === 0 ? 1.6 : 0.6),
       })),
     []
   );
@@ -561,7 +569,14 @@ function SkyField({ progress }: { progress: number }) {
     () => ({
       dots: new THREE.PointsMaterial({
         color: "#ffffff",
-        size: 1.8,
+        size: 1.8 * 2.2,
+        sizeAttenuation: false,
+        transparent: true,
+        depthWrite: false,
+      }),
+      dotsSmall: new THREE.PointsMaterial({
+        color: "#ffffff",
+        size: 1.8 * 0.6,
         sizeAttenuation: false,
         transparent: true,
         depthWrite: false,
@@ -575,13 +590,15 @@ function SkyField({ progress }: { progress: number }) {
   useFrame(() => {
     const fade = 1 - THREE.MathUtils.clamp(progressRef.current, 0, 1);
     materials.dots.opacity = fade;
+    materials.dotsSmall.opacity = fade;
     materials.line.opacity = fade;
     // Turn the discs to face the camera.
   });
 
   return (
     <group>
-      <points geometry={dotGeometry} material={materials.dots} />
+      <points geometry={dotGeometries.big} material={materials.dots} />
+      <points geometry={dotGeometries.small} material={materials.dotsSmall} />
       {sparkles.map((s, i) => (
         <lineLoop
           key={i}
