@@ -311,6 +311,28 @@ const SPARKLE_COUNT = 350;
 const DOT_COUNT = Math.round(SPARKLE_COUNT * 0.1);
 const OUTLINE_COUNT = SPARKLE_COUNT - DOT_COUNT;
 
+// Outline of a four-point star like the reference: long thin spikes up and
+// down, shorter ones left and right, and very deep concave sides.
+function fourPointSparkle(size: number, width = 0.5, pinch = 0.04, segments = 14) {
+  const tips = [
+    new THREE.Vector2(0, size), // up
+    new THREE.Vector2(size * width, 0), // right
+    new THREE.Vector2(0, -size), // down
+    new THREE.Vector2(-size * width, 0), // left
+  ];
+  const points: THREE.Vector3[] = [];
+  for (let i = 0; i < tips.length; i++) {
+    const a = tips[i];
+    const b = tips[(i + 1) % tips.length];
+    const control = a.clone().add(b).multiplyScalar(0.5 * pinch);
+    const curve = new THREE.QuadraticBezierCurve(a, control, b);
+    for (const p of curve.getPoints(segments)) {
+      points.push(new THREE.Vector3(p.x, p.y, 0));
+    }
+  }
+  return points;
+}
+
 function sparkleOutline(size: number, pinch = 0.12, segments = 10, diagonal = 0.45) {
   const TIPS = 8;
   const tips: THREE.Vector2[] = [];
@@ -576,7 +598,7 @@ function SkyField({ progress }: { progress: number }) {
   }, [sparkles]);
   const sparkleGeometry = React.useMemo(
     // Sky sparkles: four long points with deep concave sides, like the reference.
-    () => new THREE.BufferGeometry().setFromPoints(sparkleOutline(1, 0.04, 14, 0.08)),
+    () => new THREE.BufferGeometry().setFromPoints(fourPointSparkle(1)),
     []
   );
 
