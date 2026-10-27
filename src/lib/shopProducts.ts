@@ -12,6 +12,7 @@ import { DEFAULT_VARIANT_TITLE, formatMoney, type CommerceProduct, type Money } 
 import { GENDER_SCALE_MAX, GENDER_SCALE_MIN } from "@/lib/garments";
 
 export type ShopProduct = CommerceProduct & {
+  variantImages: Record<string, string>; // variant id -> image url
   description: string;
   vendor: string;
   images: string[];
@@ -70,6 +71,9 @@ export function productFromShopify(p: ShopifyProduct): ShopProduct {
     options: p.options
       .filter((o) => o.name !== "Title")
       .map((o) => ({ name: o.name, values: o.values })),
+    variantImages: Object.fromEntries(
+      p.variants.nodes.flatMap((v) => (v.image?.url ? [[v.id, v.image.url]] : []))
+    ),
     variants: variants.length
       ? variants
       : [

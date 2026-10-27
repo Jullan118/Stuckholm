@@ -12,7 +12,13 @@ import {
 // Renders one <select> per product option (today just "Size"; a "Color"
 // option from Shopify would get its own dropdown automatically). Sizes that
 // are sold out stay visible but can't be picked.
-export function AddToCart({ product }: { product: CommerceProduct }) {
+export function AddToCart({
+  product,
+  onVariantChange,
+}: {
+  product: CommerceProduct;
+  onVariantChange?: (variantId: string | null) => void;
+}) {
   const { addLine, quantityInCart } = useCart();
   const [selected, setSelected] = React.useState<Record<string, string>>({});
   const [error, setError] = React.useState(false);
@@ -24,6 +30,12 @@ export function AddToCart({ product }: { product: CommerceProduct }) {
   }, [product.id]);
 
   const variant = findVariant(product, selected);
+
+  // Tell the page which colour/size is picked, so it can show that picture.
+  React.useEffect(() => {
+    onVariantChange?.(variant?.id ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variant?.id]);
   const soldOut = isSoldOut(product);
   const inCart = variant ? quantityInCart(variant.id) : 0;
   const reachedMax =

@@ -35,6 +35,7 @@ const VARIANT_FIELDS = `
   availableForSale
   price { amount currencyCode }
   selectedOptions { name value }
+  image { url }
 `;
 
 export const PRODUCT_FIELDS = `
@@ -58,6 +59,7 @@ export type ShopifyVariant = {
   availableForSale: boolean;
   price: ShopifyMoney;
   selectedOptions: { name: string; value: string }[];
+  image: { url: string } | null;
 };
 
 export type ShopifyProduct = {

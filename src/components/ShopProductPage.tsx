@@ -23,6 +23,15 @@ export function ShopProductPage({
     setActiveIndex(0);
   }, [product.handle]);
 
+  // Picking a colour (or size) in the dropdown shows that variant's picture,
+  // if the variant has one in Shopify.
+  function showVariantImage(variantId: string | null) {
+    if (!variantId) return;
+    const url = product.variantImages[variantId];
+    const index = url ? images.indexOf(url) : -1;
+    if (index >= 0) setActiveIndex(index);
+  }
+
   const current = images[activeIndex] ?? images[0];
 
   function goPrev() {
@@ -134,7 +143,7 @@ export function ShopProductPage({
           </div>
 
           <div className="flex justify-center">
-            <AddToCart product={product} />
+            <AddToCart product={product} onVariantChange={showVariantImage} />
           </div>
 
           {product.description && (
