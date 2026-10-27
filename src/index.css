@@ -50,15 +50,16 @@ html.hero-light .home-ink {
   opacity: 0;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.5) 0px,
-    rgba(255, 255, 255, 0.5) 1px,
+    rgba(255, 255, 255, 0.6) 0px,
+    rgba(255, 255, 255, 0.6) 1px,
     transparent 1px,
     transparent 3px,
-    rgba(170, 225, 255, 0.95) 14px,
-    rgba(170, 225, 255, 0.95) 17px,
-    transparent 17px,
-    transparent 31px
+    rgba(210, 240, 255, 1) 12px,
+    rgba(210, 240, 255, 1) 18px,
+    transparent 18px,
+    transparent 30px
   );
+
   mix-blend-mode: screen;
   animation: stuck-glitch-scan 20s linear infinite;
 }
@@ -115,22 +116,26 @@ html.hero-light .home-ink {
     background-position: 0 0;
   }
   5.1% {
-    opacity: 0.8;
+    opacity: 1;
     background-position: 0 40px;
   }
   5.4% {
-    opacity: 0.5;
+    opacity: 0.8;
     background-position: 0 -30px;
   }
   5.7% {
-    opacity: 0.8;
+    opacity: 1;
     background-position: 0 20px;
   }
   6.3% {
-    opacity: 0.6;
+    opacity: 0.7;
     background-position: 0 -10px;
   }
-  6.5%, 100% {
+  6.5% {
+    opacity: 0.5;
+    background-position: 0 6px;
+  }
+  8.5%, 100% {
     opacity: 0;
     background-position: 0 0;
   }
