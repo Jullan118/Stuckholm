@@ -6,7 +6,10 @@ import path from "node:path";
 
 // The globe model is served from GitHub through jsDelivr, because theme
 // assets cannot hold a .glb file. The repo must stay public and the file on main.
+// THEME_GLOBE_URL lets a build point at a specific commit's model file, so a
+// theme can ship a new globe before that file is merged into main.
 const GLOBE_URL =
+  process.env.THEME_GLOBE_URL ||
   "https://raw.githubusercontent.com/Jullan118/Stuckholm/main/public/models/globe_2610_v4.glb";
 
 execSync("npx vite build --config vite.theme.config.ts", {
