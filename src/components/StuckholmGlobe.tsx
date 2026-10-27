@@ -108,6 +108,21 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     }
   });
 
+  // Letters are outlines: no solid fill, only a white edge line.
+  letterMeshes.forEach((mesh) => {
+    const edges = new THREE.EdgesGeometry(mesh.geometry, 20);
+    const line = new THREE.LineSegments(
+      edges,
+      new THREE.LineBasicMaterial({ color: PAPER })
+    );
+    mesh.add(line);
+    mesh.material = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+    });
+  });
+
   // Move the letters out of the blob after the walk, so the tree isn't
   // changing while it is being traversed.
   letterMeshes.forEach((mesh) => {
@@ -139,6 +154,17 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     mesh.updateMatrix();
   });
 
+
+  // Globe and band: solid grey, 95 % opaque (5 % see-through). Each mesh gets
+  // its own material copy so the cached GLB materials are not changed.
+  blobMeshes.forEach((mesh) => {
+    const mat = (mesh.material as THREE.MeshStandardMaterial).clone();
+    mat.color = new THREE.Color(GLOBE_GREY);
+    mat.transparent = true;
+    mat.opacity = GLOBE_START_OPACITY;
+    mat.depthWrite = true;
+    mesh.material = mat;
+  });
 
   return { blob: root, letters };
 }
@@ -199,6 +225,13 @@ function DriftingGlobe({
       // Idle spin around the globe's own (possibly tilted) vertical axis.
       const spinSpeed = 0.07 + progressRef.current * 0.18;
       yawRef.current -= delta * spinSpeed;
+    }
+    // The letter ring turns the other way: the globe's own spin is -s, so a
+    // local spin of +2s on the ring (which sits inside the globe's spin) makes
+    // it go +s in the scene, the opposite direction.
+    if (ringRef.current) {
+      const s = 0.07 + progressRef.current * 0.18;
+      ringRef.current.rotation.y += delta * s * 2;
     }
     // Spin around the globe's own axis (its Y, which runs bottom to cross). Order XYZ
     // keeps that axis tilted but fixed while it turns, so the globe never wobbles.
