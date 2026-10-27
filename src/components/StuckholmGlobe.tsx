@@ -226,13 +226,8 @@ function DriftingGlobe({
       const spinSpeed = 0.07 + progressRef.current * 0.18;
       yawRef.current -= delta * spinSpeed;
     }
-    // The letter ring turns the other way: the globe's own spin is -s, so a
-    // local spin of +2s on the ring (which sits inside the globe's spin) makes
-    // it go +s in the scene, the opposite direction.
-    if (ringRef.current) {
-      const s = 0.07 + progressRef.current * 0.18;
-      ringRef.current.rotation.y += delta * s * 2;
-    }
+    // The letter ring has no spin of its own: it turns with the globe, in the
+    // same direction (medsols, seen from above) and at the same speed.
     // Spin around the globe's own axis (its Y, which runs bottom to cross). Order XYZ
     // keeps that axis tilted but fixed while it turns, so the globe never wobbles.
     group.rotation.set(GLOBE_BASE_PITCH + pitchRef.current, yawRef.current, 0, "XYZ");
