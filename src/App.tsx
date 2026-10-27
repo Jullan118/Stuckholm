@@ -19,6 +19,7 @@ import { Login } from "@/pages/Login";
 import { Contact } from "@/pages/Contact";
 import { InfoPage } from "@/pages/InfoPage";
 import { Cookies } from "@/pages/Cookies";
+import { Privacy } from "@/pages/Privacy";
 import { Terms } from "@/pages/Terms";
 import { Shipping } from "@/pages/Shipping";
 import { Refund } from "@/pages/Refund";
@@ -50,7 +51,7 @@ function App() {
           <Route path="/refund" element={<Refund />} />
           <Route path="/payments" element={<InfoPage title="Betalning" />} />
           <Route path="/faq" element={<InfoPage title="FAQ" />} />
-          <Route path="/privacy" element={<InfoPage title="Integritetspolicy" />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="/cookies" element={<Cookies />} />
           <Route path="/terms" element={<Terms />} />
         </Routes>
