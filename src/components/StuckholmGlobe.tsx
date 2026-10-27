@@ -52,6 +52,7 @@ const CAM_Z = 189; // 10 % further back than before (172 -> 189)
 const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
 const GLOBE_GREY = "#e4e7ea";
+const CRACK_GREY = "#9aa1a6"; // lighter grey for cracks and scratches
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#000000"); // helsvart
 const SKY_WHITE = new THREE.Color("#ffffff");
@@ -158,8 +159,12 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
   // Globe and band: solid grey, 95 % opaque (5 % see-through). Each mesh gets
   // its own material copy so the cached GLB materials are not changed.
   blobMeshes.forEach((mesh) => {
-    const mat = (mesh.material as THREE.MeshStandardMaterial).clone();
-    mat.color = new THREE.Color(GLOBE_GREY);
+    const original = mesh.material as THREE.MeshStandardMaterial;
+    const mat = original.clone();
+    // Cracks and scratches come in as the near-black material. Keep them as
+    // their own, lighter grey so they still show against the globe.
+    const isCrack = original.color.r < 0.3 && original.color.g < 0.3 && original.color.b < 0.3;
+    mat.color = new THREE.Color(isCrack ? CRACK_GREY : GLOBE_GREY);
     mat.transparent = true;
     mat.opacity = GLOBE_START_OPACITY;
     mat.depthWrite = true;
