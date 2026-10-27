@@ -539,16 +539,19 @@ function SkyField({ progress }: { progress: number }) {
   const dotGeometries = React.useMemo(() => {
     const big: number[] = [];
     const small: number[] = [];
+    // About 15 % of the dots are faint and small, a third group.
+    const faint: number[] = [];
     for (let i = 0; i < SKY_STAR_COUNT; i++) {
       const p = skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45);
-      (i % 2 === 0 ? big : small).push(p.x, p.y, p.z);
+      const list = i % 100 < 15 ? faint : i % 2 === 0 ? big : small;
+      list.push(p.x, p.y, p.z);
     }
     const make = (list: number[]) =>
       new THREE.BufferGeometry().setAttribute(
         "position",
         new THREE.Float32BufferAttribute(list, 3)
       );
-    return { big: make(big), small: make(small) };
+    return { big: make(big), small: make(small), faint: make(faint) };
   }, []);
 
   const sparkles = React.useMemo(
@@ -607,6 +610,15 @@ function SkyField({ progress }: { progress: number }) {
         transparent: true,
         depthWrite: false,
       }),
+      faintDots: new THREE.PointsMaterial({
+        color: "#ffffff",
+        size: 1.8 * 0.45,
+        sizeAttenuation: false,
+        map: roundDot,
+        alphaTest: 0.5,
+        transparent: true,
+        depthWrite: false,
+      }),
       // The small "sparkles" are now round dots too.
       sparkleDots: new THREE.PointsMaterial({
         color: "#ffffff",
@@ -627,6 +639,7 @@ function SkyField({ progress }: { progress: number }) {
     materials.dots.opacity = fade;
     materials.dotsSmall.opacity = fade;
     materials.sparkleDots.opacity = fade;
+    materials.faintDots.opacity = fade * 0.4; // paler
     materials.line.opacity = fade;
     // Turn the discs to face the camera.
   });
@@ -635,6 +648,7 @@ function SkyField({ progress }: { progress: number }) {
     <group>
       <points geometry={dotGeometries.big} material={materials.dots} />
       <points geometry={dotGeometries.small} material={materials.dotsSmall} />
+      <points geometry={dotGeometries.faint} material={materials.faintDots} />
       <points geometry={smallSparkleGeometry} material={materials.sparkleDots} />
       {sparkles.map((s, i) => i % 2 === 0 && (
         <lineLoop
