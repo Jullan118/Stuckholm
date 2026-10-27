@@ -165,7 +165,7 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     // Cracks and scratches come in as the near-black material. Keep them as
     // their own, lighter grey so they still show against the globe.
     const isCrack = original.color.r < 0.3 && original.color.g < 0.3 && original.color.b < 0.3;
-    mat.color = new THREE.Color(isCrack ? CRACK_GREY : GLOBE_GREY);
+    mat.color = new THREE.Color(isCrack ? CRACK_GREY : fillColor);
     mat.userData.baseColor = mat.color.clone();
     mat.transparent = true;
     mat.opacity = GLOBE_START_OPACITY;
