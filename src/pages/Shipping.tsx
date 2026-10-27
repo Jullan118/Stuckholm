@@ -1,3 +1,17 @@
+// Shipping policy. Layout matches Refund.tsx; copy is used as written.
+const EMAIL = "stuck@stuckholm.se";
+
+function Mail() {
+  return (
+    <a
+      href={`mailto:${EMAIL}`}
+      className="underline hover:opacity-70 transition-opacity"
+    >
+      {EMAIL}
+    </a>
+  );
+}
+
 export function Shipping() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-[11px] sm:text-xs leading-snug">
@@ -5,74 +19,59 @@ export function Shipping() {
         Shipping
       </h1>
 
-      <p className="mb-2">We currently ship to the following regions:</p>
-      <ul className="list-none space-y-1 mb-2">
-        <li>– United States</li>
-        <li>– United Kingdom</li>
-        <li>– Europe (EU &amp; non-EU)</li>
-        <li>– Canada</li>
-        <li>– Select international countries</li>
-      </ul>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">Where we ship</h2>
       <p className="mb-5">
-        If your country isn’t listed at checkout, feel free to contact us for
-        confirmation.
+        We ship to the United States, the United Kingdom, Europe (EU and non-EU),
+        Canada and selected international countries. If your country is not listed
+        at checkout, contact us at <Mail /> and we will confirm whether we can
+        deliver to you.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
-        Production &amp; Shipping Timeline
-      </h2>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">Shipping costs</h2>
+      <p className="mb-5">Shipping costs are shown at checkout before you pay.</p>
+
+      <h2 className="text-xs sm:text-sm font-normal mb-2">Made-to-order items</h2>
       <p className="mb-2">
-        Stuckholm pieces are made to order and produced by our partner. Typical
-        timelines are:
+        Stuckholm pieces are made to order by our production partner. Estimated
+        times:
       </p>
-      <ul className="list-none space-y-1 mb-2">
-        <li>– Production time: 2–7 business days after the order is placed</li>
+      <ul className="list-none space-y-1 mb-5">
+        <li>– Production: 2–7 business days after your order is placed</li>
+        <li>– USA: 3–7 business days shipping</li>
+        <li>– UK and EU: 5–10 business days shipping</li>
+        <li>– International: 10–20 business days shipping</li>
       </ul>
-      <p className="mb-2">Shipping time:</p>
-      <ul className="list-none space-y-1 mb-2 pl-4">
-        <li>– USA: 3–7 business days</li>
-        <li>– UK/EU: 5–10 business days</li>
-        <li>– International: 10–20 business days</li>
-      </ul>
+
+      <h2 className="text-xs sm:text-sm font-normal mb-2">Second-hand items</h2>
       <p className="mb-5">
-        Shipping timelines are estimates, not guarantees.
+        Second-hand items are sent from our stock within 2 business days after your
+        order is placed.
+      </p>
+
+      <p className="mb-5">Delivery times are estimates, not guarantees.</p>
+
+      <h2 className="text-xs sm:text-sm font-normal mb-2">Tracking</h2>
+      <p className="mb-5">
+        When your order ships, you will receive an email with tracking details. If
+        tracking has not updated within 5 days, contact us at <Mail />.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">
-        Tracking Information
+        Customs, duties and import taxes
       </h2>
       <p className="mb-5">
-        You will receive an email with tracking details once your order ships.
-        If tracking hasn’t updated within 5 days, please contact us at{" "}
-        <a
-          href="mailto:stuck@stuckholm.se"
-          className="underline hover:opacity-70 transition-opacity"
-        >
-          stuck@stuckholm.se
-        </a>
-        .
+        For orders from outside the EU, your country may charge customs duties or
+        import taxes when the parcel arrives. These are paid by the buyer, not by
+        Stuckholm.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
-        Customs, Duties &amp; Import Taxes
-      </h2>
-      <p className="mb-5">
-        Stuckholm is not responsible for any customs fees, import taxes, or
-        additional charges imposed by your country. These are the buyer’s
-        responsibility.
+      <h2 className="text-xs sm:text-sm font-normal mb-2">Delays</h2>
+      <p>
+        We are not responsible for delays caused by events outside our control, such
+        as customs processing, postal disruptions or weather. Please check your
+        shipping address before you order. If a parcel cannot be delivered because
+        the address was incorrect, the cost of redelivery may be charged to you.
       </p>
-
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
-        Delays and Disclaimers
-      </h2>
-      <p className="mb-2">We are not liable for delays caused by:</p>
-      <ul className="list-none space-y-1 mb-2">
-        <li>– Customs processing</li>
-        <li>– Postal disruptions</li>
-        <li>– Weather conditions</li>
-        <li>– Incorrect addresses provided by customers</li>
-      </ul>
-      <p>Please double-check your shipping information before placing an order.</p>
     </div>
   );
 }
