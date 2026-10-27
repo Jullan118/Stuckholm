@@ -14,7 +14,7 @@ export default {
         "letter-jump": "letterJump 0.4s ease",
       },
       fontFamily: {
-        manrope: ['Manrope', 'sans-serif'],
+        manrope: ['"Cormorant Garamond"', 'serif'],
         cormorant: ['"Cormorant Garamond"', 'serif'],
       },
     },
