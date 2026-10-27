@@ -22,7 +22,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-3 leading-tight">
             <span className={headingClass}>Info</span>
             <Link to="/shipping" className={linkClass}>Shipping</Link>
-            <Link to="/refund" className={linkClass}>Refund</Link>
+            <Link to="/refund" className={linkClass}>Return & Refunds</Link>
           </div>
 
           <div className="flex flex-col gap-3 leading-tight">
