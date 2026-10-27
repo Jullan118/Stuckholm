@@ -595,7 +595,7 @@ function SkyField({ progress }: { progress: number }) {
     return {
       dots: new THREE.PointsMaterial({
         color: "#ffffff",
-        size: 1.8 * 2.2,
+        size: 1.8 * 0.6,
         sizeAttenuation: false,
         map: roundDot,
         alphaTest: 0.5,
