@@ -1,173 +1,120 @@
+// Terms of use. Layout matches Privacy.tsx; copy is used as written.
+const EMAIL = "stuck@stuckholm.se";
+
+function Mail() {
+  return (
+    <a
+      href={`mailto:${EMAIL}`}
+      className="underline hover:opacity-70 transition-opacity"
+    >
+      {EMAIL}
+    </a>
+  );
+}
+
 export function Terms() {
   return (
     <div className="relative z-10 w-full max-w-4xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-[11px] sm:text-xs leading-snug">
       <h1 className="text-xl sm:text-2xl font-light mb-2">Terms of Use</h1>
-      <p className="mb-5 text-black/50">Last updated: 10 October 2026</p>
+      <p className="mb-5 text-black/50">Last updated: 22 October 2026</p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">1. About us</h2>
-      <p className="mb-2">
-        These terms apply to the online store and website at stuckholm.se (the
-        “Website”), operated by:
-      </p>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">1. Seller</h2>
       <p className="mb-5">
-        Company name: Sturm und Drang AB
-        <br />
-        Organisation number: 5592733009
-        <br />
-        Address: Metargatan 5, 116 66 Stockholm
-        <br />
-        Email: stuck@stuckholm.se
+        Sturm und Drang AB, org. no. 5592733009, Norrtullsgatan 12N, 113 27
+        Stockholm, <Mail />.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">2. Scope</h2>
       <p className="mb-5">
-        These terms apply to all purchases made through our website, including
-        new clothing and second-hand items. By placing an order, you accept
-        these terms.
+        These terms apply to all purchases on stuckholm.se. By ordering, you accept
+        them.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">3. Products and prices</h2>
-      <ul className="list-none space-y-1 mb-2">
-        <li>
-          – We sell two types of products: new clothing made to order by our
-          production partner, and selected second-hand items from our own
-          collection. Second-hand items are unique or limited, so each one can
-          only be bought once. Descriptions and photos show the condition.
-        </li>
-        <li>
-          – All prices are shown in xxx (currency) and include VAT where
-          applicable. Shipping costs are shown at checkout. We may change prices
-          at any time. The price valid at the time of your order applies.
-        </li>
-      </ul>
-      <div className="mb-5" />
+      <p className="mb-5">
+        We sell new clothing made to order by our production partner, and
+        second-hand items from our own collection. Second-hand items are unique, so
+        each can only be bought once. All prices are in SEK and include VAT.
+        Shipping is shown at checkout. The price at the time of your order applies.
+      </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">4. Placing an order</h2>
-      <ul className="list-none space-y-1 mb-5">
-        <li>
-          – Adding a product to your bag does not create a contract. A contract
-          is formed when you receive our order confirmation by email. If an item
-          is no longer available, for example because a second-hand piece was
-          sold to someone else, we will contact you and refund you in full.
-        </li>
-        <li>
-          – You are responsible for giving us correct delivery and contact
-          details. See our Shipping page.
-        </li>
-      </ul>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">4. Orders and contract</h2>
+      <p className="mb-5">
+        A contract is formed when you receive our order confirmation by email. If an
+        item is no longer available, we will contact you and refund you in full.
+      </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">5. Payment</h2>
-      <ul className="list-none space-y-1 mb-5">
-        <li>
-          – Payment is made through the checkout provided by Shopify. We accept
-          xxx (payment methods).
-        </li>
-        <li>– Your order is processed once payment has been received.</li>
-      </ul>
+      <p className="mb-5">Payment is handled by Shopify at checkout.</p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
-        6. Production, delivery and risk
-      </h2>
-      <ul className="list-none space-y-1 mb-5">
-        <li>
-          – New products are made to order. Production and delivery times are on
-          our Shipping page.
-        </li>
-        <li>
-          – Second-hand items are sent from our stock, usually within xxx
-          business days.
-        </li>
-        <li>
-          – Risk of loss passes to you when the product is delivered to the
-          address you gave us.
-        </li>
-      </ul>
-
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
-        7. Right of withdrawal (14 days)
-      </h2>
-      <p className="mb-2">
-        You can cancel your order within 14 days of receiving it, without giving
-        a reason. This applies to both new and second-hand items.
-      </p>
-      <p className="mb-2">How to return an item:</p>
-      <ol className="list-none space-y-1 mb-2">
-        <li>1. Email us at stuck@stuckholm.se with your order number.</li>
-        <li>
-          2. Send the item back within 14 days of telling us. Please include your
-          order number in the parcel.
-        </li>
-        <li>3. You pay the return shipping.</li>
-      </ol>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">6. Delivery and risk</h2>
       <p className="mb-5">
-        We refund the purchase price and the standard delivery cost within 14
-        days of receiving the returned item. The refund goes back to your
-        original payment method.
+        Made-to-order items are produced and shipped as described on our Shipping
+        page. Second-hand items are sent within 2 business days of your order. Risk
+        passes to you on delivery.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">8. Defects and complaints</h2>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">7. Right of withdrawal</h2>
       <p className="mb-5">
-        If a product is faulty or does not match the description, you have rights
-        under Swedish consumer law (konsumentköplagen). Contact us within a
-        reasonable time after you discover the fault, at stuck@stuckholm.se. We
-        will cover the return shipping, and repair, replace or refund the
-        product, as the law requires.
+        You can cancel within 14 days of receiving your order, without giving a
+        reason. Details are in our Return &amp; Refund Policy.
+      </p>
+
+      <h2 className="text-xs sm:text-sm font-normal mb-2">8. Faulty goods</h2>
+      <p className="mb-5">
+        If a product is faulty or does not match its description, you have rights
+        under Swedish consumer law (konsumentköplagen). Contact us at <Mail /> within
+        this timeframe. We cover return shipping and repair, replacement or refund,
+        as the law requires.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">9. Intellectual property</h2>
       <p className="mb-5">
-        All designs, graphics, texts, photos and the Stuckholm name and logo are
-        our property or licensed to us. You may not copy or use them without our
-        written permission, except for private, non-commercial use.
+        Our designs, texts, photos and the Stuckholm name and logo belong to us or
+        are licensed to us. Do not copy them without our written permission, except
+        for private use.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">10. Use of the Website</h2>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">10. Website use</h2>
       <p className="mb-5">
-        You agree not to misuse the Website, including by attempting to access
-        systems or data you are not authorised to use, or by interfering with its
-        operation.
+        Do not misuse the Website or interfere with its operation.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">11. Limitation of liability</h2>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">11. Liability</h2>
       <p className="mb-5">
-        To the extent permitted by law, we are not liable for indirect losses or
-        for delays caused by events outside our control, such as customs
-        processing, postal disruptions or weather. This does not limit any rights
-        you have as a consumer under mandatory law.
+        To the extent the law allows, we are not liable for indirect losses or delays
+        outside our control. This does not limit your rights as a consumer.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">12. Third-party services</h2>
       <p className="mb-5">
-        The Website uses third-party services, including Shopify (checkout),
-        Supabase (sign-in) and Vercel (hosting). Their terms may also apply to
-        parts of your purchase.
+        We use Shopify (checkout), Supabase (sign-in), Vercel (hosting) and Tidymerch
+        (production and shipping). Their terms may also apply to parts of your
+        purchase.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">13. Changes to these terms</h2>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">13. Changes</h2>
       <p className="mb-5">
-        We may update these terms. The version that applies is the one in force
-        when you place your order.
+        We may update these terms. The version in force when you order applies.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">14. Governing law and disputes</h2>
-      <p className="mb-2">
-        These terms are governed by Swedish law. If you are a consumer, you also
-        keep the protection of the mandatory laws in your country of residence.
-      </p>
+      <h2 className="text-xs sm:text-sm font-normal mb-2">14. Law and disputes</h2>
       <p className="mb-5">
-        For consumer disputes, you can contact the Swedish Consumer Dispute Board
-        (Allmänna reklamationsnämnden, ARN), www.arn.se. Disputes that cannot be
-        resolved this way are heard by a Swedish court (xxx: confirm the court or
-        venue).
+        Swedish law applies. Consumers also keep the protection of mandatory laws in
+        their country of residence. Consumer disputes can be brought to the Swedish
+        Consumer Dispute Board (ARN),{" "}
+        <a
+          href="https://www.arn.se"
+          className="underline hover:opacity-70 transition-opacity"
+        >
+          www.arn.se
+        </a>
+        , or to a Swedish court.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">15. Contact</h2>
       <p>
-        Stuckholm
-        <br />
-        stuck@stuckholm.se
-        <br />
-        Metargatan 5, 116 66 Stockholm
+        <Mail />
       </p>
     </div>
   );
