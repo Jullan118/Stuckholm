@@ -558,8 +558,8 @@ function SkyField({ progress }: { progress: number }) {
     () =>
       Array.from({ length: SKY_SPARKLE_COUNT }, (_, i) => ({
         pos: skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45),
-        // Half of the sparkles are bigger, half smaller.
-        size: (i < 50 ? 10 + Math.random() * 8 : 6 + Math.random() * 5) * (i % 2 === 0 ? 1.6 : 0.6),
+        // Only one in four sparkles is big, the rest are smaller.
+        size: (i < 50 ? 10 + Math.random() * 8 : 6 + Math.random() * 5) * (i % 4 === 0 ? 1.6 : 0.6),
       })),
     []
   );
