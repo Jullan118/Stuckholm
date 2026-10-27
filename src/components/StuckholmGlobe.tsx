@@ -235,6 +235,13 @@ function DriftingGlobe({
     // Glitch: red for a short moment, once every minute.
     const elapsed = state.clock.elapsedTime;
     const glitchOn = elapsed % GLITCH_EVERY < GLITCH_LENGTH && elapsed > 1;
+    // Fade the globe out as the page scrolls down to the white part, so it
+    // is gone by the time the background is white.
+    const fade = 1 - THREE.MathUtils.smoothstep(progressRef.current, 0.2, 0.9);
+    bodyMaterials.forEach((mat) => {
+      mat.opacity = GLOBE_START_OPACITY * fade;
+    });
+
     if (glitchOn !== glitchingRef.current) {
       glitchingRef.current = glitchOn;
       bodyMaterials.forEach((mat) => {
