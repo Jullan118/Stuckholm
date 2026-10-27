@@ -28,7 +28,7 @@ export function MainNav() {
         <Link
           key={link.label}
           to={link.to}
-          className={`inline-block text-base transition-transform duration-200 ease-out hover:scale-125 ${
+          className={`inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${
   isHome ? "text-white home-ink hover:opacity-70" : "text-black hover:text-black/70"
 }`}
         >
