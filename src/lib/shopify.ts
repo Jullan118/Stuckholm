@@ -48,6 +48,7 @@ export const PRODUCT_FIELDS = `
   featuredImage { url altText }
   images(first: 10) { nodes { url altText } }
   options { name values }
+  collections(first: 20) { nodes { handle } }
   variants(first: 100) { nodes { ${VARIANT_FIELDS} } }
 `;
 
@@ -72,6 +73,7 @@ export type ShopifyProduct = {
   featuredImage: { url: string; altText: string | null } | null;
   images: { nodes: { url: string; altText: string | null }[] };
   options: { name: string; values: string[] }[];
+  collections: { nodes: { handle: string }[] };
   variants: { nodes: ShopifyVariant[] };
 };
 

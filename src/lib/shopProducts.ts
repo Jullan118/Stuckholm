@@ -17,6 +17,7 @@ export type ShopProduct = CommerceProduct & {
   vendor: string;
   images: string[];
   isTrash: boolean;
+  collections: string[]; // Shopify collection handles, e.g. "artwork", "clothing"
   genderScale: number | null;
   brand: string | null;
   colour: string | null;
@@ -90,6 +91,7 @@ export function productFromShopify(p: ShopifyProduct): ShopProduct {
     vendor: p.vendor,
     images: images.length ? images : [image].filter(Boolean),
     isTrash,
+    collections: p.collections.nodes.map((c) => c.handle),
     genderScale: genderScaleFrom(p.tags),
     brand: tagValue(p.tags, "brand"),
     colour: tagValue(p.tags, "colour"),
