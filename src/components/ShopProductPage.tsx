@@ -78,10 +78,10 @@ export function ShopProductPage({
                 <button
                   type="button"
                   onClick={() => setLightboxIndex(activeIndex)}
-                  className="w-full max-w-md aspect-square border border-black/15 overflow-hidden cursor-zoom-in"
+                  className="w-full max-w-xl aspect-square border border-black/15 bg-[#f2f2f2] overflow-hidden cursor-zoom-in flex items-center justify-center"
                   aria-label="View image larger"
                 >
-                  <img src={current} alt={product.title} className="w-full h-full object-cover" />
+                  <img src={current} alt={product.title} className="max-w-full max-h-full object-contain" />
                 </button>
 
                 {images.length > 1 && (
