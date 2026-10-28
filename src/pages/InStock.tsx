@@ -5,8 +5,8 @@ import { ProductGrid } from "@/components/ProductGrid";
 // Shopify collection handles. Make sure these match the handles in Shopify
 // (a collection named "Artwork" gets the handle "artwork").
 const CATEGORIES = [
-  { handle: "artwork", label: "Artwork" },
   { handle: "clothing", label: "Clothing" },
+  { handle: "artwork", label: "Artwork" },
 ] as const;
 
 export function InStock() {
