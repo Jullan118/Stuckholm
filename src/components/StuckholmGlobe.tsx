@@ -283,9 +283,11 @@ function DriftingGlobe({
           <group ref={ringRef}>
             <primitive object={letters} />
           </group>
+          {/* The apple sits in the same group as the globe, so it gets the same
+              position, tilt, spin and float during the apple phase. */}
+          <GlitchApple />
         </Float>
       </group>
-      <GlitchApple />
     </group>
   );
 }
