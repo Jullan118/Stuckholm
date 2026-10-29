@@ -22,15 +22,10 @@ html.hero-light .home-ink {
 }
 
 
-/* During the terrain and apple variants the globe itself is hidden. */
-.stuck-glitch[data-variant="terrain"] > canvas:not([aria-hidden]),
-.stuck-glitch[data-variant="apple"] > canvas:not([aria-hidden]) {
-  opacity: 0;
-}
-
-/* Glitch on the home globe: every 15 s, for 0.7 s, the scene turns blue,
-   jerks sideways in steps, splits into blue and red edges and gets scan
-   lines. GlitchBurst.tsx adds one of three overlays per burst. */
+/* Glitch on the home globe: every 15 s, for 0.6 s in three 0.2 s phases
+   (pixels, grid landscape, apple). The phases are driven by
+   src/lib/glitchClock.ts. The CSS here adds the blue wash, the sideways
+   jerk and the scan lines over the whole burst. */
 .stuck-glitch {
   position: relative;
   animation: stuck-glitch 15s linear infinite;
@@ -72,27 +67,27 @@ html.hero-light .home-ink {
     transform: translateX(0);
     filter: none;
   }
-  0.311% {
+  0.333% {
     transform: translateX(26px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
   }
-  1.244% {
+  1% {
     transform: translateX(-20px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
   }
-  2.178% {
+  1.667% {
     transform: translateX(14px);
     filter: drop-shadow(-6px 0 0 rgba(0, 120, 255, 1)) drop-shadow(6px 0 0 rgba(255, 40, 90, 0.8));
   }
-  3.111% {
+  2.333% {
     transform: translateX(-9px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
   }
-  4.044% {
+  3% {
     transform: translateX(4px);
     filter: none;
   }
-  4.667%, 100% {
+  4%, 100% {
     transform: translateX(0);
     filter: none;
   }
@@ -101,16 +96,16 @@ html.hero-light .home-ink {
   0% {
     opacity: 0;
   }
-  0.311%, 1.244% {
+  0.333%, 1% {
     opacity: 0.55;
   }
-  2.178%, 3.111% {
+  1.667%, 2.333% {
     opacity: 0.4;
   }
-  4.044% {
+  3% {
     opacity: 0.55;
   }
-  4.667%, 100% {
+  4%, 100% {
     opacity: 0;
   }
 }
@@ -119,24 +114,31 @@ html.hero-light .home-ink {
     opacity: 0;
     background-position: 0 0;
   }
-  0.311% {
+  0.333% {
     opacity: 1;
     background-position: 0 40px;
   }
-  1.244% {
+  1% {
     opacity: 0.8;
     background-position: 0 -30px;
   }
-  2.178% {
+  1.667% {
     opacity: 1;
     background-position: 0 20px;
   }
-  4.044% {
+  3% {
     opacity: 0.7;
     background-position: 0 -10px;
   }
-  4.667%, 100% {
+  4%, 100% {
     opacity: 0;
     background-position: 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stuck-glitch,
+  .stuck-glitch::before,
+  .stuck-glitch::after {
+    animation: none;
   }
 }

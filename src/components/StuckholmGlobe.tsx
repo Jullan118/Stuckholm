@@ -4,6 +4,8 @@ import { Float, useGLTF } from "@react-three/drei";
 import GravityGrid, { type Well } from "./GravityGrid";
 import * as THREE from "three";
 import { GlitchBurst } from "./GlitchBurst";
+import { GlitchApple } from "./GlitchApple";
+import { glitch, startGlitchClock } from "../lib/glitchClock";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
@@ -202,6 +204,7 @@ function DriftingGlobe({
 }) {
   const groupRef = React.useRef<THREE.Group>(null);
   const ringRef = React.useRef<THREE.Group>(null);
+  const blobRef = React.useRef<THREE.Group>(null);
   const progressRef = React.useRef(0);
   const yawRef = React.useRef(0);
   const pitchRef = React.useRef(0);
@@ -226,6 +229,11 @@ function DriftingGlobe({
   }, [blob]);
 
   useFrame((state, delta) => {
+    // The globe is hidden while the apple is shown.
+    const hidden = glitch.phase === "apple";
+    if (blobRef.current) blobRef.current.visible = !hidden;
+    if (ringRef.current) ringRef.current.visible = !hidden;
+
     const group = groupRef.current;
     if (!group) return;
 
@@ -269,12 +277,15 @@ function DriftingGlobe({
     <group position={[6.5, 14, 3.8]} rotation={[0, 0, -Math.PI / 6]} scale={2.17 * SCENE_SIZE * GLOBE_SIZE}>
       <group ref={groupRef} scale={1.08}>
         <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
-          <primitive object={blob} />
+          <group ref={blobRef}>
+            <primitive object={blob} />
+          </group>
           <group ref={ringRef}>
             <primitive object={letters} />
           </group>
         </Float>
       </group>
+      <GlitchApple />
     </group>
   );
 }
@@ -607,6 +618,9 @@ export function StuckholmGlobe({
     deltaY: 0,
   });
   const [isDragging, setIsDragging] = React.useState(false);
+
+  // Starts the 15 s glitch cycle shared by the grid, globe and overlays.
+  React.useEffect(() => startGlitchClock(), []);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     dragRef.current.dragging = true;

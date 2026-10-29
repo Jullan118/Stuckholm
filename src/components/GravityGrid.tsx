@@ -1,5 +1,7 @@
-import { useMemo } from 'react';
-import { Line } from '@react-three/drei';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
+import { glitch, glitchTime } from '../lib/glitchClock';
 
 /** One dip in the grid. Several can sit side by side, each pulling the net down. */
 export type Well = {
@@ -35,8 +37,6 @@ type GravityGridProps = {
   color?: string;
   /** Overall opacity (used for the scroll fade) */
   opacity?: number;
-  /** Line thickness in pixels */
-  lineWidth?: number;
   /** How dim the far side of the grid is (0 = invisible, 1 = as bright as near) */
   farBrightness?: number;
   /** Leaves an open ring around the centre (world units). Gives a gap between grid and globe */
@@ -55,9 +55,62 @@ type GravityGridProps = {
   rotation?: [number, number, number];
 };
 
+const VERTEX_SHADER = /* glsl */ `
+attribute float aShade;
+uniform float uTime;   // seconds since the current glitch phase started
+uniform float uGrid;   // 1 during the grid phase: the grid becomes a landscape
+uniform float uShake;  // 1 during the pixel phase: the grid jitters
+uniform float uSize;
+varying float vShade;
+varying float vHeight;
+void main() {
+  vec3 p = position;
+  // Shake: the grid jitters sideways during the pixel phase.
+  p.x += uShake * sin(p.z * 0.09 + uTime * 180.0) * uSize * 0.004;
+  p.z += uShake * cos(p.x * 0.07 + uTime * 150.0) * uSize * 0.003;
+  // Landscape: a ridge scans across the grid once per phase, plus a slow wave.
+  float scanZ = mod(uTime / 0.2, 1.0) * uSize - uSize * 0.5;
+  float band = exp(-pow((p.z - scanZ) / (uSize * 0.05), 2.0));
+  float wave = sin(p.x * 0.012 + uTime * 6.0) * cos(p.z * 0.010 - uTime * 4.0);
+  float h = uGrid * (band * 0.07 + wave * 0.035) * uSize;
+  p.y += h;
+  vHeight = h / (uSize * 0.07);
+  vShade = aShade;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}
+`;
+
+const FRAGMENT_SHADER = /* glsl */ `
+uniform vec3 uColor;
+uniform float uOpacity;
+uniform float uGrid;
+varying float vShade;
+varying float vHeight;
+// Blue, green, yellow, red, violet: the colours of the scanning landscape.
+vec3 ramp(float x) {
+  vec3 c1 = vec3(0.16, 0.35, 1.00);
+  vec3 c2 = vec3(0.30, 1.00, 0.55);
+  vec3 c3 = vec3(1.00, 0.92, 0.30);
+  vec3 c4 = vec3(1.00, 0.30, 0.25);
+  vec3 c5 = vec3(0.85, 0.25, 1.00);
+  x = clamp(x, 0.0, 0.999);
+  if (x < 0.25) return mix(c1, c2, x / 0.25);
+  if (x < 0.5) return mix(c2, c3, (x - 0.25) / 0.25);
+  if (x < 0.75) return mix(c3, c4, (x - 0.5) / 0.25);
+  return mix(c4, c5, (x - 0.75) / 0.25);
+}
+void main() {
+  vec3 base = uColor * vShade;
+  vec3 land = ramp(clamp(vHeight * 0.5 + 0.5, 0.0, 1.0));
+  gl_FragColor = vec4(mix(base, land, uGrid), uOpacity);
+}
+`;
+
 /**
  * A wireframe grid that dips in the middle, like the spacetime images.
  * Lines near the camera (+z) are bright, lines far away fade out.
+ * During the glitch it jitters (pixel phase) and turns into a scanning
+ * landscape (grid phase); see src/lib/glitchClock.ts.
  */
 export default function GravityGrid({
   size = 36,
@@ -66,7 +119,6 @@ export default function GravityGrid({
   falloff = 3,
   color = '#ffffff',
   opacity = 1,
-  lineWidth = 1.5,
   farBrightness = 0.15,
   clearRadius = 0,
   clearCenter = [0, 0],
@@ -137,17 +189,56 @@ export default function GravityGrid({
     return { points: pts, colors: cols };
   }, [size, divisions, depth, falloff, farBrightness, clearRadius, clearCenter, clearFade, clearHalf, wellCenter, wells]);
 
+  const geometry = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    const pos = new Float32Array(points.length * 2 * 3);
+    const shade = new Float32Array(points.length * 2);
+    points.forEach((p, i) => {
+      pos[i * 3] = p[0];
+      pos[i * 3 + 1] = p[1];
+      pos[i * 3 + 2] = p[2];
+    });
+    colors.forEach((c, i) => {
+      shade[i] = c[0];
+    });
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('aShade', new THREE.BufferAttribute(shade, 1));
+    return g;
+  }, [points, colors]);
+
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        vertexShader: VERTEX_SHADER,
+        fragmentShader: FRAGMENT_SHADER,
+        uniforms: {
+          uTime: { value: 0 },
+          uGrid: { value: 0 },
+          uShake: { value: 0 },
+          uSize: { value: size },
+          uColor: { value: new THREE.Color(color) },
+          uOpacity: { value: opacity },
+        },
+        transparent: true,
+        depthWrite: false,
+      }),
+    // Only rebuild when the grid changes. Opacity and glitch state are set per frame below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [size, color]
+  );
+
+  const opacityRef = useRef(opacity);
+  opacityRef.current = opacity;
+
+  useFrame(() => {
+    const u = material.uniforms;
+    u.uOpacity.value = opacityRef.current;
+    u.uTime.value = glitchTime();
+    u.uGrid.value = glitch.phase === 'grid' ? 1 : 0;
+    u.uShake.value = glitch.phase === 'pixel' ? 1 : 0;
+  });
+
   return (
-    <Line
-      points={points}
-      segments
-      color={color}
-      vertexColors={colors}
-      lineWidth={lineWidth}
-      transparent
-      opacity={opacity}
-      position={position}
-      rotation={rotation}
-    />
+    <lineSegments geometry={geometry} material={material} position={position} rotation={rotation} />
   );
 }
