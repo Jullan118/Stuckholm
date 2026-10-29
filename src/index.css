@@ -22,9 +22,15 @@ html.hero-light .home-ink {
 }
 
 
+/* During the terrain and apple variants the globe itself is hidden. */
+.stuck-glitch[data-variant="terrain"] > canvas:not([aria-hidden]),
+.stuck-glitch[data-variant="apple"] > canvas:not([aria-hidden]) {
+  opacity: 0;
+}
+
 /* Glitch on the home globe: every 15 s, for 0.7 s, the scene turns blue,
    jerks sideways in steps, splits into blue and red edges and gets scan
-   lines. An ASCII layer (AsciiBurst.tsx) runs on the same 15 s cycle. */
+   lines. GlitchBurst.tsx adds one of three overlays per burst. */
 .stuck-glitch {
   position: relative;
   animation: stuck-glitch 15s linear infinite;

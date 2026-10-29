@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, useGLTF } from "@react-three/drei";
 import GravityGrid, { type Well } from "./GravityGrid";
 import * as THREE from "three";
-import { AsciiBurst } from "./AsciiBurst";
+import { GlitchBurst } from "./GlitchBurst";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
@@ -673,7 +673,7 @@ export function StuckholmGlobe({
           opacity={0.45 * (1 - scrollProgress)}
         />
       </Canvas>
-      <AsciiBurst />
+      <GlitchBurst />
     </div>
   );
 }
