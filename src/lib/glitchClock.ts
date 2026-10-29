@@ -1,17 +1,13 @@
-// One shared clock for the home-page glitch. Every 15 s a burst runs for
-// 0.6 s, split into three 0.2 s phases:
-//   pixel: pixels over the screen and the grid shakes
-//   grid:  the grid turns into a scanning, coloured landscape
-//   apple: the globe is replaced by the apple
-// The CSS glitch in index.css uses the same 15 s / 0.6 s timings.
-
-export type GlitchPhase = "pixel" | "grid" | "apple" | null;
+// One shared clock for the home-page glitch. Every 15 s a one-second
+// sequence runs: the globe breaks into blue particles from the inside out.
+// The CSS glitch in index.css uses the same 15 s / 1 s timings.
 
 export const GLITCH_CYCLE_MS = 15000;
-export const GLITCH_PHASE_MS = 200;
-export const GLITCH_APPLE_MS = 400; // the apple phase lasts longer than the others
+export const GLITCH_SHATTER_MS = 1000;
 
-// Read every frame by the 3D scene and the pixel overlay.
+export type GlitchPhase = "shatter" | null;
+
+// Read every frame by the 3D scene.
 export const glitch: { phase: GlitchPhase; start: number } = {
   phase: null,
   start: 0,
@@ -34,10 +30,8 @@ export function startGlitchClock(): () => void {
     glitch.start = performance.now();
   };
   const run = () => {
-    set("pixel");
-    timers.push(window.setTimeout(() => set("grid"), GLITCH_PHASE_MS));
-    timers.push(window.setTimeout(() => set("apple"), GLITCH_PHASE_MS * 2));
-    timers.push(window.setTimeout(() => set(null), GLITCH_PHASE_MS * 2 + GLITCH_APPLE_MS));
+    set("shatter");
+    timers.push(window.setTimeout(() => set(null), GLITCH_SHATTER_MS));
   };
   run();
   const id = window.setInterval(run, GLITCH_CYCLE_MS);

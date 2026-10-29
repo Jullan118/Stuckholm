@@ -3,8 +3,8 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, useGLTF } from "@react-three/drei";
 import GravityGrid, { type Well } from "./GravityGrid";
 import * as THREE from "three";
-import { GlitchBurst } from "./GlitchBurst";
-import { GlitchApple } from "./GlitchApple";
+import { ShatterGlobe } from "./ShatterGlobe";
+import { GlitchWord } from "./GlitchWord";
 import { glitch, startGlitchClock } from "../lib/glitchClock";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
@@ -229,9 +229,12 @@ function DriftingGlobe({
   }, [blob]);
 
   useFrame((state, delta) => {
-    // The globe is hidden while the apple is shown.
-    const hidden = glitch.phase === "apple";
-    if (blobRef.current) blobRef.current.visible = !hidden;
+    // The globe is hidden while it breaks into particles.
+    const hidden = glitch.phase === "shatter";
+    // Hide the globe's meshes, not the group, so the particles stay visible.
+    blob.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) child.visible = !hidden;
+    });
     if (ringRef.current) ringRef.current.visible = !hidden;
 
     const group = groupRef.current;
@@ -283,9 +286,7 @@ function DriftingGlobe({
           <group ref={ringRef}>
             <primitive object={letters} />
           </group>
-          {/* The apple sits in the same group as the globe, so it gets the same
-              position, tilt, spin and float during the apple phase. */}
-          <GlitchApple />
+          <ShatterGlobe source={blob} />
         </Float>
       </group>
     </group>
@@ -689,7 +690,7 @@ export function StuckholmGlobe({
           opacity={0.45 * (1 - scrollProgress)}
         />
       </Canvas>
-      <GlitchBurst />
+      <GlitchWord />
     </div>
   );
 }
