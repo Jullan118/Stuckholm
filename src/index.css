@@ -22,10 +22,10 @@ html.hero-light .home-ink {
 }
 
 
-/* Glitch on the home globe: every 20 s, for 0.3 s, the scene (globe, grid and
-   stars) turns strongly blue, jerks sideways in big steps, splits into blue
-   and red edges, and gets fine scan lines and bright streaks, like a broken
-   video signal. The 20 s cycle is split into percentages: 1.5 % = 0.3 s. */
+/* Glitch on the home globe: every 20 s, for 1.5 s, the scene turns blue,
+   jerks sideways in steps, splits into blue and red edges and gets scan
+   lines. An ASCII layer (AsciiBurst.tsx) runs on the same 20 s cycle. The
+   burst is 1.5 s = 7.5 % of 20 s. */
 .stuck-glitch {
   position: relative;
   animation: stuck-glitch 20s linear infinite;
@@ -59,83 +59,78 @@ html.hero-light .home-ink {
     transparent 18px,
     transparent 30px
   );
-
   mix-blend-mode: screen;
   animation: stuck-glitch-scan 20s linear infinite;
 }
 @keyframes stuck-glitch {
-  0%, 5% {
+  0% {
     transform: translateX(0);
     filter: none;
   }
-  5.1% {
+  0.5% {
     transform: translateX(26px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
   }
-  5.4% {
+  2% {
     transform: translateX(-20px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
   }
-  5.7% {
+  3.5% {
     transform: translateX(14px);
     filter: drop-shadow(-6px 0 0 rgba(0, 120, 255, 1)) drop-shadow(6px 0 0 rgba(255, 40, 90, 0.8));
   }
-  6% {
+  5% {
     transform: translateX(-9px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
   }
-  6.3% {
+  6.5% {
     transform: translateX(4px);
     filter: none;
   }
-  6.5%, 100% {
+  7.5%, 100% {
     transform: translateX(0);
     filter: none;
   }
 }
 @keyframes stuck-glitch-tint {
-  0%, 5% {
+  0% {
     opacity: 0;
   }
-  5.1%, 5.4% {
+  0.5%, 2% {
     opacity: 0.55;
   }
-  5.7%, 6% {
+  3.5%, 5% {
     opacity: 0.4;
   }
-  6.1%, 6.3% {
+  6.5% {
     opacity: 0.55;
   }
-  6.5%, 100% {
+  7.5%, 100% {
     opacity: 0;
   }
 }
 @keyframes stuck-glitch-scan {
-  0%, 5% {
+  0% {
     opacity: 0;
     background-position: 0 0;
   }
-  5.1% {
+  0.5% {
     opacity: 1;
     background-position: 0 40px;
   }
-  5.4% {
+  2% {
     opacity: 0.8;
     background-position: 0 -30px;
   }
-  5.7% {
+  3.5% {
     opacity: 1;
     background-position: 0 20px;
   }
-  6.3% {
+  6.5% {
     opacity: 0.7;
     background-position: 0 -10px;
   }
-  6.5% {
-    opacity: 0.5;
-    background-position: 0 6px;
-  }
-  8.5%, 100% {
+  7.5%, 100% {
     opacity: 0;
     background-position: 0 0;
   }
