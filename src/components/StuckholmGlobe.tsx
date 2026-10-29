@@ -9,7 +9,7 @@ import { GlitchBurst } from "./GlitchBurst";
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
 // re-scaled in code, so the file's own units don't matter.
 export const BLOB_MODEL_URL: string =
-  (import.meta.env.VITE_BLOB_MODEL_URL as string | undefined) || "/models/globe_globi.glb";
+  (import.meta.env.VITE_BLOB_MODEL_URL as string | undefined) || "/models/globe_globeny.glb";
 const BLOB_RADIUS = 3.2; // 20 % mindre än 4.0
 // Scales the letter ring around the globe. 1 = as placed in blobben.glb.
 const LETTER_SCALE = 1;
@@ -169,6 +169,10 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
     // their own, lighter grey so they still show against the globe.
     const isCrack = original.color.r < 0.3 && original.color.g < 0.3 && original.color.b < 0.3;
     mat.color = new THREE.Color(isCrack ? CRACK_GREY : GLOBE_GREY);
+    // Matte surface: rough and non-metallic, so the lumps in the new model
+    // don't catch as much light.
+    mat.roughness = 0.9;
+    mat.metalness = 0;
     mat.userData.baseColor = mat.color.clone();
     mat.transparent = true;
     mat.opacity = GLOBE_START_OPACITY;
