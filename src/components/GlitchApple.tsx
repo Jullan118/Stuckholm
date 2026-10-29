@@ -10,7 +10,7 @@ export const APPLE_MODEL_URL = "/models/apple.glb";
 
 // The globe's blob has radius 3.2 and sits in a group scaled by 1.08.
 // The apple is placed in the same group, so it gets the same size.
-const APPLE_RADIUS = 3.2 * 1.08;
+const APPLE_RADIUS = 1.6; // about half the globe: change here to resize
 
 export function GlitchApple() {
   const gltf = useGLTF(APPLE_MODEL_URL);
