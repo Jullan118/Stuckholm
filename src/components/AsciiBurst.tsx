@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 const CHARS = "¤§¶ƒ±²³µ¿¡░▒▓█╬═║%&#@?*+=<>{}[]01";
 const GLYPH_BLUE = "rgba(120, 165, 255, 0.95)";
 const CELL = 14;          // size of one character cell in px
-const BURST_MS = 1500;    // length of one burst, same as the CSS glitch
-const EVERY_MS = 20000;   // same 20 s cycle as the CSS glitch
+const BURST_MS = 700;     // length of one burst, same as the CSS glitch
+const EVERY_MS = 15000;   // same 15 s cycle as the CSS glitch
 
-// Draws a field of blue ASCII characters over the globe for 1.5 s every 20 s.
+// Draws a field of blue ASCII characters over the globe for 0.7 s every 15 s.
 // The timer starts when the component mounts, which is the same moment the
 // CSS .stuck-glitch animation starts, so the two stay in step.
 export function AsciiBurst() {
