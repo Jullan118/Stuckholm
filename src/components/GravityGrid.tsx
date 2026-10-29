@@ -1,5 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { glitch } from '../lib/glitchClock';
 
 /** One dip in the grid. Several can sit side by side, each pulling the net down. */
 export type Well = {
@@ -165,7 +167,28 @@ export default function GravityGrid({
     [color, opacity]
   );
 
+  // During the glitch the grid turns green and jumps sideways, then returns.
+  const meshRef = useRef<THREE.LineSegments>(null);
+  const baseColor = useMemo(() => new THREE.Color(color), [color]);
+  const GREEN = useMemo(() => new THREE.Color('#7dff6a'), []);
+  useFrame(() => {
+    const m = meshRef.current;
+    if (!m) return;
+    const mat = material as THREE.LineBasicMaterial;
+    if (glitch.phase === 'shatter') {
+      mat.color.copy(GREEN);
+      m.position.set(
+        position[0] + (Math.random() - 0.5) * 12,
+        position[1],
+        position[2] + (Math.random() - 0.5) * 12
+      );
+    } else {
+      mat.color.copy(baseColor);
+      m.position.set(position[0], position[1], position[2]);
+    }
+  });
+
   return (
-    <lineSegments geometry={geometry} material={material} position={position} rotation={rotation} />
+    <lineSegments ref={meshRef} geometry={geometry} material={material} position={position} rotation={rotation} />
   );
 }
