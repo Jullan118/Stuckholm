@@ -8,12 +8,12 @@ import { glitch, glitchTime, GLITCH_SHATTER_MS } from "../lib/glitchClock";
 // of the screen, fading as they go.
 
 const MAX_POINTS = 9000;
-const GLOBE_RADIUS = 3.0; // a little inside the blob's radius (3.2)
-const SPREAD = 60; // how far a particle drifts over the whole sequence, in globe units
 
 const VERTEX = /* glsl */ `
 uniform float uT;      // seconds into the sequence
 uniform float uSize;
+uniform float uRadius; // globe radius, in the globe's own units
+uniform float uSpread; // how far a particle drifts over the sequence
 attribute vec3 aDir;   // outward direction
 attribute float aR;    // starting distance from the centre, 0..1
 attribute float aSeed; // colour and timing variation
@@ -21,7 +21,7 @@ attribute float aSpeed;
 varying float vAlpha;
 varying float vSeed;
 void main() {
-  float d = aR * ${GLOBE_RADIUS.toFixed(2)} + uT * aSpeed * ${SPREAD.toFixed(2)};
+  float d = aR * uRadius + uT * aSpeed * uSpread;
   vec3 p = aDir * d;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   gl_Position = projectionMatrix * mv;
@@ -51,6 +51,13 @@ void main() {
 // of the globe, so they spin and float with it.
 export function ShatterGlobe({ source }: { source: THREE.Object3D }) {
   const { geometry, material, points } = React.useMemo(() => {
+    // Radius in the globe's own units: the globe is scaled inside the scene,
+    // so measure its world size and divide by its world scale.
+    source.updateWorldMatrix(true, true);
+    const box = new THREE.Box3().setFromObject(source);
+    const worldRadius = box.getSize(new THREE.Vector3()).length() / 2;
+    const worldScale = source.getWorldScale(new THREE.Vector3()).x || 1;
+    const radius = worldRadius / worldScale;
     const n = MAX_POINTS;
     const dir = new Float32Array(n * 3);
     const dist = new Float32Array(n);
@@ -86,6 +93,8 @@ export function ShatterGlobe({ source }: { source: THREE.Object3D }) {
       uniforms: {
         uT: { value: 0 },
         uSize: { value: 5 },
+        uRadius: { value: radius },
+        uSpread: { value: radius * 14 },
       },
       transparent: true,
       depthWrite: false,

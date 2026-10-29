@@ -177,11 +177,8 @@ export default function GravityGrid({
     const mat = material as THREE.LineBasicMaterial;
     if (glitch.phase === 'shatter') {
       mat.color.copy(GREEN);
-      m.position.set(
-        position[0] + (Math.random() - 0.5) * 12,
-        position[1],
-        position[2] + (Math.random() - 0.5) * 12
-      );
+      // A small sideways jump, not a wobble across the whole grid.
+      m.position.set(position[0] + (Math.random() - 0.5) * 2, position[1], position[2]);
     } else {
       mat.color.copy(baseColor);
       m.position.set(position[0], position[1], position[2]);
