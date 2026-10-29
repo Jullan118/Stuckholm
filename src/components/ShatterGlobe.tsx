@@ -70,10 +70,12 @@ export function ShatterGlobe({ source }: { source: THREE.Object3D }) {
       pos[i * 3] = v.x;
       pos[i * 3 + 1] = v.y;
       pos[i * 3 + 2] = v.z;
-      // Random outward direction, with a pull away from the centre.
-      const out = v.clone().normalize();
-      const rnd = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
-      const d = out.multiplyScalar(0.7).add(rnd.multiplyScalar(1.2)).normalize();
+      // Uniform random direction over the whole sphere, so the pieces fly
+      // out in every direction, not just one side.
+      const u = Math.random() * 2 - 1;
+      const phi = Math.random() * Math.PI * 2;
+      const r = Math.sqrt(1 - u * u);
+      const d = new THREE.Vector3(r * Math.cos(phi), u, r * Math.sin(phi));
       const speed = 0.5 + Math.random() * 0.8;
       dir[i * 3] = d.x * speed;
       dir[i * 3 + 1] = d.y * speed;
