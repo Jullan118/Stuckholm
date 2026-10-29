@@ -4,7 +4,7 @@ import { glitch } from "../lib/glitchClock";
 // Pixel overlay for the "pixel" phase of the glitch: coloured blocks over the
 // whole globe area, with no characters.
 const CELL = 10;
-const COLOURS = ["rgba(120, 165, 255, 0.9)", "rgba(230, 240, 255, 0.9)", "rgba(60, 110, 255, 0.85)"];
+const COLOURS = ["rgba(120, 165, 255, 0.35)", "rgba(230, 240, 255, 0.35)", "rgba(60, 110, 255, 0.3)"];
 
 export function GlitchBurst() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -32,7 +32,7 @@ export function GlitchBurst() {
         const cols = Math.ceil(canvas.width / CELL);
         const rows = Math.ceil(canvas.height / CELL);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.12)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         for (let y = 0; y < rows; y++) {
           for (let x = 0; x < cols; x++) {

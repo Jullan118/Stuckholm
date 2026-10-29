@@ -68,11 +68,11 @@ void main() {
   // Shake: the grid jitters sideways during the pixel phase.
   p.x += uShake * sin(p.z * 0.09 + uTime * 180.0) * uSize * 0.004;
   p.z += uShake * cos(p.x * 0.07 + uTime * 150.0) * uSize * 0.003;
-  // Landscape: a ridge scans across the grid once per phase, plus a slow wave.
-  float scanZ = mod(uTime / 0.2, 1.0) * uSize - uSize * 0.5;
-  float band = exp(-pow((p.z - scanZ) / (uSize * 0.05), 2.0));
-  float wave = sin(p.x * 0.012 + uTime * 6.0) * cos(p.z * 0.010 - uTime * 4.0);
-  float h = uGrid * (band * 0.07 + wave * 0.035) * uSize;
+  // Landscape: the same grid, lifted and lowered in places, like hills. No new
+  // lines are drawn; the existing grid moves.
+  float hills = sin(p.x * 0.010 + uTime * 5.0) * cos(p.z * 0.008 - uTime * 3.0)
+              + 0.5 * sin((p.x + p.z) * 0.017 + uTime * 7.0);
+  float h = uGrid * hills * 0.03 * uSize;
   p.y += h;
   vHeight = h / (uSize * 0.07);
   vShade = aShade;
