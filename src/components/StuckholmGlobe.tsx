@@ -242,8 +242,8 @@ function DriftingGlobe({
     const glitching = glitch.phase === "pixel" || glitch.phase === "grid";
     if (glitching) {
       bodyMaterials.forEach((mat) => mat.color.set(GLITCH_BLUE));
-      const jx = (Math.random() - 0.5) * 1;
-      const jz = (Math.random() - 0.5) * 1;
+      const jx = (Math.random() - 0.5) * 0.2;
+      const jz = (Math.random() - 0.5) * 0.2;
       if (blobRef.current) blobRef.current.position.set(jx, 0, jz);
       if (ringRef.current) ringRef.current.position.set(jx, 0, jz);
       wasGlitching.current = true;

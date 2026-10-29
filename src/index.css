@@ -67,27 +67,27 @@ html.hero-light .home-ink {
     transform: translateX(0);
     filter: none;
   }
-  0.29% {
+  0.21% {
     transform: translateX(26px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1));
   }
-  0.875% {
+  0.625% {
     transform: translateX(-20px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1));
   }
-  1.46% {
+  1.04% {
     transform: translateX(14px);
     filter: drop-shadow(-6px 0 0 rgba(0, 120, 255, 1));
   }
-  2.04% {
+  1.46% {
     transform: translateX(-9px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1));
   }
-  2.63% {
+  1.875% {
     transform: translateX(4px);
     filter: none;
   }
-  3.5%, 100% {
+  2.5%, 100% {
     transform: translateX(0);
     filter: none;
   }
@@ -96,16 +96,16 @@ html.hero-light .home-ink {
   0% {
     opacity: 0;
   }
-  0.29%, 0.875% {
+  0.21%, 0.625% {
     opacity: 0.55;
   }
-  1.46%, 2.04% {
+  1.04%, 1.46% {
     opacity: 0.4;
   }
-  2.63% {
+  1.875% {
     opacity: 0.55;
   }
-  3.5%, 100% {
+  2.5%, 100% {
     opacity: 0;
   }
 }
@@ -114,23 +114,23 @@ html.hero-light .home-ink {
     opacity: 0;
     background-position: 0 0;
   }
-  0.29% {
+  0.21% {
     opacity: 1;
     background-position: 0 40px;
   }
-  0.875% {
+  0.625% {
     opacity: 0.8;
     background-position: 0 -30px;
   }
-  1.46% {
+  1.04% {
     opacity: 1;
     background-position: 0 20px;
   }
-  2.63% {
+  1.875% {
     opacity: 0.7;
     background-position: 0 -10px;
   }
-  3.5%, 100% {
+  2.5%, 100% {
     opacity: 0;
     background-position: 0 0;
   }

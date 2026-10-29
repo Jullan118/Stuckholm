@@ -86,18 +86,11 @@ uniform float uOpacity;
 uniform float uGrid;
 varying float vShade;
 varying float vHeight;
-// Blue, green, yellow, red, violet: the colours of the scanning landscape.
+// Blues only: deep blue in the valleys, pale blue on the peaks.
 vec3 ramp(float x) {
-  vec3 c1 = vec3(0.16, 0.35, 1.00);
-  vec3 c2 = vec3(0.30, 1.00, 0.55);
-  vec3 c3 = vec3(1.00, 0.92, 0.30);
-  vec3 c4 = vec3(1.00, 0.30, 0.25);
-  vec3 c5 = vec3(0.85, 0.25, 1.00);
-  x = clamp(x, 0.0, 0.999);
-  if (x < 0.25) return mix(c1, c2, x / 0.25);
-  if (x < 0.5) return mix(c2, c3, (x - 0.25) / 0.25);
-  if (x < 0.75) return mix(c3, c4, (x - 0.5) / 0.25);
-  return mix(c4, c5, (x - 0.75) / 0.25);
+  vec3 low = vec3(0.10, 0.25, 0.95);
+  vec3 high = vec3(0.55, 0.75, 1.00);
+  return mix(low, high, clamp(x, 0.0, 1.0));
 }
 void main() {
   vec3 base = uColor * vShade;
