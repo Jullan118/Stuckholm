@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, useGLTF } from "@react-three/drei";
 import GravityGrid, { type Well } from "./GravityGrid";
 import * as THREE from "three";
-import { startGlitchClock } from "../lib/glitchClock";
+import { glitch, startGlitchClock } from "../lib/glitchClock";
 import { GlitchBurst } from "./GlitchBurst";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
@@ -54,6 +54,7 @@ const CAM_Z = 189; // 10 % further back than before (172 -> 189)
 const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
 const GLOBE_GREY = "#e4e7ea";
+const GLITCH_BLUE = "#4f7bff";
 const CRACK_GREY = "#9aa1a6"; // lighter grey for cracks and scratches
 
 // Night-sky navy at the top of the page, fading to white as you scroll.
@@ -227,11 +228,31 @@ function DriftingGlobe({
     return list;
   }, [blob]);
 
+  const baseColors = React.useMemo(
+    () => bodyMaterials.map((m) => m.color.clone()),
+    [bodyMaterials]
+  );
+  const wasGlitching = React.useRef(false);
+
   useFrame((state, delta) => {
-
-
     const group = groupRef.current;
     if (!group) return;
+
+    // During the glitch the globe turns blue and shakes sideways.
+    const glitching = glitch.phase === "pixel" || glitch.phase === "grid";
+    if (glitching) {
+      bodyMaterials.forEach((mat) => mat.color.set(GLITCH_BLUE));
+      const jx = (Math.random() - 0.5) * 3;
+      const jz = (Math.random() - 0.5) * 3;
+      if (blobRef.current) blobRef.current.position.set(jx, 0, jz);
+      if (ringRef.current) ringRef.current.position.set(jx, 0, jz);
+      wasGlitching.current = true;
+    } else if (wasGlitching.current) {
+      bodyMaterials.forEach((mat, i) => mat.color.copy(baseColors[i]));
+      if (blobRef.current) blobRef.current.position.set(0, 0, 0);
+      if (ringRef.current) ringRef.current.position.set(0, 0, 0);
+      wasGlitching.current = false;
+    }
 
     // Fade the globe out as the page scrolls down to the white part, so it
     // is gone by the time the background is white.
@@ -501,6 +522,22 @@ function Starfield({ progress }: { progress: number }) {
 // Moves the camera back on narrow screens (phones), so the whole globe and its
 // letter ring fit the width instead of being cut off at the sides. Wide
 // screens keep the normal distance of 8.
+// During the glitch the whole scene is drawn at very low resolution and scaled
+// up with hard pixels, so the globe and the grid look pixelated.
+function PixelateOnGlitch() {
+  const gl = useThree((state) => state.gl);
+  const last = React.useRef<boolean | null>(null);
+  useFrame(() => {
+    const glitching = glitch.phase === "pixel" || glitch.phase === "grid";
+    if (glitching === last.current) return;
+    last.current = glitching;
+    const normal = Math.min(window.devicePixelRatio || 1, 1.5);
+    gl.setPixelRatio(glitching ? 0.12 : normal);
+    gl.domElement.style.imageRendering = glitching ? "pixelated" : "";
+  });
+  return null;
+}
+
 function FitCamera() {
   const size = useThree((state) => state.size);
   const camera = useThree((state) => state.camera);
@@ -665,6 +702,7 @@ export function StuckholmGlobe({
         <SceneBackground progress={scrollProgress} />
         <SkyField progress={scrollProgress} />
         <FitCamera />
+        <PixelateOnGlitch />
         <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
