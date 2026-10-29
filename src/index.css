@@ -22,14 +22,13 @@ html.hero-light .home-ink {
 }
 
 
-/* Glitch on the home globe: every 15 s, for 1 s, the globe breaks into blue
-   particles (ShatterGlobe.tsx). The CSS here adds a blue wash, a sideways
-   jerk and scan lines over the same second. Timings come from
-   src/lib/glitchClock.ts. */
+/* Glitch on the home globe: every 15 s, for 0.6 s in three 0.2 s phases
+   (pixels, grid landscape, apple). The phases are driven by
+   src/lib/glitchClock.ts. The CSS here adds the blue wash, the sideways
+   jerk and the scan lines over the whole burst. */
 .stuck-glitch {
   position: relative;
-  /* The first glitch waits one full cycle, matching the clock in glitchClock.ts. */
-  animation: stuck-glitch 15s linear 15s infinite;
+  animation: stuck-glitch 15s linear infinite;
 }
 /* Strong blue wash over the whole scene. */
 .stuck-glitch::after {
@@ -38,9 +37,9 @@ html.hero-light .home-ink {
   inset: 0;
   pointer-events: none;
   opacity: 0;
-  background: rgb(120, 255, 90);
+  background: rgb(35, 110, 255);
   mix-blend-mode: color;
-  animation: stuck-glitch-tint 15s linear 15s infinite;
+  animation: stuck-glitch-tint 15s linear infinite;
 }
 /* Fine scan lines and bright streaks across the whole width. */
 .stuck-glitch::before {
@@ -61,31 +60,80 @@ html.hero-light .home-ink {
     transparent 30px
   );
   mix-blend-mode: screen;
-  animation: stuck-glitch-scan 15s linear 15s infinite;
+  animation: stuck-glitch-scan 15s linear infinite;
 }
 @keyframes stuck-glitch {
-  0% { transform: translateX(0); filter: none; }
-  0.667% { transform: translateX(26px); filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8)); }
-  2% { transform: translateX(-20px); filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8)); }
-  3.333% { transform: translateX(14px); filter: drop-shadow(-6px 0 0 rgba(0, 120, 255, 1)) drop-shadow(6px 0 0 rgba(255, 40, 90, 0.8)); }
-  4.667% { transform: translateX(-9px); filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8)); }
-  5.667% { transform: translateX(4px); filter: none; }
-  6.667%, 100% { transform: translateX(0); filter: none; }
+  0% {
+    transform: translateX(0);
+    filter: none;
+  }
+  0.333% {
+    transform: translateX(26px);
+    filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
+  }
+  1% {
+    transform: translateX(-20px);
+    filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
+  }
+  1.667% {
+    transform: translateX(14px);
+    filter: drop-shadow(-6px 0 0 rgba(0, 120, 255, 1)) drop-shadow(6px 0 0 rgba(255, 40, 90, 0.8));
+  }
+  2.333% {
+    transform: translateX(-9px);
+    filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1)) drop-shadow(-8px 0 0 rgba(255, 40, 90, 0.8));
+  }
+  3% {
+    transform: translateX(4px);
+    filter: none;
+  }
+  4%, 100% {
+    transform: translateX(0);
+    filter: none;
+  }
 }
 @keyframes stuck-glitch-tint {
-  0% { opacity: 0; }
-  0.667%, 2% { opacity: 0.55; }
-  3.333%, 4.667% { opacity: 0.4; }
-  5.667% { opacity: 0.55; }
-  6.667%, 100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  0.333%, 1% {
+    opacity: 0.55;
+  }
+  1.667%, 2.333% {
+    opacity: 0.4;
+  }
+  3% {
+    opacity: 0.55;
+  }
+  4%, 100% {
+    opacity: 0;
+  }
 }
 @keyframes stuck-glitch-scan {
-  0% { opacity: 0; background-position: 0 0; }
-  0.667% { opacity: 1; background-position: 0 40px; }
-  2% { opacity: 0.8; background-position: 0 -30px; }
-  3.333% { opacity: 1; background-position: 0 20px; }
-  5.667% { opacity: 0.7; background-position: 0 -10px; }
-  6.667%, 100% { opacity: 0; background-position: 0 0; }
+  0% {
+    opacity: 0;
+    background-position: 0 0;
+  }
+  0.333% {
+    opacity: 1;
+    background-position: 0 40px;
+  }
+  1% {
+    opacity: 0.8;
+    background-position: 0 -30px;
+  }
+  1.667% {
+    opacity: 1;
+    background-position: 0 20px;
+  }
+  3% {
+    opacity: 0.7;
+    background-position: 0 -10px;
+  }
+  4%, 100% {
+    opacity: 0;
+    background-position: 0 0;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .stuck-glitch,
