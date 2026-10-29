@@ -4,7 +4,6 @@ import { Float, useGLTF } from "@react-three/drei";
 import GravityGrid, { type Well } from "./GravityGrid";
 import * as THREE from "three";
 import { ShatterGlobe } from "./ShatterGlobe";
-import { GlitchWord } from "./GlitchWord";
 import { glitch, startGlitchClock } from "../lib/glitchClock";
 
 // The blob is a Rhino/Grasshopper export (blobben.glb). It is re-centred and
@@ -690,7 +689,6 @@ export function StuckholmGlobe({
           opacity={0.45 * (1 - scrollProgress)}
         />
       </Canvas>
-      <GlitchWord />
     </div>
   );
 }
