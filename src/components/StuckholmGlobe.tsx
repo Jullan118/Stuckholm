@@ -25,7 +25,7 @@ const BAND_TWIST = 0; // radians a broken band part is turned
 const INK = "#383e42";
 const PAPER = "#ffffff";
 // How opaque the globe is at the top of the page (1 = solid).
-const GLOBE_START_OPACITY = 0.9; // 10 % transparent
+const GLOBE_START_OPACITY = 0.98; // 2 % transparent
 // One number for the size of the globe AND the grid, so they change together.
 // 1 = the size before the last +10 % step.
 // Extra size for the globe and its letter ring only (2.86875 = 1.5x the previous 1.9125).
