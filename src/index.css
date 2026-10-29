@@ -28,7 +28,8 @@ html.hero-light .home-ink {
    src/lib/glitchClock.ts. */
 .stuck-glitch {
   position: relative;
-  animation: stuck-glitch 15s linear infinite;
+  /* The first glitch waits one full cycle, matching the clock in glitchClock.ts. */
+  animation: stuck-glitch 15s linear 15s infinite;
 }
 /* Strong blue wash over the whole scene. */
 .stuck-glitch::after {
@@ -39,7 +40,7 @@ html.hero-light .home-ink {
   opacity: 0;
   background: rgb(35, 110, 255);
   mix-blend-mode: color;
-  animation: stuck-glitch-tint 15s linear infinite;
+  animation: stuck-glitch-tint 15s linear 15s infinite;
 }
 /* Fine scan lines and bright streaks across the whole width. */
 .stuck-glitch::before {
@@ -60,7 +61,7 @@ html.hero-light .home-ink {
     transparent 30px
   );
   mix-blend-mode: screen;
-  animation: stuck-glitch-scan 15s linear infinite;
+  animation: stuck-glitch-scan 15s linear 15s infinite;
 }
 @keyframes stuck-glitch {
   0% { transform: translateX(0); filter: none; }

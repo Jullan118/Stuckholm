@@ -33,7 +33,7 @@ export function startGlitchClock(): () => void {
     set("shatter");
     timers.push(window.setTimeout(() => set(null), GLITCH_SHATTER_MS));
   };
-  run();
+  // The first burst comes after one full cycle, not when the page opens.
   const id = window.setInterval(run, GLITCH_CYCLE_MS);
   return () => {
     window.clearInterval(id);
