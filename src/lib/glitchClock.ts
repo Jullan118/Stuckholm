@@ -9,6 +9,7 @@ export type GlitchPhase = "pixel" | "grid" | "apple" | null;
 
 export const GLITCH_CYCLE_MS = 15000;
 export const GLITCH_PHASE_MS = 200;
+export const GLITCH_APPLE_MS = 400; // the apple phase lasts longer than the others
 
 // Read every frame by the 3D scene and the pixel overlay.
 export const glitch: { phase: GlitchPhase; start: number } = {
@@ -36,7 +37,7 @@ export function startGlitchClock(): () => void {
     set("pixel");
     timers.push(window.setTimeout(() => set("grid"), GLITCH_PHASE_MS));
     timers.push(window.setTimeout(() => set("apple"), GLITCH_PHASE_MS * 2));
-    timers.push(window.setTimeout(() => set(null), GLITCH_PHASE_MS * 3));
+    timers.push(window.setTimeout(() => set(null), GLITCH_PHASE_MS * 2 + GLITCH_APPLE_MS));
   };
   run();
   const id = window.setInterval(run, GLITCH_CYCLE_MS);
