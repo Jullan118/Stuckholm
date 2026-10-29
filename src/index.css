@@ -28,7 +28,7 @@ html.hero-light .home-ink {
    jerk and the scan lines over the whole burst. */
 .stuck-glitch {
   position: relative;
-  animation: stuck-glitch 20s linear 20s infinite;
+  animation: stuck-glitch 15s linear 15s infinite;
 }
 /* Strong blue wash over the whole scene. */
 .stuck-glitch::after {
@@ -39,7 +39,7 @@ html.hero-light .home-ink {
   opacity: 0;
   background: rgb(35, 110, 255);
   mix-blend-mode: color;
-  animation: stuck-glitch-tint 20s linear 20s infinite;
+  animation: stuck-glitch-tint 15s linear 15s infinite;
 }
 /* Fine scan lines and bright streaks across the whole width. */
 .stuck-glitch::before {
@@ -60,34 +60,34 @@ html.hero-light .home-ink {
     transparent 30px
   );
   mix-blend-mode: screen;
-  animation: stuck-glitch-scan 20s linear 20s infinite;
+  animation: stuck-glitch-scan 15s linear 15s infinite;
 }
 @keyframes stuck-glitch {
   0% {
     transform: translateX(0);
     filter: none;
   }
-  0.21% {
+  0.333% {
     transform: translateX(26px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1));
   }
-  0.625% {
+  1% {
     transform: translateX(-20px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1));
   }
-  1.04% {
+  1.667% {
     transform: translateX(14px);
     filter: drop-shadow(-6px 0 0 rgba(0, 120, 255, 1));
   }
-  1.46% {
+  2.333% {
     transform: translateX(-9px);
     filter: drop-shadow(8px 0 0 rgba(0, 120, 255, 1));
   }
-  1.875% {
+  3% {
     transform: translateX(4px);
     filter: none;
   }
-  2.5%, 100% {
+  4%, 100% {
     transform: translateX(0);
     filter: none;
   }
@@ -96,16 +96,16 @@ html.hero-light .home-ink {
   0% {
     opacity: 0;
   }
-  0.21%, 0.625% {
+  0.333%, 1% {
     opacity: 0.55;
   }
-  1.04%, 1.46% {
+  1.667%, 2.333% {
     opacity: 0.4;
   }
-  1.875% {
+  3% {
     opacity: 0.55;
   }
-  2.5%, 100% {
+  4%, 100% {
     opacity: 0;
   }
 }
@@ -114,23 +114,23 @@ html.hero-light .home-ink {
     opacity: 0;
     background-position: 0 0;
   }
-  0.21% {
+  0.333% {
     opacity: 1;
     background-position: 0 40px;
   }
-  0.625% {
+  1% {
     opacity: 0.8;
     background-position: 0 -30px;
   }
-  1.04% {
+  1.667% {
     opacity: 1;
     background-position: 0 20px;
   }
-  1.875% {
+  3% {
     opacity: 0.7;
     background-position: 0 -10px;
   }
-  2.5%, 100% {
+  4%, 100% {
     opacity: 0;
     background-position: 0 0;
   }
