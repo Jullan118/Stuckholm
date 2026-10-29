@@ -20,7 +20,7 @@ varying float vAlpha;
 void main() {
   float k = clamp((uT - aDelay) / 0.55, 0.0, 1.0);
   float ease = k * k;
-  vec3 p = position + aDir * ease * 6.0;
+  vec3 p = position + aDir * ease * 18.0;
   p.y += sin(uT * 9.0 + aSeed * 6.2831) * 0.04 * k;
   vec4 mv = modelViewMatrix * vec4(p, 1.0);
   gl_Position = projectionMatrix * mv;

@@ -53,7 +53,7 @@ export function GlitchWord() {
             }
           }
         }
-        wrap.style.opacity = visible ? "1" : "0";
+        wrap.style.opacity = visible ? "0.22" : "0";
       }
       raf = requestAnimationFrame(frame);
     };
