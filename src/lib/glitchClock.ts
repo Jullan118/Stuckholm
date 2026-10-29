@@ -1,14 +1,13 @@
-// One shared clock for the home-page glitch. Every 15 s a burst runs for
-// 0.6 s, split into three 0.2 s phases:
-//   pixel: pixels over the screen and the grid shakes
-//   grid:  the grid turns into a scanning, coloured landscape
-//   apple: the globe is replaced by the apple
-// The CSS glitch in index.css uses the same 15 s / 0.6 s timings.
+// One shared clock for the home-page glitch. Every 20 s a burst runs for
+// 0.7 s, split into two 0.35 s phases:
+//   pixel: pixels over the screen, the globe turns blue and shakes
+//   grid:  the grid turns into a rising and falling landscape
+// The CSS glitch in index.css uses the same 20 s / 0.7 s timings.
 
 export type GlitchPhase = "pixel" | "grid" | null;
 
-export const GLITCH_CYCLE_MS = 15000;
-export const GLITCH_PHASE_MS = 200;
+export const GLITCH_CYCLE_MS = 20000;
+export const GLITCH_PHASE_MS = 350;
 
 // Read every frame by the 3D scene and the pixel overlay.
 export const glitch: { phase: GlitchPhase; start: number } = {
