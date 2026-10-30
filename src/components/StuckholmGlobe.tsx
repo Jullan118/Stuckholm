@@ -53,9 +53,9 @@ const CAM_Y = 26.4; // 10 % higher than before (24 -> 26.4)
 const CAM_Z = 189; // 10 % further back than before (172 -> 189)
 const CAM_TARGET: [number, number, number] = [0, -0.6, 0];
 // Light grey for the globe body.
-const GLOBE_GREY = "#e4e7ea";
+const GLOBE_GREY = "#f4f6f8";
 const GLITCH_BLUE = "#4f7bff";
-const CRACK_GREY = "#9aa1a6"; // lighter grey for cracks and scratches
+const CRACK_GREY = "#4a5056"; // lighter grey for cracks and scratches
 
 // Night-sky navy at the top of the page, fading to white as you scroll.
 const SKY_DARK = new THREE.Color("#000000"); // helsvart
