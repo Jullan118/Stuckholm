@@ -7,7 +7,12 @@
 //   "brand:X", "colour:X", "condition:X" → shown on the product page
 // The vendor field is the seller name for Trash pieces.
 import * as React from "react";
-import { fetchAllProducts, fetchProductByHandle, type ShopifyProduct } from "@/lib/shopify";
+import {
+  fetchAllProducts,
+  fetchCollectionProducts,
+  fetchProductByHandle,
+  type ShopifyProduct,
+} from "@/lib/shopify";
 import { DEFAULT_VARIANT_TITLE, formatMoney, type CommerceProduct, type Money } from "@/lib/commerce";
 import { GENDER_SCALE_MAX, GENDER_SCALE_MIN } from "@/lib/garments";
 
@@ -156,6 +161,30 @@ export function useShopProduct(handle: string | undefined): LoadState<ShopProduc
     fetchProductByHandle(handle)
       .then((p) => {
         if (!cancelled) setState({ status: "ready", data: p ? productFromShopify(p) : null });
+      })
+      .catch(() => {
+        if (!cancelled) setState({ status: "error" });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [handle]);
+
+  return state;
+}
+
+// Products of one Shopify collection, by handle. Unknown handle = empty list.
+export function useCollectionProducts(handle: string): LoadState<ShopProduct[]> {
+  const [state, setState] = React.useState<LoadState<ShopProduct[]>>({ status: "loading" });
+
+  React.useEffect(() => {
+    let cancelled = false;
+    setState({ status: "loading" });
+    fetchCollectionProducts(handle)
+      .then((list) => {
+        if (!cancelled) {
+          setState({ status: "ready", data: (list ?? []).map(productFromShopify) });
+        }
       })
       .catch(() => {
         if (!cancelled) setState({ status: "error" });

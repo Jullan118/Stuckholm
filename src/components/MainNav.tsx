@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { CATEGORIES, type Category } from "@/lib/categories";
+import { CATEGORIES, CONSUME_HANDLE, type Category } from "@/lib/categories";
 
 // Top-left navigation. On every page it shows the "Consume" link. On
 // /consume the categories slide in from the left on the same row. Hovering
@@ -14,7 +14,7 @@ import { CATEGORIES, type Category } from "@/lib/categories";
 export function MainNav() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
-  const isConsume = pathname === "/consume";
+  const isConsume = pathname === "/consume" || pathname.startsWith("/collections/");
   const [active, setActive] = React.useState<string | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
 
@@ -50,7 +50,7 @@ export function MainNav() {
       }`}
     >
       <Link
-        to="/consume"
+        to={`/collections/${CONSUME_HANDLE}`}
         className={`relative z-[13] inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`}
       >
         Consume
@@ -83,18 +83,12 @@ export function MainNav() {
               <ul className="absolute left-0 top-full pt-3 flex gap-6 sm:gap-8 whitespace-nowrap animate-blur-fade-in">
                 {cat.children.map((child) => (
                   <li key={child.label}>
-                    {child.to ? (
-                      <Link
-                        to={child.to}
-                        className="text-base sm:text-lg text-black/70 hover:text-black transition-colors"
-                      >
-                        {child.label}
-                      </Link>
-                    ) : (
-                      <span className="text-base sm:text-lg text-black/70 hover:text-black transition-colors cursor-default">
-                        {child.label}
-                      </span>
-                    )}
+                    <Link
+                      to={`/collections/${child.handle}`}
+                      className="text-base sm:text-lg text-black/70 hover:text-black transition-colors"
+                    >
+                      {child.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -115,20 +109,9 @@ function CategoryLink({
   onOpen: () => void;
 }) {
   const base = `inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`;
-
-  if (category.to) {
-    return (
-      <Link to={category.to} className={base} onFocus={onOpen}>
-        {category.label}
-      </Link>
-    );
-  }
-  if (category.children) {
-    return (
-      <button type="button" onClick={onOpen} aria-haspopup="true" className={base}>
-        {category.label}
-      </button>
-    );
-  }
-  return <span className={`${base} cursor-default`}>{category.label}</span>;
+  return (
+    <Link to={`/collections/${category.handle}`} className={base} onFocus={onOpen}>
+      {category.label}
+    </Link>
+  );
 }

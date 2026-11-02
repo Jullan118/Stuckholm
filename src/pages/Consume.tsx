@@ -1,10 +1,14 @@
-import { useShopProducts } from "@/lib/shopProducts";
+import { useParams } from "react-router-dom";
+import { useCollectionProducts } from "@/lib/shopProducts";
 import { ProductGrid } from "@/components/ProductGrid";
+import { CONSUME_HANDLE } from "@/lib/categories";
 
-// Every product, new and secondhand together. Categories live in the header
-// (see MainNav), so this page is just the grid.
+// One Shopify collection as a product grid. /collections/all shows every
+// product; /collections/apparel, /collections/descartes etc. show their own.
+// Categories live in the header (see MainNav).
 export function Consume() {
-  const state = useShopProducts("all");
+  const { handle = CONSUME_HANDLE } = useParams();
+  const state = useCollectionProducts(handle);
 
   return (
     <div className="relative z-10 w-full pt-24 pb-16 animate-blur-fade-in">

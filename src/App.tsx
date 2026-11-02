@@ -40,7 +40,8 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/consume" element={<Consume />} />
+          <Route path="/consume" element={<Navigate to="/collections/all" replace />} />
+          <Route path="/collections/:handle" element={<Consume />} />
           <Route path="/in-stock" element={<InStock />} />
           <Route path="/in-stock/:slug" element={<InStockProduct />} />
           <Route path="/trash" element={<Trash />} />
