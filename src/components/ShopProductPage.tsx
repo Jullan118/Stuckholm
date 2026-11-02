@@ -78,10 +78,10 @@ export function ShopProductPage({
                 <button
                   type="button"
                   onClick={() => setLightboxIndex(activeIndex)}
-                  className="w-full max-w-md aspect-square border border-black/15 overflow-hidden cursor-zoom-in"
+                  className="w-full cursor-zoom-in"
                   aria-label="View image larger"
                 >
-                  <img src={current} alt={product.title} className="w-full h-full object-cover" />
+                  <img src={current} alt={product.title} className="w-full h-auto block" />
                 </button>
 
                 {images.length > 1 && (
@@ -131,27 +131,25 @@ export function ShopProductPage({
           />
         )}
 
-        {/* Name, price, options, add to cart, and the product copy */}
-        <div className="w-full md:w-2/5 flex flex-col gap-3 text-center">
-          <div className="flex flex-col items-center gap-1">
-            <h1 className="text-2xl sm:text-3xl font-manrope font-light text-black">
+        {/* Name, price, sizes, add to cart, then the product copy (left-aligned) */}
+        <div className="w-full md:w-2/5 flex flex-col gap-4 text-left">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-2xl sm:text-3xl font-manrope font-bold text-black">
               {product.title}
             </h1>
             {product.priceText && (
-              <p className="text-black font-medium text-lg whitespace-nowrap">{product.priceText}</p>
+              <p className="text-black text-lg whitespace-nowrap">{product.priceText}</p>
             )}
           </div>
 
-          <div className="flex justify-center">
-            <AddToCart product={product} onVariantChange={showVariantImage} />
-          </div>
+          <AddToCart product={product} onVariantChange={showVariantImage} />
 
           {product.description && (
-            <p className="text-black/80 mt-2 whitespace-pre-line">{product.description}</p>
+            <p className="text-black/80 mt-4 whitespace-pre-line">{product.description}</p>
           )}
 
           {meta.length > 0 && (
-            <dl className="text-black/70 text-sm flex flex-col items-center gap-1 mt-2">
+            <dl className="text-black/70 text-sm flex flex-col items-start gap-1 mt-2">
               {meta.map(([label, value]) => (
                 <React.Fragment key={label}>
                   <dt className="text-black/50">{label}</dt>
