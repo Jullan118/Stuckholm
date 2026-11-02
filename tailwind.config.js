@@ -20,10 +20,15 @@ export default {
           from: { opacity: "0", transform: "translateX(-28px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        blurFadeIn: {
+          from: { opacity: "0", filter: "blur(10px)", transform: "translateY(-6px)" },
+          to: { opacity: "1", filter: "blur(0px)", transform: "translateY(0)" },
+        },
       },
       animation: {
         "letter-jump": "letterJump 0.4s ease",
         "slide-in-left": "slideInLeft 0.45s ease-out both",
+        "blur-fade-in": "blurFadeIn 0.6s ease-out both",
       },
       fontFamily: {
         manrope: ['"Cormorant Garamond"', 'serif'],

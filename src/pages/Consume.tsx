@@ -7,7 +7,7 @@ export function Consume() {
   const state = useShopProducts("all");
 
   return (
-    <div className="relative z-10 w-full pt-24 pb-16">
+    <div className="relative z-10 w-full pt-24 pb-16 animate-blur-fade-in">
       {state.status === "loading" && <p className="text-center text-black/50 text-sm">Loading…</p>}
       {state.status === "error" && (
         <p className="text-center text-black/50 text-sm">

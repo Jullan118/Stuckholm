@@ -56,6 +56,14 @@ export function MainNav() {
         Consume
       </Link>
 
+      {isConsume && active && (
+        <div
+          aria-hidden="true"
+          onClick={() => setActive(null)}
+          className="fixed inset-0 z-[12] bg-white/50 backdrop-blur-sm animate-blur-fade-in"
+        />
+      )}
+
       {isConsume &&
         CATEGORIES.map((cat, i) => (
           <div
@@ -72,7 +80,7 @@ export function MainNav() {
             />
 
             {cat.children && active === cat.label && (
-              <ul className="absolute left-0 top-full pt-3 flex gap-6 sm:gap-8 whitespace-nowrap animate-slide-in-left">
+              <ul className="absolute left-0 top-full pt-3 flex gap-6 sm:gap-8 whitespace-nowrap animate-blur-fade-in">
                 {cat.children.map((child) => (
                   <li key={child.label}>
                     {child.to ? (
