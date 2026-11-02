@@ -46,8 +46,8 @@ export function Refund() {
       </h2>
       <p className="mb-5">
         If an item is faulty, does not match its description, or is the wrong item,
-        email <Mail /> with your order number and photos of the problem. We will
-        cover return shipping and repair, replace or refund the item.
+        email <Mail /> with your order number and photos of the problem. You pay
+        the return shipping. We will repair, replace or refund the item.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">Questions?</h2>
