@@ -8,6 +8,12 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ 'favicon-16x16.png' | asset_url }}" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon-32x32.png' | asset_url }}" />
     <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-touch-icon.png' | asset_url }}" />
+    <style>
+      @font-face { font-family: "Sabon"; src: url("{{ 'sabon-regular.woff2' | asset_url }}") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+      @font-face { font-family: "Sabon"; src: url("{{ 'sabon-italic.woff2' | asset_url }}") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+      @font-face { font-family: "Sabon"; src: url("{{ 'sabon-bold.woff2' | asset_url }}") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+      @font-face { font-family: "Sabon"; src: url("{{ 'sabon-bold-italic.woff2' | asset_url }}") format("woff2"); font-weight: 700; font-style: italic; font-display: swap; }
+    </style>
     {{ content_for_header }}
   </head>
   <body>
