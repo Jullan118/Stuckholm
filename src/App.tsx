@@ -25,6 +25,7 @@ import { Shipping } from "@/pages/Shipping";
 import { Refund } from "@/pages/Refund";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
+import { Consume } from "@/pages/Consume";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/consume" element={<Consume />} />
           <Route path="/in-stock" element={<InStock />} />
           <Route path="/in-stock/:slug" element={<InStockProduct />} />
           <Route path="/trash" element={<Trash />} />

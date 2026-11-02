@@ -1,10 +1,7 @@
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-const LINKS = [
-  { label: "Shop", to: "/in-stock" },
-  { label: "Trash", to: "/trash" },
-];
+const LINKS = [{ label: "Consume", to: "/consume" }];
 
 // Always-visible horizontal category row (replaces the old hamburger menu).
 // Each link grows slightly on hover instead of just changing color.
