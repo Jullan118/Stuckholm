@@ -38,6 +38,13 @@ export function MainNav() {
     };
   }, [active]);
 
+  // The category the current collection belongs to (or is). Its sub-categories
+  // stay visible while you are on one of its pages.
+  const routeHandle = pathname.split("/")[2];
+  const currentCategory = CATEGORIES.find(
+    (c) => c.handle === routeHandle || c.children?.some((ch) => ch.handle === routeHandle)
+  );
+
   const inkClass = isHome
     ? "text-white home-ink hover:opacity-70"
     : "text-black hover:text-black/70";
@@ -71,7 +78,7 @@ export function MainNav() {
               onOpen={() => cat.children && setActive(cat.label)}
             />
 
-            {cat.children && active === cat.label && (
+            {cat.children && (active === cat.label || currentCategory?.label === cat.label) && (
               <ul className="absolute left-0 top-full pt-3 flex gap-6 sm:gap-8 whitespace-nowrap animate-blur-fade-in">
                 {cat.children.map((child) => (
                   <li key={child.label}>

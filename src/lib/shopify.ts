@@ -91,6 +91,9 @@ export async function fetchAllProducts(): Promise<ShopifyProduct[]> {
 // `null` = no collection with that handle. The "all" handle is the store's
 // built-in collection of every product, so /collections/all shows everything.
 export async function fetchCollectionProducts(handle: string): Promise<ShopifyProduct[] | null> {
+  // "all" = every product. Asked for directly, so it doesn't depend on the
+  // Storefront API returning the built-in collection.
+  if (handle === "all") return fetchAllProducts();
   const data = await storefront<{ collection: { products: { nodes: ShopifyProduct[] } } | null }>(
     `query CollectionProducts($handle: String!) {
       collection(handle: $handle) {
