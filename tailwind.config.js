@@ -31,8 +31,8 @@ export default {
         "blur-fade-in": "blurFadeIn 0.6s ease-out both",
       },
       fontFamily: {
-        manrope: ['"Sabon"', 'Georgia', 'serif'],
-        cormorant: ['"Sabon"', 'Georgia', 'serif'],
+        manrope: ['"Helvetica Neue"', 'Helvetica', 'Arial', sans-serif],
+        cormorant: ['"Helvetica Neue"', 'Helvetica', 'Arial', sans-serif],
       },
     },
   },

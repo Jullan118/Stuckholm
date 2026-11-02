@@ -58,7 +58,7 @@ export function MainNav() {
     >
       <Link
         to={`/collections/${CONSUME_HANDLE}`}
-        className={`inline-block text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`}
+        className={`inline-block text-lg sm:text-xl font-bold uppercase transition-opacity duration-200 ${inkClass}`}
       >
         Consume
       </Link>
@@ -84,7 +84,7 @@ export function MainNav() {
                   <li key={child.label}>
                     <Link
                       to={`/collections/${child.handle}`}
-                      className={`text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`}
+                      className={`text-lg sm:text-xl font-bold uppercase transition-opacity duration-200 ${inkClass}`}
                     >
                       {child.label}
                     </Link>
@@ -107,7 +107,7 @@ function CategoryLink({
   inkClass: string;
   onOpen: () => void;
 }) {
-  const base = `inline-block text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`;
+  const base = `inline-block text-lg sm:text-xl font-bold uppercase transition-opacity duration-200 ${inkClass}`;
   return (
     <Link to={`/collections/${category.handle}`} className={base} onFocus={onOpen}>
       {category.label}
