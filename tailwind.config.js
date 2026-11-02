@@ -10,8 +10,20 @@ export default {
           "60%": { transform: "translateY(1px)" },
         },
       },
+      keyframes: {
+        letterJump: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "30%": { transform: "translateY(-4px)" },
+          "60%": { transform: "translateY(1px)" },
+        },
+        slideInLeft: {
+          from: { opacity: "0", transform: "translateX(-28px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+      },
       animation: {
         "letter-jump": "letterJump 0.4s ease",
+        "slide-in-left": "slideInLeft 0.45s ease-out both",
       },
       fontFamily: {
         manrope: ['"Cormorant Garamond"', 'serif'],

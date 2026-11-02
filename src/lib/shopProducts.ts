@@ -118,8 +118,9 @@ export type LoadState<T> =
   | { status: "error" }
   | { status: "ready"; data: T };
 
-// All products of one kind: "trash" for secondhand, "in-stock" for new.
-export function useShopProducts(kind: "trash" | "in-stock"): LoadState<ShopProduct[]> {
+// All products of one kind: "trash" for secondhand, "in-stock" for new,
+// "all" for both together.
+export function useShopProducts(kind: "trash" | "in-stock" | "all"): LoadState<ShopProduct[]> {
   const [state, setState] = React.useState<LoadState<ShopProduct[]>>({ status: "loading" });
 
   React.useEffect(() => {
@@ -127,7 +128,10 @@ export function useShopProducts(kind: "trash" | "in-stock"): LoadState<ShopProdu
     loadProducts()
       .then((all) => {
         if (!cancelled) {
-          setState({ status: "ready", data: all.filter((p) => p.isTrash === (kind === "trash")) });
+          setState({
+            status: "ready",
+            data: kind === "all" ? all : all.filter((p) => p.isTrash === (kind === "trash")),
+          });
         }
       })
       .catch(() => {
