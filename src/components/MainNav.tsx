@@ -51,24 +51,16 @@ export function MainNav() {
     >
       <Link
         to={`/collections/${CONSUME_HANDLE}`}
-        className={`relative z-[13] inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`}
+        className={`inline-block text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`}
       >
         Consume
       </Link>
-
-      {isConsume && active && (
-        <div
-          aria-hidden="true"
-          onClick={() => setActive(null)}
-          className="fixed inset-0 z-[12] bg-white/50 backdrop-blur-sm animate-blur-fade-in"
-        />
-      )}
 
       {isConsume &&
         CATEGORIES.map((cat, i) => (
           <div
             key={cat.label}
-            className="relative z-[13] animate-slide-in-left"
+            className="relative animate-slide-in-left"
             style={{ animationDelay: `${120 + i * 90}ms` }}
             onMouseEnter={() => cat.children && setActive(cat.label)}
             onMouseLeave={() => setActive(null)}
@@ -85,7 +77,7 @@ export function MainNav() {
                   <li key={child.label}>
                     <Link
                       to={`/collections/${child.handle}`}
-                      className="text-base sm:text-lg text-black/70 hover:text-black transition-colors"
+                      className={`text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`}
                     >
                       {child.label}
                     </Link>
@@ -108,7 +100,7 @@ function CategoryLink({
   inkClass: string;
   onOpen: () => void;
 }) {
-  const base = `inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`;
+  const base = `inline-block text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`;
   return (
     <Link to={`/collections/${category.handle}`} className={base} onFocus={onOpen}>
       {category.label}
