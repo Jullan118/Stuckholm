@@ -51,7 +51,7 @@ export function MainNav() {
     >
       <Link
         to="/consume"
-        className={`inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`}
+        className={`relative z-[13] inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`}
       >
         Consume
       </Link>
@@ -68,7 +68,7 @@ export function MainNav() {
         CATEGORIES.map((cat, i) => (
           <div
             key={cat.label}
-            className="relative animate-slide-in-left"
+            className="relative z-[13] animate-slide-in-left"
             style={{ animationDelay: `${120 + i * 90}ms` }}
             onMouseEnter={() => cat.children && setActive(cat.label)}
             onMouseLeave={() => setActive(null)}
