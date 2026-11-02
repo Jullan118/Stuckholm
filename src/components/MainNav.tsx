@@ -2,10 +2,11 @@ import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CATEGORIES, type Category } from "@/lib/categories";
 
-// Top-left navigation. On every page it shows one big "Consume" link. On
-// /consume the categories slide in from the left, one after another, on the
-// same row. Clicking a category with sub-categories opens a menu centred on
-// the page. Click outside, press Escape, or change page to close it.
+// Top-left navigation. On every page it shows the "Consume" link. On
+// /consume the categories slide in from the left on the same row. Hovering
+// (or clicking) a category shows its sub-categories directly under it, in a
+// row running to the right. Moving the mouse away, clicking outside, pressing
+// Escape or changing page closes them.
 // On the home page the hero is a dark starfield, so the nav switches to
 // white there instead of its usual black-on-white. On every other page the
 // mini globe logo (MiniGlobe) sits in the same top-left corner, so the nav
@@ -14,20 +15,20 @@ export function MainNav() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
   const isConsume = pathname === "/consume";
-  const [openCategory, setOpenCategory] = React.useState<string | null>(null);
+  const [active, setActive] = React.useState<string | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
 
-  // Close the sub-menu when the page changes.
-  React.useEffect(() => setOpenCategory(null), [pathname]);
+  // Close the sub-row when the page changes.
+  React.useEffect(() => setActive(null), [pathname]);
 
   // Close on outside click or Escape.
   React.useEffect(() => {
-    if (!openCategory) return;
+    if (!active) return;
     const onDown = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenCategory(null);
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setActive(null);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpenCategory(null);
+      if (e.key === "Escape") setActive(null);
     };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
@@ -35,101 +36,90 @@ export function MainNav() {
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("keydown", onKey);
     };
-  }, [openCategory]);
+  }, [active]);
 
   const inkClass = isHome
     ? "text-white home-ink hover:opacity-70"
     : "text-black hover:text-black/70";
-  const openMenu = CATEGORIES.find((c) => c.label === openCategory && c.children);
 
   return (
-    <>
-      <div
-        ref={navRef}
-        className={`fixed -top-2 right-4 sm:right-8 z-20 h-16 flex flex-wrap items-center gap-6 sm:gap-10 ${
-          isHome ? "left-4 sm:left-8" : "left-24"
-        }`}
+    <div
+      ref={navRef}
+      className={`fixed -top-2 right-4 sm:right-8 z-20 h-16 flex flex-wrap items-center gap-6 sm:gap-10 ${
+        isHome ? "left-4 sm:left-8" : "left-24"
+      }`}
+    >
+      <Link
+        to="/consume"
+        className={`inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`}
       >
-        <Link
-          to="/consume"
-          className={`inline-block text-2xl sm:text-4xl transition-transform duration-200 ease-out hover:scale-110 ${inkClass}`}
-        >
-          Consume
-        </Link>
+        Consume
+      </Link>
 
-        {isConsume &&
-          CATEGORIES.map((cat, i) => (
-            <div
-              key={cat.label}
-              className="animate-slide-in-left"
-              style={{ animationDelay: `${120 + i * 90}ms` }}
-            >
-              <CategoryItem
-                category={cat}
-                inkClass={inkClass}
-                open={openCategory === cat.label}
-                onToggle={() =>
-                  setOpenCategory((cur) => (cur === cat.label ? null : cat.label))
-                }
-              />
-            </div>
-          ))}
-      </div>
+      {isConsume &&
+        CATEGORIES.map((cat, i) => (
+          <div
+            key={cat.label}
+            className="relative animate-slide-in-left"
+            style={{ animationDelay: `${120 + i * 90}ms` }}
+            onMouseEnter={() => cat.children && setActive(cat.label)}
+            onMouseLeave={() => setActive(null)}
+          >
+            <CategoryLink
+              category={cat}
+              inkClass={inkClass}
+              onOpen={() => cat.children && setActive(cat.label)}
+            />
 
-      {isConsume && openMenu && (
-        <div className="fixed left-1/2 -translate-x-1/2 top-20 z-30 bg-white text-black border border-black/10 shadow-sm px-8 py-5 min-w-[16rem]">
-          <p className="font-manrope text-xs uppercase tracking-widest text-black/50 mb-3 text-center">
-            {openMenu.label}
-          </p>
-          <ul className="space-y-2 text-center font-manrope text-lg">
-            {openMenu.children!.map((child) => (
-              <li key={child.label}>
-                {child.to ? (
-                  <Link to={child.to} className="hover:opacity-60 transition-opacity">
-                    {child.label}
-                  </Link>
-                ) : (
-                  <span className="text-black/80">{child.label}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </>
+            {cat.children && active === cat.label && (
+              <ul className="absolute left-0 top-full pt-3 flex gap-6 sm:gap-8 whitespace-nowrap animate-slide-in-left">
+                {cat.children.map((child) => (
+                  <li key={child.label}>
+                    {child.to ? (
+                      <Link
+                        to={child.to}
+                        className="text-base sm:text-lg text-black/70 hover:text-black transition-colors"
+                      >
+                        {child.label}
+                      </Link>
+                    ) : (
+                      <span className="text-base sm:text-lg text-black/70 hover:text-black transition-colors cursor-default">
+                        {child.label}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
+    </div>
   );
 }
 
-function CategoryItem({
+function CategoryLink({
   category,
   inkClass,
-  open,
-  onToggle,
+  onOpen,
 }: {
   category: Category;
   inkClass: string;
-  open: boolean;
-  onToggle: () => void;
+  onOpen: () => void;
 }) {
   const base = `inline-block text-lg sm:text-xl transition-transform duration-200 ease-out hover:scale-125 ${inkClass}`;
 
-  if (category.children) {
-    return (
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        className={`${base} ${open ? "scale-125" : ""}`}
-      >
-        {category.label}
-      </button>
-    );
-  }
   if (category.to) {
     return (
-      <Link to={category.to} className={base}>
+      <Link to={category.to} className={base} onFocus={onOpen}>
         {category.label}
       </Link>
+    );
+  }
+  if (category.children) {
+    return (
+      <button type="button" onClick={onOpen} aria-haspopup="true" className={base}>
+        {category.label}
+      </button>
     );
   }
   return <span className={`${base} cursor-default`}>{category.label}</span>;
