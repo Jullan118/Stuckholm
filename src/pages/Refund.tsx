@@ -47,15 +47,16 @@ export function Refund() {
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">Who pays for the return?</h2>
       <p className="mb-5">
-        You pay the return shipping. The exception is when the return is caused
-        by a fault or by a wrong item (see below).
+        You pay the return shipping, in every case, including returns of faulty
+        or wrong items.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">Refund timing</h2>
       <p className="mb-5">
-        We refund the purchase price and the standard delivery cost within 14
-        days of receiving the item, to your original payment method. Your bank
-        may need a few more business days to show the refund.
+        We refund the purchase price within 14 days of receiving the item, to
+        your original payment method. Original shipping and handling charges are
+        not refundable. Your bank may need a few more business days to show the
+        refund.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">Cancelling before production</h2>
@@ -71,8 +72,8 @@ export function Refund() {
       </h2>
       <p className="mb-5">
         If your item arrives damaged, faulty or is not the item you ordered, email{" "}
-        <Mail /> with your order number and photos of the problem. We will send
-        you a return label by email. We will repair, replace or refund the item.
+        <Mail /> with your order number and photos of the problem. You pay the
+        return shipping. We will repair, replace or refund the item.
       </p>
 
       <h2 className="text-xs sm:text-sm font-normal mb-2">
