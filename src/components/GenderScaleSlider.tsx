@@ -107,8 +107,8 @@ export function GenderScaleSlider({
             onClick={onReset}
             className={
               (value ?? GENDER_SCALE_NEUTRAL) === GENDER_SCALE_NEUTRAL
-                ? "text-black text-sm sm:text-base underline underline-offset-4"
-                : "text-black/50 hover:text-black text-sm sm:text-base transition-colors"
+                ? "text-black text-xs sm:text-xs underline underline-offset-4"
+                : "text-black/50 hover:text-black text-xs sm:text-xs transition-colors"
             }
           >
             {resetLabel}
@@ -117,7 +117,7 @@ export function GenderScaleSlider({
       )}
       <div
         className={`flex items-center justify-between text-black mb-2 ${
-          compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"
+          compact ? "text-xs sm:text-xs" : "text-xs sm:text-xs"
         }`}
       >
         <span>{leftLabel}</span>

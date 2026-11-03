@@ -77,7 +77,7 @@ export function AddToCart({
                     setSelected((s) => ({ ...s, [option.name]: value }));
                     setError(false);
                   }}
-                  className={`min-w-[3rem] h-12 px-3 border text-base transition-colors ${
+                  className={`min-w-[3rem] h-12 px-3 border text-xs transition-colors ${
                     picked
                       ? "bg-black text-white border-black"
                       : available
@@ -93,7 +93,7 @@ export function AddToCart({
         ))}
 
       {error && (
-        <p className="text-[#d51f26] text-sm">
+        <p className="text-[#d51f26] text-xs">
           Pick a {missing.join(" and ") || "size"} first.
         </p>
       )}

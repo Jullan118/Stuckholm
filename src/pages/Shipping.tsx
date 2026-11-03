@@ -15,11 +15,11 @@ function Mail() {
 export function Shipping() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-[11px] sm:text-xs leading-snug">
-      <h1 className="text-base sm:text-lg font-light mb-5 text-center">
+      <h1 className="text-xs sm:text-sm font-light mb-5 text-center">
         Shipping
       </h1>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Where we ship</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Where we ship</h2>
       <p className="mb-5">
         We ship to the United States, the United Kingdom, Europe (EU and non-EU),
         Canada and selected international countries. If your country is not listed
@@ -27,10 +27,10 @@ export function Shipping() {
         deliver to you.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Shipping costs</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Shipping costs</h2>
       <p className="mb-5">Shipping costs are shown at checkout before you pay.</p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Made-to-order items</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Made-to-order items</h2>
       <p className="mb-2">
         Stuckholm pieces are made to order by our production partner. Estimated
         times:
@@ -42,7 +42,7 @@ export function Shipping() {
         <li>– International: 10–20 business days shipping</li>
       </ul>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Second-hand items</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Second-hand items</h2>
       <p className="mb-5">
         Second-hand items are sent from our stock within 2 business days after your
         order is placed.
@@ -50,13 +50,13 @@ export function Shipping() {
 
       <p className="mb-5">Delivery times are estimates, not guarantees.</p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Tracking</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Tracking</h2>
       <p className="mb-5">
         When your order ships, you will receive an email with tracking details. If
         tracking has not updated within 5 days, contact us at <Mail />.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
+      <h2 className="text-xs sm:text-xs font-normal mb-2">
         Customs, duties and import taxes
       </h2>
       <p className="mb-5">
@@ -65,7 +65,7 @@ export function Shipping() {
         Stuckholm.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Delays</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Delays</h2>
       <p>
         We are not responsible for delays caused by events outside our control, such
         as customs processing, postal disruptions or weather. Please check your

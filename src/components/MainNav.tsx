@@ -53,12 +53,12 @@ export function MainNav() {
     <div
       ref={navRef}
       className={`fixed -top-2 right-4 sm:right-8 z-20 h-16 flex flex-wrap items-center gap-6 sm:gap-10 ${
-        isHome ? "left-4 sm:left-8" : "left-24"
+        "left-4 sm:left-8"
       }`}
     >
       <Link
         to={`/collections/${CONSUME_HANDLE}`}
-        className={`inline-block text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`}
+        className={`inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
       >
         Consume
       </Link>
@@ -84,7 +84,7 @@ export function MainNav() {
                   <li key={child.label}>
                     <Link
                       to={`/collections/${child.handle}`}
-                      className={`text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`}
+                      className={`text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
                     >
                       {child.label}
                     </Link>
@@ -107,7 +107,7 @@ function CategoryLink({
   inkClass: string;
   onOpen: () => void;
 }) {
-  const base = `inline-block text-lg sm:text-xl transition-opacity duration-200 ${inkClass}`;
+  const base = `inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`;
   return (
     <Link to={`/collections/${category.handle}`} className={base} onFocus={onOpen}>
       {category.label}

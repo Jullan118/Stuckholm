@@ -12,15 +12,15 @@ export function Consume() {
 
   return (
     <div className="relative z-10 w-full pt-24 pb-16 animate-blur-fade-in">
-      {state.status === "loading" && <p className="text-center text-black/50 text-sm">Loading…</p>}
+      {state.status === "loading" && <p className="text-center text-black/50 text-xs">Loading…</p>}
       {state.status === "error" && (
-        <p className="text-center text-black/50 text-sm">
+        <p className="text-center text-black/50 text-xs">
           Couldn't load products right now. Please try again soon.
         </p>
       )}
       {state.status === "ready" &&
         (state.data.length === 0 ? (
-          <p className="text-center text-black/50 text-sm">No products yet.</p>
+          <p className="text-center text-black/50 text-xs">No products yet.</p>
         ) : (
           <ProductGrid products={state.data} />
         ))}

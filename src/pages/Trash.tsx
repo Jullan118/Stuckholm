@@ -24,9 +24,9 @@ export function Trash() {
         onReset={() => setScale(GENDER_SCALE_NEUTRAL)}
       />
 
-      {state.status === "loading" && <p className="text-center text-black/50 text-sm">Loading…</p>}
+      {state.status === "loading" && <p className="text-center text-black/50 text-xs">Loading…</p>}
       {state.status === "error" && (
-        <p className="text-center text-black/50 text-sm">
+        <p className="text-center text-black/50 text-xs">
           Couldn't load items right now. Please try again soon.
         </p>
       )}
@@ -38,7 +38,7 @@ export function Trash() {
             return scale < GENDER_SCALE_NEUTRAL ? p.genderScale <= scale : p.genderScale >= scale;
           });
           if (visible.length === 0) {
-            return <p className="text-center text-black/50 text-sm mb-16">No items here yet.</p>;
+            return <p className="text-center text-black/50 text-xs mb-16">No items here yet.</p>;
           }
           return (
             <div className="mb-16">

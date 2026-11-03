@@ -16,25 +16,12 @@ export function CartCorner() {
     <button
       type="button"
       onClick={openCart}
-      className={`fixed top-4 right-4 sm:right-8 z-20 flex items-center gap-1 transition-transform duration-200 hover:scale-110 ${
+      className={`fixed top-5 right-24 sm:right-[8.5rem] z-20 transition-transform duration-200 hover:scale-110 ${
         isHome ? "text-white home-ink" : "text-black"
       }`}
       aria-label={`Cart, ${totalQuantity} item${totalQuantity === 1 ? "" : "s"}`}
     >
-      <svg
-        width="22"
-        height="22"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M6 8h12l-1 12.5a1 1 0 0 1-1 .9H8a1 1 0 0 1-1-.9L6 8Z" />
-        <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-      </svg>
-      <sup className="text-[11px] leading-none">{totalQuantity}</sup>
+      Cart{totalQuantity > 0 ? ` (${totalQuantity})` : ""}
     </button>
   );
 }

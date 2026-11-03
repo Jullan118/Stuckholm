@@ -53,7 +53,7 @@ export function ShopProductPage({
     <div className="relative z-10 w-full max-w-5xl px-4 sm:px-8 pt-28 pb-16">
       <Link
         to={backTo}
-        className="inline-block text-black/70 hover:text-black text-sm mb-8 transition-colors"
+        className="inline-block text-black/70 hover:text-black text-xs mb-8 transition-colors"
       >
         ← {backLabel}
       </Link>
@@ -69,7 +69,7 @@ export function ShopProductPage({
                     type="button"
                     onClick={goPrev}
                     aria-label="Previous image"
-                    className="shrink-0 text-black/40 hover:text-black transition-colors text-3xl leading-none px-1"
+                    className="shrink-0 text-black/40 hover:text-black transition-colors text-xl leading-none px-1"
                   >
                     ‹
                   </button>
@@ -89,7 +89,7 @@ export function ShopProductPage({
                     type="button"
                     onClick={goNext}
                     aria-label="Next image"
-                    className="shrink-0 text-black/40 hover:text-black transition-colors text-3xl leading-none px-1"
+                    className="shrink-0 text-black/40 hover:text-black transition-colors text-xl leading-none px-1"
                   >
                     ›
                   </button>
@@ -134,11 +134,11 @@ export function ShopProductPage({
         {/* Name, price, sizes, add to cart, then the product copy (left-aligned) */}
         <div className="w-full md:w-2/5 flex flex-col gap-4 text-left">
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl sm:text-3xl font-manrope font-bold text-black">
+            <h1 className="text-lg sm:text-xl font-manrope font-bold text-black">
               {product.title}
             </h1>
             {product.priceText && (
-              <p className="text-black text-lg whitespace-nowrap">{product.priceText}</p>
+              <p className="text-black text-sm whitespace-nowrap">{product.priceText}</p>
             )}
           </div>
 
@@ -149,7 +149,7 @@ export function ShopProductPage({
           )}
 
           {meta.length > 0 && (
-            <dl className="text-black/70 text-sm flex flex-col items-start gap-1 mt-2">
+            <dl className="text-black/70 text-xs flex flex-col items-start gap-1 mt-2">
               {meta.map(([label, value]) => (
                 <React.Fragment key={label}>
                   <dt className="text-black/50">{label}</dt>

@@ -43,18 +43,18 @@ export function Login() {
 
   return (
     <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center px-6 text-center">
-      <h1 className="text-3xl sm:text-4xl font-manrope font-light text-black mb-8">
+      <h1 className="text-xl sm:text-2xl font-manrope font-light text-black mb-8">
         Log in
       </h1>
 
       {!supabaseConfigured ? (
-        <p className="text-black/50 text-sm">Login isn't connected yet.</p>
+        <p className="text-black/50 text-xs">Login isn't connected yet.</p>
       ) : checkingSession ? null : session ? (
         <div className="flex flex-col items-center gap-3">
-          <p className="text-black/70 text-sm">Logged in as {session.user.email}</p>
+          <p className="text-black/70 text-xs">Logged in as {session.user.email}</p>
           <button
             onClick={handleLogout}
-            className="text-black/60 text-sm underline hover:text-black transition-colors"
+            className="text-black/60 text-xs underline hover:text-black transition-colors"
           >
             Log out
           </button>
@@ -80,7 +80,7 @@ export function Login() {
             className="border border-black/20 rounded-lg px-3 py-2"
             required
           />
-          {loginError && <p className="text-[#d51f26] text-sm">{loginError}</p>}
+          {loginError && <p className="text-[#d51f26] text-xs">{loginError}</p>}
           <button
             type="submit"
             className="bg-black text-white rounded-full px-6 py-2 mt-2 hover:opacity-80 transition-opacity"

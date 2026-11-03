@@ -42,11 +42,11 @@ export function CartDrawer() {
         }`}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-black/10">
-          <p className="text-xl">Cart</p>
+          <p className="text-base">Cart</p>
           <button
             type="button"
             onClick={closeCart}
-            className="text-2xl leading-none text-black/60 hover:text-black"
+            className="text-lg leading-none text-black/60 hover:text-black"
             aria-label="Close cart"
           >
             ×
@@ -91,12 +91,12 @@ export function CartDrawer() {
                       </span>
                     </div>
                     {line.variantTitle && (
-                      <p className="text-sm text-black/60">Size {line.variantTitle}</p>
+                      <p className="text-xs text-black/60">Size {line.variantTitle}</p>
                     )}
 
                     <div className="flex items-center justify-between mt-auto pt-2">
                       {line.maxQuantity === 1 ? (
-                        <span className="text-sm text-black/50">One of a kind</span>
+                        <span className="text-xs text-black/50">One of a kind</span>
                       ) : (
                         <div className="flex items-center border border-black/30">
                           <button
@@ -126,7 +126,7 @@ export function CartDrawer() {
                       <button
                         type="button"
                         onClick={() => removeLine(line.merchandiseId)}
-                        className="text-sm text-black/50 hover:text-black underline"
+                        className="text-xs text-black/50 hover:text-black underline"
                       >
                         Remove
                       </button>
@@ -146,7 +146,7 @@ export function CartDrawer() {
                 <span>{subtotal}</span>
               </div>
             )}
-            {error && <p className="text-sm text-[#d51f26]">{error}</p>}
+            {error && <p className="text-xs text-[#d51f26]">{error}</p>}
             <p className="text-xs text-black/50">Shipping calculated at checkout.</p>
             <button
               type="button"

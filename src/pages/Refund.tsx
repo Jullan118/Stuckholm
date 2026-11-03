@@ -15,12 +15,12 @@ function Mail() {
 export function Refund() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-28 pb-16 font-manrope text-black text-center text-[11px] sm:text-xs leading-snug">
-      <h1 className="text-xl sm:text-2xl font-light mb-2 text-center">
+      <h1 className="text-base sm:text-lg font-light mb-2 text-center">
         Return &amp; Refund Policy
       </h1>
       <p className="mb-5 text-black/50">Effective date: 27 October 2026</p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">How do I return an item?</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">How do I return an item?</h2>
       <ul className="list-none space-y-1 mb-5">
         <li>1. Email us at <Mail /> before you send anything back.</li>
         <li>2. Pack the item carefully, ideally in its original packaging.</li>
@@ -37,7 +37,7 @@ export function Refund() {
         Tidy Merch, Fridas väg 21, 611 50 Nyköping, Sweden
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Right of withdrawal</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Right of withdrawal</h2>
       <p className="mb-5">
         You can cancel your order without giving a reason within 14 days of
         receiving it. Send us an email with your order number, then return the
@@ -45,13 +45,13 @@ export function Refund() {
         condition. This applies to new and second-hand items.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Who pays for the return?</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Who pays for the return?</h2>
       <p className="mb-5">
         You pay the return shipping, in every case, including returns of faulty
         or wrong items.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Refund timing</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Refund timing</h2>
       <p className="mb-5">
         We refund the purchase price within 14 days of receiving the item, to
         your original payment method. Original shipping and handling charges are
@@ -59,7 +59,7 @@ export function Refund() {
         refund.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Cancelling before production</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Cancelling before production</h2>
       <p className="mb-5">
         You can cancel an order within 12 hours of purchase at no cost. After
         that, you can cancel only if the item has not entered production. Once an
@@ -67,7 +67,7 @@ export function Refund() {
         it under the right of withdrawal.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
+      <h2 className="text-xs sm:text-xs font-normal mb-2">
         Damaged, faulty or wrong items
       </h2>
       <p className="mb-5">
@@ -76,7 +76,7 @@ export function Refund() {
         return shipping. We will repair, replace or refund the item.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">
+      <h2 className="text-xs sm:text-xs font-normal mb-2">
         What if the item looks different from the photos?
       </h2>
       <p className="mb-5">
@@ -85,13 +85,13 @@ export function Refund() {
         the shop, email us with a photo or two so we can look into it.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Exchanges</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Exchanges</h2>
       <p className="mb-5">
         We do not process exchanges. Return the item you have, and once the return
         is accepted, place a new order for the item you want.
       </p>
 
-      <h2 className="text-xs sm:text-sm font-normal mb-2">Questions?</h2>
+      <h2 className="text-xs sm:text-xs font-normal mb-2">Questions?</h2>
       <p>
         Email <Mail />.
       </p>

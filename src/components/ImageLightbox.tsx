@@ -38,7 +38,7 @@ export function ImageLightbox({ images, index, alt, onClose, onNavigate }: Image
         type="button"
         onClick={onClose}
         aria-label="Close"
-        className="absolute top-5 right-5 text-white/80 hover:text-white text-3xl leading-none w-10 h-10 flex items-center justify-center"
+        className="absolute top-5 right-5 text-white/80 hover:text-white text-xl leading-none w-10 h-10 flex items-center justify-center"
       >
         ×
       </button>
@@ -51,7 +51,7 @@ export function ImageLightbox({ images, index, alt, onClose, onNavigate }: Image
             onNavigate((index - 1 + images.length) % images.length);
           }}
           aria-label="Previous image"
-          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl leading-none w-12 h-12 flex items-center justify-center"
+          className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-2xl leading-none w-12 h-12 flex items-center justify-center"
         >
           ‹
         </button>
@@ -72,14 +72,14 @@ export function ImageLightbox({ images, index, alt, onClose, onNavigate }: Image
             onNavigate((index + 1) % images.length);
           }}
           aria-label="Next image"
-          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-4xl leading-none w-12 h-12 flex items-center justify-center"
+          className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 text-white/70 hover:text-white text-2xl leading-none w-12 h-12 flex items-center justify-center"
         >
           ›
         </button>
       )}
 
       {images.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-xs">
           {index + 1} / {images.length}
         </div>
       )}
