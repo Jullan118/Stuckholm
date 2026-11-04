@@ -16,9 +16,13 @@ function SpinningBlob() {
   const groupRef = React.useRef<THREE.Group>(null);
   const { blob, letters } = React.useMemo(() => {
     const parts = createBlobFromModel(gltf.scene, FILL);
+    // Collect the parts first: adding children while traversing would make the
+    // traversal walk into the new wireframe meshes forever.
+    const blobMeshes: THREE.Mesh[] = [];
     parts.blob.traverse((o) => {
-      const mesh = o as THREE.Mesh;
-      if (!mesh.isMesh) return;
+      if ((o as THREE.Mesh).isMesh) blobMeshes.push(o as THREE.Mesh);
+    });
+    blobMeshes.forEach((mesh) => {
       mesh.material = new THREE.MeshBasicMaterial({ color: FILL });
       // Wireframe drawn over each blob part, so the edges show on the fill.
       const wire = new THREE.Mesh(
