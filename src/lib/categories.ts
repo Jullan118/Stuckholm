@@ -15,6 +15,6 @@ export const CONSUME_HANDLE = "all"; // Shopify's built-in "all products" collec
 export const CATEGORIES: Category[] = [
   { label: "Apparel", handle: "apparel" },
   { label: "Artwork", handle: "artwork" },
-  { label: "2ndhand", handle: "preloved" },
+  { label: "2ndhand", handle: "2ndhand" },
   { label: "E01", handle: "e01" },
 ];
