@@ -16,6 +16,7 @@ export function MainNav() {
   const isHome = pathname === "/";
   const isConsume = pathname === "/consume" || pathname.startsWith("/collections/");
   const isProductPage = /^\/(in-stock|trash)\/[^/]+/.test(pathname);
+  const isEntrance = pathname === `/collections/${CONSUME_HANDLE}`;
   const [active, setActive] = React.useState<string | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
 
@@ -64,7 +65,7 @@ export function MainNav() {
           Consume
         </Link>
       )}
-      {!isProductPage && !isHome && (
+      {!isProductPage && !isHome && !isEntrance && (
         <Link
           to={`/collections/${CONSUME_HANDLE}`}
           className={`inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}

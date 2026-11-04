@@ -1,13 +1,17 @@
-// Soft, out-of-focus backdrop for the shop pages (/collections/...). Grey with
-// faint blue, red and green blurred blobs, like a photo that has been pushed
-// out of focus. It sits behind the product grid and fills the whole screen.
+// Blurred image laid over the whole screen on the entrance page (/collections/all).
+// The products underneath are hidden by the blur; the category menu sits above
+// it in the header. Grey with faint blue, red and green blurred blobs.
 export function BlurredBackdrop() {
   const blob = "absolute rounded-full";
   return (
     <div
       aria-hidden="true"
-      className="fixed inset-0 z-0 overflow-hidden pointer-events-none"
-      style={{ background: "linear-gradient(180deg, #f3f3f3 0%, #b4b4b4 45%, #9c9c9c 100%)" }}
+      className="fixed inset-0 z-[15] overflow-hidden pointer-events-none"
+      style={{
+        background: "linear-gradient(180deg, rgba(243,243,243,0.6) 0%, rgba(180,180,180,0.55) 45%, rgba(156,156,156,0.65) 100%)",
+        backdropFilter: "blur(28px)",
+        WebkitBackdropFilter: "blur(28px)",
+      }}
     >
       <div
         className={blob}

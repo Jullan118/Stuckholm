@@ -10,10 +10,12 @@ import { BlurredBackdrop } from "@/components/BlurredBackdrop";
 export function Consume() {
   const { handle = CONSUME_HANDLE } = useParams();
   const state = useCollectionProducts(handle);
+  // The entrance (/collections/all, reached from Consume on the home page) is
+  // fully blurred over the products; category pages show them on white.
+  const isEntrance = handle === CONSUME_HANDLE;
 
   return (
-    <div className="relative w-full min-h-screen">
-    <BlurredBackdrop />
+    <>
     <div className="relative z-10 w-full pt-24 pb-16 animate-blur-fade-in">
       {state.status === "loading" && <p className="text-center text-black/50 text-xs">Loading…</p>}
       {state.status === "error" && (
@@ -28,6 +30,7 @@ export function Consume() {
           <ProductGrid products={state.data} />
         ))}
     </div>
-    </div>
+    {isEntrance && <BlurredBackdrop />}
+    </>
   );
 }
