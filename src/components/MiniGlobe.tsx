@@ -5,9 +5,9 @@ import { useGLTF, Bounds } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
 import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe";
 
-// Same model as the home globe: a light grey body like the big globe, with the
-// dark line-art of the edges and the letters over it. It turns the
-// same way as the home globe (negative Y).
+// Same model and material as the home globe: the grey body is built by the same
+// function, so it is lit and shaded the same way. The letter ring has dark
+// outlines. It turns the same way as the home globe (negative Y).
 const FILL = "#e4e7ea";
 const INK = "#383e42";
 
@@ -16,23 +16,6 @@ function SpinningBlob() {
   const groupRef = React.useRef<THREE.Group>(null);
   const { blob, letters } = React.useMemo(() => {
     const parts = createBlobFromModel(gltf.scene, FILL);
-    // Collect the parts first: adding children while traversing would make the
-    // traversal walk into the new wireframe meshes forever.
-    const blobMeshes: THREE.Mesh[] = [];
-    parts.blob.traverse((o) => {
-      if ((o as THREE.Mesh).isMesh) blobMeshes.push(o as THREE.Mesh);
-    });
-    blobMeshes.forEach((mesh) => {
-      mesh.material = new THREE.MeshBasicMaterial({ color: FILL });
-      // Edge lines only at the sharp creases, like the home globe's line-art.
-      // A full wireframe is too dense at this size and reads as near-black.
-      const edges = new THREE.LineSegments(
-        new THREE.EdgesGeometry(mesh.geometry, 20),
-        new THREE.LineBasicMaterial({ color: INK })
-      );
-      edges.scale.setScalar(1.002);
-      mesh.add(edges);
-    });
     parts.letters.traverse((o) => {
       const line = o as THREE.LineSegments;
       if (line.isLineSegments) (line.material as THREE.LineBasicMaterial).color.set(INK);
