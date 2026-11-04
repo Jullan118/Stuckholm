@@ -2,19 +2,20 @@ import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CATEGORIES, CONSUME_HANDLE, type Category } from "@/lib/categories";
 
-// Top-left navigation. On every page it shows the "Consume" link. On
-// /consume the categories slide in from the left on the same row. Hovering
-// (or clicking) a category shows its sub-categories directly under it, in a
-// row running to the right. Moving the mouse away, clicking outside, pressing
-// Escape or changing page closes them.
+// Centred navigation. On every page except product pages it shows the
+// "Consume" link, which is the way into the shop (like a key to the room). On
+// the collection pages the categories slide in on the same row. Hovering (or
+// clicking) a category shows its sub-categories directly under it. Moving the
+// mouse away, clicking outside, pressing Escape or changing page closes them.
+// On product pages "Consume" disappears, since you are already inside.
 // On the home page the hero is a dark starfield, so the nav switches to
-// white there instead of its usual black-on-white. On every other page the
-// mini globe logo (MiniGlobe) sits in the same top-left corner, so the nav
-// shifts right to sit beside it instead of underneath it.
+// white there instead of its usual black-on-white. The mini globe (top-left)
+// and the cart (top-right) sit in the corners; the nav keeps clear of them.
 export function MainNav() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
   const isConsume = pathname === "/consume" || pathname.startsWith("/collections/");
+  const isProductPage = /^\/(in-stock|trash)\/[^/]+/.test(pathname);
   const [active, setActive] = React.useState<string | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
 
@@ -52,16 +53,17 @@ export function MainNav() {
   return (
     <div
       ref={navRef}
-      className={`fixed -top-2 right-4 sm:right-8 z-20 h-16 flex flex-wrap items-center gap-6 sm:gap-10 ${
-        "left-4 sm:left-8"
-      }`}
+      className="fixed inset-x-0 top-1 z-20 h-16 flex items-center justify-center px-20 sm:px-32 pointer-events-none"
     >
-      <Link
-        to={`/collections/${CONSUME_HANDLE}`}
-        className={`inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
-      >
-        Consume
-      </Link>
+    <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10">
+      {!isProductPage && (
+        <Link
+          to={`/collections/${CONSUME_HANDLE}`}
+          className={`inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
+        >
+          Consume
+        </Link>
+      )}
 
       {isConsume &&
         CATEGORIES.map((cat, i) => (
@@ -94,6 +96,7 @@ export function MainNav() {
             )}
           </div>
         ))}
+    </div>
     </div>
   );
 }

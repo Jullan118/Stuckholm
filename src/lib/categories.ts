@@ -1,9 +1,9 @@
 // Category menu shown in the header on collection pages (/collections/...).
-// Each `handle` is the Shopify collection handle (the URL name). Please check
-// these match your collections exactly; Shopify makes a handle from the title
-// (lowercase, spaces become hyphens) unless you changed it.
-// Clicking a category or sub-category opens /collections/<handle>. Sub-categories
-// appear directly under their parent when it is hovered or clicked.
+// Each `handle` is the Shopify collection handle (the URL name). These are
+// placeholders for the preview: once the real collections exist in Shopify,
+// check that each handle matches its collection exactly (Shopify makes a
+// handle from the title: lowercase, spaces become hyphens, unless changed).
+// Clicking a category opens /collections/<handle>.
 export type Category = {
   label: string;
   handle: string;
@@ -13,20 +13,8 @@ export type Category = {
 export const CONSUME_HANDLE = "all"; // Shopify's built-in "all products" collection
 
 export const CATEGORIES: Category[] = [
-  {
-    label: "Apparel",
-    handle: "apparel",
-    children: [
-      { label: "Descartes", handle: "descartes" },
-      { label: "Stuck Royale", handle: "stuck-royale" },
-      { label: "Stuck in Stuckholm", handle: "stuck-in-stuckholm" },
-      { label: "Breturn", handle: "breturn" },
-    ],
-  },
-  { label: "Artwork", handle: "artwork" },
-  {
-    label: "2ndhand",
-    handle: "2ndhand",
-    children: [{ label: "Chasmere Corner", handle: "chasmere-corner" }],
-  },
+  { label: "Apparel", handle: "apparel" },
+  { label: "Artworks", handle: "artworks" },
+  { label: "Preloved", handle: "preloved" },
+  { label: "E01", handle: "e01" },
 ];
