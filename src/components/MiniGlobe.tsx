@@ -6,7 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe";
 
 // Same model as the home globe: a light grey body like the big globe, with the
-// dark line-art of the letters and the wireframe edges over it. It turns the
+// dark line-art of the edges and the letters over it. It turns the
 // same way as the home globe (negative Y).
 const FILL = "#e4e7ea";
 const INK = "#383e42";
@@ -24,13 +24,14 @@ function SpinningBlob() {
     });
     blobMeshes.forEach((mesh) => {
       mesh.material = new THREE.MeshBasicMaterial({ color: FILL });
-      // Wireframe drawn over each blob part, so the edges show on the fill.
-      const wire = new THREE.Mesh(
-        mesh.geometry,
-        new THREE.MeshBasicMaterial({ color: INK, wireframe: true })
+      // Edge lines only at the sharp creases, like the home globe's line-art.
+      // A full wireframe is too dense at this size and reads as near-black.
+      const edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(mesh.geometry, 20),
+        new THREE.LineBasicMaterial({ color: INK })
       );
-      wire.scale.setScalar(1.002);
-      mesh.add(wire);
+      edges.scale.setScalar(1.002);
+      mesh.add(edges);
     });
     parts.letters.traverse((o) => {
       const line = o as THREE.LineSegments;
