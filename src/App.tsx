@@ -12,7 +12,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartProvider } from "@/lib/cart";
 import { Home } from "@/pages/Home";
-import { InStock } from "@/pages/InStock";
 import { InStockProduct } from "@/pages/InStockProduct";
 import { About } from "@/pages/About";
 import { Login } from "@/pages/Login";
@@ -42,7 +41,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/consume" element={<Navigate to="/collections/all" replace />} />
           <Route path="/collections/:handle" element={<Consume />} />
-          <Route path="/in-stock" element={<InStock />} />
+          <Route path="/in-stock" element={<Navigate to="/collections/all" replace />} />
           <Route path="/in-stock/:slug" element={<InStockProduct />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/trash/:slug" element={<TrashProduct />} />

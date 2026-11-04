@@ -1,10 +1,12 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { AddToCart } from "@/components/AddToCart";
 import type { ShopProduct } from "@/lib/shopProducts";
 
-// Shared product page for /in-stock/:handle and /trash/:handle.
+// Shared product page for /in-stock/:handle and /trash/:handle. The back link
+// returns to the exact page you came from; backTo is only used if there is no
+// earlier page in this visit (for example when the product was opened directly).
 export function ShopProductPage({
   product,
   backTo,
@@ -14,6 +16,8 @@ export function ShopProductPage({
   backTo: string;
   backLabel: string;
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const images = product.images;
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
@@ -51,12 +55,18 @@ export function ShopProductPage({
 
   return (
     <div className="relative z-10 w-full max-w-5xl px-4 sm:px-8 pt-28 pb-16">
-      <Link
-        to={backTo}
+      <button
+        type="button"
+        onClick={() => {
+          // location.key is "default" when the product was opened straight from
+          // a link, with no earlier page in this visit.
+          if (location.key !== "default") navigate(-1);
+          else navigate(backTo, { replace: true });
+        }}
         className="inline-block text-black/70 hover:text-black text-xs mb-8 transition-colors"
       >
         ← {backLabel}
-      </Link>
+      </button>
 
       <div className="flex flex-col md:flex-row gap-10">
         {/* Image carousel: one big image with prev/next arrows, thumbnails below */}
