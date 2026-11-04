@@ -8,7 +8,7 @@ import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe
 // Same model as the home globe, drawn as a near-black wireframe: the blob shows
 // only its triangle edges, and the letter ring is a dark outline. It turns the
 // same way as the home globe (negative Y).
-const INK = "#0b0b0c";
+const INK = "#3a3e44";
 
 function SpinningBlob() {
   const gltf = useGLTF(BLOB_MODEL_URL);
