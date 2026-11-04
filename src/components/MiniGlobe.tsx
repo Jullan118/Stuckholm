@@ -5,21 +5,28 @@ import { useGLTF, Bounds } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
 import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe";
 
-// Same model as the home globe, drawn as a near-black wireframe: the blob shows
-// only its triangle edges, and the letter ring is a dark outline. It turns the
+// Same model as the home globe: a light grey body like the big globe, with the
+// dark line-art of the letters and the wireframe edges over it. It turns the
 // same way as the home globe (negative Y).
-const INK = "#3a3e44";
+const FILL = "#e4e7ea";
+const INK = "#383e42";
 
 function SpinningBlob() {
   const gltf = useGLTF(BLOB_MODEL_URL);
   const groupRef = React.useRef<THREE.Group>(null);
   const { blob, letters } = React.useMemo(() => {
-    const parts = createBlobFromModel(gltf.scene, INK);
+    const parts = createBlobFromModel(gltf.scene, FILL);
     parts.blob.traverse((o) => {
       const mesh = o as THREE.Mesh;
-      if (mesh.isMesh) {
-        mesh.material = new THREE.MeshBasicMaterial({ color: INK, wireframe: true });
-      }
+      if (!mesh.isMesh) return;
+      mesh.material = new THREE.MeshBasicMaterial({ color: FILL });
+      // Wireframe drawn over each blob part, so the edges show on the fill.
+      const wire = new THREE.Mesh(
+        mesh.geometry,
+        new THREE.MeshBasicMaterial({ color: INK, wireframe: true })
+      );
+      wire.scale.setScalar(1.002);
+      mesh.add(wire);
     });
     parts.letters.traverse((o) => {
       const line = o as THREE.LineSegments;
