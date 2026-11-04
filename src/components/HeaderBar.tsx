@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 // header and show through the gaps between its items.
 export function HeaderBar() {
   const { pathname } = useLocation();
-  if (pathname === "/") return null;
+  // The home page and the shop pages have their own backdrop, so no white strip.
+  if (pathname === "/" || pathname.startsWith("/collections/")) return null;
   return <div aria-hidden="true" className="fixed inset-x-0 top-0 h-20 z-[15] bg-white" />;
 }
