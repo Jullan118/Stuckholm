@@ -56,7 +56,15 @@ export function MainNav() {
       className="fixed inset-x-0 top-1 z-20 h-16 flex items-center justify-center px-20 sm:px-32 pointer-events-none"
     >
     <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10">
-      {!isProductPage && (
+      {isHome && (
+        <Link
+          to={`/collections/${CONSUME_HANDLE}`}
+          className={`pointer-events-auto fixed top-4 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
+        >
+          Consume
+        </Link>
+      )}
+      {!isProductPage && !isHome && (
         <Link
           to={`/collections/${CONSUME_HANDLE}`}
           className={`inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
