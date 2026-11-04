@@ -22,5 +22,5 @@ export function InStockProduct() {
     );
   }
 
-  return <ShopProductPage product={state.data} backTo="/collections/all" backLabel="Shop" />;
+  return <ShopProductPage product={state.data} backTo="/collections/all" backLabel="Back" />;
 }
