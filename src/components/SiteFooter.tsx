@@ -15,21 +15,21 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="w-full font-manrope text-black mt-64 mb-14">
+    <footer className="w-full font-manrope text-black mt-64 mb-14 px-4">
       <div className="w-full">
-        <div className="ml-4 border-t border-black/20" />
-        <div className="px-4 pt-6 pb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-32 text-xs sm:text-sm">
+        <div className="border-t border-black/20" />
+        <div className="pt-6 pb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-32 text-xs sm:text-sm">
           <div className="flex flex-col gap-3 leading-tight">
             <span className={headingClass}>Info</span>
             <Link to="/shipping" className={linkClass}>Shipping</Link>
-            <Link to="/refund" className={linkClass}>Return & Refunds</Link>
+            <Link to="/refund" className={linkClass}>Returns</Link>
           </div>
 
           <div className="flex flex-col gap-3 leading-tight">
             <span className={headingClass}>Legal</span>
             <Link to="/cookies" className={linkClass}>Cookies</Link>
-            <Link to="/privacy" className={linkClass}>Privacy Policy</Link>
-            <Link to="/terms" className={linkClass}>Terms of Use</Link>
+            <Link to="/privacy" className={linkClass}>Privacy</Link>
+            <Link to="/terms" className={linkClass}>Terms</Link>
           </div>
 
           <div className="flex flex-col gap-3 leading-tight">
@@ -47,8 +47,8 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="px-4 py-4 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-1 text-xs sm:text-sm text-black/50 w-full">
-        <span>© {year} Stuck in Stuckholm — all rights reserved</span>
+      <div className="py-4 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-1 text-xs sm:text-sm text-black/50 w-full">
+        <span>© {year} Stuck in Stuckholm</span>
         <div className="flex flex-col items-center sm:items-end gap-1">
           <Link
             to="/login"
