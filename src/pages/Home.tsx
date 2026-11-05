@@ -5,7 +5,7 @@ import { StuckholmGlobe } from "@/components/StuckholmGlobe";
 // behind the globe to fully fade from the starry night down to white. The
 // hero itself stays pinned (sticky) for that whole stretch; the globe keeps
 // spinning in place the entire time, it never shrinks or flies away.
-const SPIN_AWAY_VH = 120;
+const SPIN_AWAY_VH = 200;
 
 // About text shown above the footer, on the home page only. Edit this text
 // freely; it is placeholder copy for now.
