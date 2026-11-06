@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useLocation } from "react-router-dom";
+import { isBannerPath } from "@/components/TopBanner";
 import { useCart } from "@/lib/cart";
 
 // Bag icon pinned to the top-right corner on every page, mirroring the
@@ -16,7 +17,7 @@ export function CartCorner() {
     <button
       type="button"
       onClick={openCart}
-      className={`fixed top-8 h-16 right-4 sm:right-8 z-20 flex items-center gap-1 transition-transform duration-200 hover:scale-110 ${
+      className={`fixed ${isBannerPath(pathname) ? "top-8" : "top-1"} h-16 right-4 sm:right-8 z-20 flex items-center gap-1 transition-transform duration-200 hover:scale-110 ${
         isHome ? "text-white home-ink" : "text-black"
       }`}
       aria-label={`Cart, ${totalQuantity} item${totalQuantity === 1 ? "" : "s"}`}

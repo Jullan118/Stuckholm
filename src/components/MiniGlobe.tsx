@@ -2,6 +2,7 @@ import * as React from "react";
 import { Canvas } from "@react-three/fiber";
 import { Bounds } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
+import { isBannerPath } from "@/components/TopBanner";
 import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe";
 import sketchCover from "@/assets/sketch-cover.png?inline";
 
@@ -14,7 +15,7 @@ export function MiniGlobe() {
   return (
     <Link
       to="/"
-      className="fixed top-8 left-4 sm:left-8 z-20 w-24 cursor-pointer hover:scale-110 transition-transform"
+      className={`fixed ${isBannerPath(pathname) ? "top-8" : "top-1"} left-4 sm:left-8 z-20 w-24 cursor-pointer hover:scale-110 transition-transform`}
       title="Till startsidan"
     >
       <img src={sketchCover} alt="" className="block w-full h-auto" />
