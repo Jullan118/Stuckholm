@@ -1,40 +1,12 @@
 import * as React from "react";
-import * as THREE from "three";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Bounds } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { Bounds } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
 import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe";
+import sketchCover from "@/assets/sketch-cover.png?inline";
 
-// Same model and material as the home globe: the grey body is built by the same
-// function, so it is lit and shaded the same way. The letter ring has dark
-// outlines. It turns the same way as the home globe (negative Y).
-const FILL = "#e4e7ea";
-const INK = "#383e42";
-
-function SpinningBlob() {
-  const gltf = useGLTF(BLOB_MODEL_URL);
-  const groupRef = React.useRef<THREE.Group>(null);
-  const { blob, letters } = React.useMemo(() => {
-    const parts = createBlobFromModel(gltf.scene, FILL);
-    parts.letters.traverse((o) => {
-      const line = o as THREE.LineSegments;
-      if (line.isLineSegments) (line.material as THREE.LineBasicMaterial).color.set(INK);
-    });
-    return parts;
-  }, [gltf.scene]);
-
-  useFrame((_, delta) => {
-    if (groupRef.current) groupRef.current.rotateY(-delta * 0.3);
-  });
-
-  return (
-    <group ref={groupRef}>
-      <primitive object={blob} />
-      <primitive object={letters} />
-    </group>
-  );
-}
-
+// Small still drawing in the top-left corner on every page except the home page.
+// It is the hand-drawn sketch itself, not a 3D model, and it does not move.
 export function MiniGlobe() {
   const { pathname } = useLocation();
   if (pathname === "/") return null;
@@ -42,18 +14,10 @@ export function MiniGlobe() {
   return (
     <Link
       to="/"
-      className="fixed top-1 left-4 sm:left-8 z-20 w-16 h-16 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform"
+      className="fixed top-1 left-4 sm:left-8 z-20 w-24 cursor-pointer hover:scale-110 transition-transform"
       title="Till startsidan"
     >
-      <Canvas camera={{ position: [0, 0, 6], fov: 40 }} style={{ background: "transparent" }}>
-        <ambientLight intensity={1} />
-        <directionalLight position={[0, 2, 8]} intensity={0.9} />
-        <React.Suspense fallback={null}>
-          <Bounds fit clip observe margin={1.1}>
-            <SpinningBlob />
-          </Bounds>
-        </React.Suspense>
-      </Canvas>
+      <img src={sketchCover} alt="" className="block w-full h-auto" />
     </Link>
   );
 }
