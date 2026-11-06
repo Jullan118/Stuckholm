@@ -86,7 +86,7 @@ export function CartDrawer() {
                       >
                         {line.productTitle}
                       </Link>
-                      <span className="text-black/60 whitespace-nowrap">
+                      <span className="font-plexmono text-black/60 whitespace-nowrap">
                         {formatMoney(line.price)}
                       </span>
                     </div>

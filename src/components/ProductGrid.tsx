@@ -27,7 +27,7 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
             <Link to={product.href}>
               <span className="text-black">{product.title}</span>
             </Link>
-            <span style={{ color: "#999999" }}>{product.priceText}</span>
+            <span className="font-plexmono" style={{ color: "#999999" }}>{product.priceText}</span>
           </div>
         </div>
       ))}
