@@ -33,6 +33,7 @@ export default {
       fontFamily: {
         manrope: ['"Sabon"', 'Georgia', 'serif'],
         cormorant: ['"Sabon"', 'Georgia', 'serif'],
+        plexmono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
     },
   },
