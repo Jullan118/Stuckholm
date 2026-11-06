@@ -53,7 +53,7 @@ export function Home() {
         className="relative w-full"
         style={{ height: `${100 + SPIN_AWAY_VH}vh` }}
       >
-        <div className="sticky top-0 left-0 w-full h-screen overflow-hidden bg-[#04050c]">
+        <div className="sticky top-0 left-0 w-full h-[100svh] overflow-hidden bg-[#04050c]">
           <StuckholmGlobe scrollProgress={progress} />
         </div>
       </div>
