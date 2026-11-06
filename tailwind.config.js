@@ -31,9 +31,9 @@ export default {
         "blur-fade-in": "blurFadeIn 0.6s ease-out both",
       },
       fontFamily: {
-        manrope: ['"Instrument Serif"', 'Georgia', 'serif'],
-        cormorant: ['"Instrument Serif"', 'Georgia', 'serif'],
-        instrument: ['"Instrument Serif"', 'Georgia', 'serif'],
+        manrope: ['"Crete Round"', 'Georgia', 'serif'],
+        cormorant: ['"Crete Round"', 'Georgia', 'serif'],
+        instrument: ['"Crete Round"', 'Georgia', 'serif'],
         plexmono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
     },
