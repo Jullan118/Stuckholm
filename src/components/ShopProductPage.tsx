@@ -2,6 +2,7 @@ import * as React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { AddToCart } from "@/components/AddToCart";
+import { GreyStarfield } from "@/components/GreyStarfield";
 import type { ShopProduct } from "@/lib/shopProducts";
 
 // Shared product page for /in-stock/:handle and /trash/:handle. The back link
@@ -54,6 +55,8 @@ export function ShopProductPage({
   }
 
   return (
+    <>
+    <GreyStarfield />
     <div className="relative z-10 w-full max-w-5xl px-4 sm:px-8 pt-28 pb-16">
       <button
         type="button"
@@ -171,5 +174,6 @@ export function ShopProductPage({
         </div>
       </div>
     </div>
+    </>
   );
 }
