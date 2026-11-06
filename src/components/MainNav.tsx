@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { isBannerPath } from "@/components/TopBanner";
 import { CATEGORIES, CONSUME_HANDLE, type Category } from "@/lib/categories";
 
 // Centred navigation: the categories, shown on the shop pages (/collections/...).
@@ -57,7 +56,7 @@ export function MainNav() {
       {isHome && (
         <Link
           to={`/collections/${CONSUME_HANDLE}`}
-          className={`pointer-events-auto fixed ${isBannerPath(pathname) ? "top-11" : "top-4"} left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
+          className={`pointer-events-auto fixed top-4 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
         >
           Consume
         </Link>
