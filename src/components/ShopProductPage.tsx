@@ -148,7 +148,7 @@ export function ShopProductPage({
               {product.title}
             </h1>
             {product.priceText && (
-              <p className="font-plexmono text-black text-sm whitespace-nowrap">{product.priceText}</p>
+              <p className="text-black text-sm whitespace-nowrap">{product.priceText}</p>
             )}
           </div>
 
