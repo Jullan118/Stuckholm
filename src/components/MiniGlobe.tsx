@@ -27,10 +27,13 @@ function SpinningBlob() {
     if (groupRef.current) groupRef.current.rotateY(-delta * 0.3);
   });
 
+  // Axis tilted 30 degrees; the spin happens around this tilted axis.
   return (
-    <group ref={groupRef}>
-      <primitive object={blob} />
-      <primitive object={letters} />
+    <group rotation={[0, 0, Math.PI / 6]}>
+      <group ref={groupRef}>
+        <primitive object={blob} />
+        <primitive object={letters} />
+      </group>
     </group>
   );
 }
