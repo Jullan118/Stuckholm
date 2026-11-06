@@ -11,6 +11,10 @@ export default {
         },
       },
       keyframes: {
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
         letterJump: {
           "0%, 100%": { transform: "translateY(0)" },
           "30%": { transform: "translateY(-4px)" },
@@ -29,6 +33,7 @@ export default {
         "letter-jump": "letterJump 0.4s ease",
         "slide-in-left": "slideInLeft 0.45s ease-out both",
         "blur-fade-in": "blurFadeIn 0.6s ease-out both",
+        marquee: "marquee 40s linear infinite",
       },
       fontFamily: {
         manrope: ['"krete"', 'Georgia', 'serif'],

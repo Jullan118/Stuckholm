@@ -56,7 +56,7 @@ export function MainNav() {
       {isHome && (
         <Link
           to={`/collections/${CONSUME_HANDLE}`}
-          className={`pointer-events-auto fixed top-4 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
+          className={`pointer-events-auto fixed top-11 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
         >
           Consume
         </Link>

@@ -5,6 +5,7 @@ import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router
 const Router = import.meta.env.VITE_USE_HASH_ROUTER ? HashRouter : BrowserRouter;
 import { MainNav } from "@/components/MainNav";
 import { MiniGlobe } from "@/components/MiniGlobe";
+import { TopBanner } from "@/components/TopBanner";
 import { HeaderBar } from "@/components/HeaderBar";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { CartCorner } from "@/components/CartCorner";
@@ -33,6 +34,7 @@ function App() {
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <ScrollToTop />
         <HeaderBar />
+        <TopBanner />
         <MiniGlobe />
         <MainNav />
         <CartCorner />

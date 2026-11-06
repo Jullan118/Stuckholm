@@ -14,7 +14,7 @@ export function MiniGlobe() {
   return (
     <Link
       to="/"
-      className="fixed top-1 left-4 sm:left-8 z-20 w-24 cursor-pointer hover:scale-110 transition-transform"
+      className="fixed top-8 left-4 sm:left-8 z-20 w-24 cursor-pointer hover:scale-110 transition-transform"
       title="Till startsidan"
     >
       <img src={sketchCover} alt="" className="block w-full h-auto" />
