@@ -39,8 +39,8 @@ const SIGN_UNITS = 42.98;
 // drawing and scroll away with it. Once the grid is gone they come back small,
 // fixed in the white strip. The portal of the category you are in is a bit
 // larger than the others.
-// Sub-categories are drawn signs on a row of their own under the portals,
-// still inside the grid. The row shows the sub-categories of the category you
+// Sub-categories are drawn signs on a row under the portals, centred under
+// the portal they belong to and still inside the grid. The row shows the sub-categories of the category you
 // are in, or of the portal you hover. In the small fixed version it only
 // shows on hover. Moving the mouse away, clicking outside, pressing Escape or
 // changing page closes it.
@@ -92,12 +92,45 @@ export function MainNav() {
   const portalHeight = compact ? "56px" : "calc(var(--header-portal-row-h) * 0.8 - 8px)";
 
   // Height of the signs on the sub-category row.
-  const signHeight = compact ? "26px" : "clamp(20px, 2.9vw, 42px)";
+  const signHeight = compact ? "22px" : "clamp(18px, 2.3vw, 34px)";
 
   // Whose sub-categories the row shows: the hovered portal's, otherwise (in
   // the large version) those of the category you are in.
   const shownLabel = active ?? (compact ? null : currentCategory?.label ?? null);
   const shown = CATEGORIES.find((c) => c.label === shownLabel);
+
+  // The row is centred under the portal it belongs to. Near the screen edge
+  // (phones) it is pushed in just enough to stay fully on screen.
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const rowRef = React.useRef<HTMLDivElement>(null);
+  const portalRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
+  const [rowLeft, setRowLeft] = React.useState<number | null>(null);
+
+  React.useLayoutEffect(() => {
+    const place = () => {
+      const wrapper = wrapperRef.current;
+      const row = rowRef.current;
+      const portal = shownLabel ? portalRefs.current[shownLabel] : null;
+      if (!wrapper || !row || !portal) return;
+      const wrapperLeft = wrapper.getBoundingClientRect().left;
+      const half = row.offsetWidth / 2;
+      const edge = 8;
+      // Portal centre on screen (offsets ignore the slide-in animation).
+      let centre = wrapperLeft + portal.offsetLeft + portal.offsetWidth / 2;
+      centre = Math.min(Math.max(centre, half + edge), window.innerWidth - half - edge);
+      setRowLeft(centre - wrapperLeft);
+    };
+    place();
+    // Portal and sign images get their width when they load, so place again then.
+    const observer = new ResizeObserver(place);
+    if (wrapperRef.current) observer.observe(wrapperRef.current);
+    if (rowRef.current) observer.observe(rowRef.current);
+    window.addEventListener("resize", place);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", place);
+    };
+  }, [shownLabel, compact, isConsume]);
 
   return (
     <>
@@ -120,7 +153,7 @@ export function MainNav() {
               : "absolute h-[var(--header-portal-row-h)] pb-1.5"
           }`}
         >
-          <div className="pointer-events-auto relative" onMouseLeave={() => setActive(null)}>
+          <div ref={wrapperRef} className="pointer-events-auto relative" onMouseLeave={() => setActive(null)}>
             <div className="flex items-end justify-center gap-x-6 sm:gap-x-16 md:gap-x-28">
               {CATEGORIES.map((cat, i) => {
                 const portal = PORTALS[cat.handle];
@@ -128,6 +161,9 @@ export function MainNav() {
                 return (
                   <div
                     key={cat.label}
+                    ref={(el) => {
+                      portalRefs.current[cat.label] = el;
+                    }}
                     className={compact ? "" : "animate-slide-in-left"}
                     style={compact ? undefined : { animationDelay: `${120 + i * 90}ms` }}
                     onMouseEnter={() => setActive(cat.children ? cat.label : null)}
@@ -158,11 +194,15 @@ export function MainNav() {
               })}
             </div>
 
-            {/* Sub-category row, centred under the portals. The outer div does
-                the centring, because the fade-in animation on the list sets
-                its own transform. */}
+            {/* Sub-category row, centred under its portal (see rowLeft above).
+                The outer div does the centring, because the fade-in animation
+                on the list sets its own transform. */}
             {shown?.children && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full w-max max-w-[100vw]">
+              <div
+                ref={rowRef}
+                className="absolute -translate-x-1/2 top-full w-max max-w-[100vw]"
+                style={{ left: rowLeft ?? "50%" }}
+              >
                 <ul
                   key={shown.label}
                   className={`flex items-center justify-center gap-x-4 sm:gap-x-8 md:gap-x-10 whitespace-nowrap animate-blur-fade-in ${
