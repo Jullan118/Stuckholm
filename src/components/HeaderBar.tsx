@@ -48,8 +48,7 @@ export function HeaderBar() {
   return (
     <>
       {/* The pages below keep their own top padding (made for the old fixed
-          strip), so the negative margin pulls them up closer to the grid. The box is half
-          as tall as the drawing and shows its top half (the horizon). The image is
+          strip), so the negative margin pulls them up closer to the grid. The image is
           scaled up a little to hide the frame line on its right and bottom edge. */}
       <div
         id={HEADER_GRID_ID}

@@ -67,9 +67,9 @@ export function MainNav() {
     ? "text-white home-ink hover:opacity-70"
     : "text-black hover:text-black/70";
 
-  // Height of the tallest portal. Large: a little less than the grid, so the
+  // Height of the tallest portal. Large: a little less than the portal row, so the
   // enlarged portal still fits inside it. Compact: fits the fixed white strip.
-  const portalHeight = compact ? "56px" : "calc(var(--header-grid-h) - 34px)";
+  const portalHeight = compact ? "56px" : "calc(var(--header-portal-row-h) * 0.8 - 8px)";
 
   return (
     <>
@@ -89,7 +89,7 @@ export function MainNav() {
           className={`inset-x-0 top-0 z-20 flex items-end justify-center px-20 sm:px-32 pointer-events-none ${
             compact
               ? "fixed h-20 pb-3 animate-blur-fade-in"
-              : "absolute h-[var(--header-grid-h)] pb-1.5"
+              : "absolute h-[var(--header-portal-row-h)] pb-1.5"
           }`}
         >
           <div className="pointer-events-auto flex items-end justify-center gap-x-5 sm:gap-x-12 md:gap-x-20">
