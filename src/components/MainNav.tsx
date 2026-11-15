@@ -92,7 +92,7 @@ export function MainNav() {
               : "absolute h-[var(--header-portal-row-h)] pb-1.5"
           }`}
         >
-          <div className="pointer-events-auto flex items-end justify-center gap-x-5 sm:gap-x-12 md:gap-x-20">
+          <div className="pointer-events-auto flex items-end justify-center gap-x-6 sm:gap-x-16 md:gap-x-28">
             {CATEGORIES.map((cat, i) => {
               const portal = PORTALS[cat.handle];
               const isCurrent = currentCategory?.label === cat.label;
