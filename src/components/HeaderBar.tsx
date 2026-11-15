@@ -17,9 +17,7 @@ export function HeaderBar() {
     <>
       {/* The pages below keep their own top padding (made for the old fixed
           strip), so the negative margin pulls them up closer to the grid. The image is
-          scaled up a little, about its top centre, to hide the frame line on
-          its right and bottom edge. The --gl-* values in index.css depend on
-          this scale and on object-cover/object-top, so change them together. */}
+          scaled up a little to hide the frame line on its right and bottom edge. */}
       <div
         aria-hidden="true"
         className="w-full -mb-12 h-[var(--header-grid-h)] overflow-hidden"
@@ -28,7 +26,7 @@ export function HeaderBar() {
           src={gridUrl}
           alt=""
           draggable={false}
-          className="w-full h-full object-cover object-top select-none origin-top scale-[1.03]"
+          className="w-full h-full object-cover object-top select-none origin-top-left scale-[1.03]"
         />
       </div>
     </>
