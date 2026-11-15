@@ -5,7 +5,7 @@
       .cls-1 {
         fill: none;
         stroke: #000;
-        stroke-opacity: .32;
+        stroke-opacity: .16;
         stroke-miterlimit: 10;
         stroke-width: .5px;
         vector-effect: non-scaling-stroke;
