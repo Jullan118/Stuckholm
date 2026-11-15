@@ -3,7 +3,6 @@ import * as THREE from "three";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Bounds } from "@react-three/drei";
 import { Link, useLocation } from "react-router-dom";
-import { usePastHeaderGrid } from "@/components/HeaderBar";
 import { BLOB_MODEL_URL, createBlobFromModel } from "@/components/StuckholmGlobe";
 
 // Same model and material as the home globe: the grey body is built by the same
@@ -41,17 +40,12 @@ function SpinningBlob() {
 
 export function MiniGlobe() {
   const { pathname } = useLocation();
-  // Larger while the grid drawing is behind it; back to the small size once
-  // the page is scrolled and it sits in the fixed white strip (80px tall).
-  const compact = usePastHeaderGrid();
   if (pathname === "/") return null;
 
   return (
     <Link
       to="/"
-      className={`fixed top-1 left-4 sm:left-8 z-20 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-all duration-200 ${
-        compact ? "w-16 h-16" : "w-16 h-16 sm:w-24 sm:h-24"
-      }`}
+      className="absolute top-1 left-4 sm:left-8 z-20 w-16 h-16 sm:w-24 sm:h-24 rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform duration-200"
       title="Till startsidan"
     >
       <Canvas camera={{ position: [0, 0, 6], fov: 40 }} style={{ background: "transparent" }}>

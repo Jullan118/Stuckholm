@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CATEGORIES, CONSUME_HANDLE } from "@/lib/categories";
-import { usePastHeaderGrid } from "@/components/HeaderBar";
 import apparelUrl from "@/assets/portal-apparel.svg?inline";
 import secondHandUrl from "@/assets/portal-2ndhand.svg?inline";
 import artworkUrl from "@/assets/portal-artwork.svg?inline";
@@ -37,15 +36,13 @@ const SIGNS: Record<string, { src: string; width: number; height: number }> = {
 const SIGN_UNITS = 42.98;
 
 // Centred navigation: the categories as drawn portals, shown on the shop pages
-// (/collections/...). At the top of the page the portals stand in the grid
-// drawing and scroll away with it. Once the grid is gone they come back small,
-// fixed in the white strip. The portal of the category you are in is a bit
-// larger than the others.
+// (/collections/...). The portals stand in the grid drawing at the top of the
+// page and scroll away with it. The portal of the category you are in is a
+// bit larger than the others.
 // Sub-categories are drawn signs on a row under the portals, centred under
 // the portal they belong to and still inside the grid. The row shows the sub-categories of the category you
-// are in, or of the portal you hover. In the small fixed version it only
-// shows on hover. Moving the mouse away, clicking outside, pressing Escape or
-// changing page closes it.
+// are in, or of the portal you hover. Moving the mouse away, clicking outside,
+// pressing Escape or changing page closes the hovered one.
 // "Consume" is not in this menu. On the home page it is the only link, in the
 // top-left corner, and it is the way in to the shop.
 // On the home page the hero is a dark starfield, so the nav switches to white
@@ -56,7 +53,6 @@ export function MainNav() {
   const isConsume = pathname === "/consume" || pathname.startsWith("/collections/");
   const [active, setActive] = React.useState<string | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
-  const compact = usePastHeaderGrid();
 
   // Close the sub-row when the page changes.
   React.useEffect(() => setActive(null), [pathname]);
@@ -89,16 +85,16 @@ export function MainNav() {
     ? "text-white home-ink hover:opacity-70"
     : "text-black hover:text-black/70";
 
-  // Height of the tallest portal. Large: a little less than the portal row, so the
-  // enlarged portal still fits inside it. Compact: fits the fixed white strip.
-  const portalHeight = compact ? "56px" : "calc(var(--header-portal-row-h) * 0.8 - 8px)";
+  // Height of the tallest portal: a little less than the portal row, so the
+  // enlarged portal still fits inside it.
+  const portalHeight = "calc(var(--header-portal-row-h) * 0.8 - 8px)";
 
   // Height of the signs on the sub-category row.
-  const signHeight = compact ? "22px" : "clamp(18px, 2.3vw, 34px)";
+  const signHeight = "clamp(18px, 2.3vw, 34px)";
 
-  // Whose sub-categories the row shows: the hovered portal's, otherwise (in
-  // the large version) those of the category you are in.
-  const shownLabel = active ?? (compact ? null : currentCategory?.label ?? null);
+  // Whose sub-categories the row shows: the hovered portal's, otherwise those
+  // of the category you are in.
+  const shownLabel = active ?? currentCategory?.label ?? null;
   const shown = CATEGORIES.find((c) => c.label === shownLabel);
 
   // The row is centred under the portal it belongs to. Near the screen edge
@@ -132,7 +128,7 @@ export function MainNav() {
       observer.disconnect();
       window.removeEventListener("resize", place);
     };
-  }, [shownLabel, compact, isConsume]);
+  }, [shownLabel, isConsume]);
 
   return (
     <>
@@ -148,12 +144,7 @@ export function MainNav() {
       {isConsume && (
         <div
           ref={navRef}
-          key={compact ? "compact" : "large"}
-          className={`inset-x-0 top-0 z-20 flex items-end justify-center px-20 sm:px-32 pointer-events-none ${
-            compact
-              ? "fixed h-20 pb-3 animate-blur-fade-in"
-              : "absolute h-[var(--header-portal-row-h)] pb-1.5"
-          }`}
+          className="absolute inset-x-0 top-0 z-20 h-[var(--header-portal-row-h)] pb-1.5 flex items-end justify-center px-20 sm:px-32 pointer-events-none"
         >
           <div ref={wrapperRef} className="pointer-events-auto relative" onMouseLeave={() => setActive(null)}>
             <div className="flex items-end justify-center gap-x-6 sm:gap-x-16 md:gap-x-28">
@@ -166,8 +157,8 @@ export function MainNav() {
                     ref={(el) => {
                       portalRefs.current[cat.label] = el;
                     }}
-                    className={compact ? "" : "animate-slide-in-left"}
-                    style={compact ? undefined : { animationDelay: `${120 + i * 90}ms` }}
+                    className="animate-slide-in-left"
+                    style={{ animationDelay: `${120 + i * 90}ms` }}
                     onMouseEnter={() => setActive(cat.children ? cat.label : null)}
                   >
                     <Link
@@ -207,9 +198,7 @@ export function MainNav() {
               >
                 <ul
                   key={shown.label}
-                  className={`flex items-center justify-center gap-x-5 sm:gap-x-10 md:gap-x-16 whitespace-nowrap animate-blur-fade-in ${
-                    compact ? "pt-4 pb-3 px-5 bg-white" : "pt-3 px-2"
-                  }`}
+                  className={`flex items-center justify-center gap-x-5 sm:gap-x-10 md:gap-x-16 whitespace-nowrap animate-blur-fade-in pt-3 px-2`}
                 >
                   {shown.children.map((child) => {
                     const sign = SIGNS[child.handle];
