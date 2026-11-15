@@ -43,7 +43,7 @@ const SIGN_UNITS = 42.98;
 // the portal they belong to and still inside the grid. The row shows the sub-categories of the category you
 // are in, or of the portal you hover. Moving the mouse away, clicking outside,
 // pressing Escape or changing page closes the hovered one.
-// "Consume" is not in this menu. On the home page it is the only link, in the
+// The "Enter" link is not in this menu. On the home page it is the only link, in the
 // top-left corner, and it is the way in to the shop.
 // On the home page the hero is a dark starfield, so the nav switches to white
 // there. The mini globe (top-left) and the cart (top-right) sit in the corners.
@@ -137,7 +137,7 @@ export function MainNav() {
           to={`/collections/${CONSUME_HANDLE}`}
           className={`fixed top-4 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
         >
-          Consume
+          Enter
         </Link>
       )}
 
