@@ -1,65 +1,71 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-// Site-wide footer, shown at the bottom of every page (in normal document
-// flow — it sits after whatever the current route renders, not pinned to
-// the viewport). Three link columns (INFO, LEGAL, STUCKHOLM), each with a
-// grey rule under its heading, followed by a thin copyright bar. "Login"
-// sits in the bottom bar, stacked right above "Stockholm, Sweden".
-// Horizontal padding lives on the wrapper so every row shares one left edge.
-const headingClass =
-  "mb-2 text-black uppercase tracking-wide text-xs sm:text-xs";
-const linkClass =
-  "uppercase tracking-wide text-black/70 hover:opacity-70 transition-opacity break-words";
+// Today's date and time in Stockholm, e.g. "15 November 19:41". It is the
+// same for every visitor, wherever they are.
+function stockholmNow() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Stockholm",
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return { date: `${get("day")} ${get("month")}`, time: `${get("hour")}:${get("minute")}` };
+}
 
+function stockholmYear() {
+  return new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Stockholm", year: "numeric" }).format(new Date());
+}
+
+const linkClass = "blackletter-outline hover:opacity-60 transition-opacity";
+
+// Site-wide footer, at the bottom of every page (in normal document flow).
+// Left: the live date and time in Stockholm. Middle: the info links.
+// Right: the year. All in the blackletter display font.
 export function SiteFooter() {
-  const year = new Date().getFullYear();
+  const [now, setNow] = React.useState(stockholmNow);
+
+  // Re-check every second so the minute changes on time.
+  React.useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNow((prev) => {
+        const next = stockholmNow();
+        return next.date === prev.date && next.time === prev.time ? prev : next;
+      });
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   return (
-    <footer className="w-full font-manrope text-black mt-64 mb-14 px-4 sm:px-8">
-      <div className="w-full">
-        <div className="border-t border-black/20" />
-        <div className="pt-6 pb-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:flex sm:gap-32 text-xs sm:text-xs">
-          <div className="flex flex-col gap-3 leading-tight">
-            <span className={headingClass}>Info</span>
-            <Link to="/shipping" className={linkClass}>Shipping</Link>
-            <Link to="/refund" className={linkClass}>Returns</Link>
-          </div>
+    // Wide screens: date in the left 40%, links from there, year at the right
+    // edge. Narrow screens: the three parts stack.
+    <footer className="relative z-10 w-full mt-32 sm:mt-48 px-4 sm:px-8 pb-6 sm:pb-8 flex flex-col gap-y-8 lg:grid lg:grid-cols-[40%_1fr_auto] lg:items-end text-black">
+      <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap">
+        {now.date} <span className="ml-[0.35em]">{now.time}</span>
+      </p>
 
-          <div className="flex flex-col gap-3 leading-tight">
-            <span className={headingClass}>Legal</span>
-            <Link to="/cookies" className={linkClass}>Cookies</Link>
-            <Link to="/privacy" className={linkClass}>Privacy</Link>
-            <Link to="/terms" className={linkClass}>Terms</Link>
-          </div>
-
-          <div className="flex flex-col gap-3 leading-tight">
-            <span className={headingClass}>Stuckholm</span>
-            <a href="mailto:stuck@stuckholm.se" className={linkClass}>Contact</a>
-            <a
-              href="https://www.instagram.com/stuckholm.se/"
-              target="_blank"
-              rel="noreferrer"
-              className={linkClass}
-            >
-              Instagram
-            </a>
-          </div>
+      <div className="flex gap-x-10 sm:gap-x-16 footer-link-size leading-tight">
+        <div className="flex flex-col">
+          <Link to="/shipping-returns" className={linkClass}>shipping &amp; returns</Link>
+          <Link to="/terms-privacy" className={linkClass}>terms &amp; privacy</Link>
         </div>
-      </div>
-
-      <div className="py-4 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-1 text-xs sm:text-xs text-black/50 w-full">
-        <span>© {year} Stuck in Stuckholm</span>
-        <div className="flex flex-col items-center sm:items-end gap-1">
-          <Link
-            to="/login"
-            className="text-black/50 hover:text-black uppercase tracking-wide transition-colors"
+        <div className="flex flex-col">
+          <Link to="/contact" className={linkClass}>contact</Link>
+          <a
+            href="https://www.instagram.com/stuckholm.se/"
+            target="_blank"
+            rel="noreferrer"
+            className={linkClass}
           >
-            Login
-          </Link>
-          <span>Stockholm, Sweden</span>
+            insta
+          </a>
         </div>
       </div>
+
+      <p className="font-blackletter footer-date-size leading-none lg:text-right">{stockholmYear()}</p>
     </footer>
   );
 }

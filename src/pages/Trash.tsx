@@ -13,7 +13,7 @@ export function Trash() {
   const [scale, setScale] = React.useState<number>(GENDER_SCALE_NEUTRAL);
 
   return (
-    <div className="relative z-10 w-full pt-24 pb-16">
+    <div className="relative z-10 w-full pt-0 pb-16">
       <GenderScaleSlider
         value={scale}
         onCommit={setScale}

@@ -11,13 +11,9 @@ body,
 body {
   margin: 0;
   background-color: #ffffff;
-  /* Site font: Didot.
-     "linotype-didot" is the web font from the Adobe Fonts project loaded in
-     index.html and layout/theme.liquid. It works for every visitor once
-     Linotype Didot is added to that project.
-     "Didot" is the copy built into Mac, iPhone and iPad, used until then.
-     Other devices fall back to Bodoni or Georgia. */
-  font-family: "linotype-didot", Didot, "Bodoni MT", Georgia, serif;
+  /* Site font: Cormorant Garamond, loaded from Google Fonts in index.html
+     and layout/theme.liquid. */
+  font-family: "Cormorant Garamond", Georgia, serif;
   letter-spacing: -0.01em;
 }
 
@@ -147,13 +143,32 @@ html.hero-light .home-ink {
   }
 }
 
-/* Header sizes, shared by the grid drawing (HeaderBar) and the nav (MainNav).
-   --header-grid-h: height of the grid drawing. On wide screens it is the full
-   drawing (2560 x 600) less 10px cut off the bottom; the minimum keeps room
-   for both rows on phones.
-   --header-portal-row-h: the top part of the grid, where the portals stand.
-   The sub-category row sits under it, still inside the grid. */
-:root {
-  --header-grid-h: calc(max(190px, 23.44vw) - 10px);
-  --header-portal-row-h: max(120px, 15vw);
+/* The blackletter display font, used for the wordmark in the header and for
+   the footer. The real font is CL Antique No 55 (Century Library). Until its
+   file is added to the site, UnifrakturMaguntia stands in for it. */
+.font-blackletter {
+  font-family: "CL Antique No 55", "UnifrakturMaguntia", serif;
+  letter-spacing: 0;
+}
+
+/* The same font drawn as outlines only: a thin dark line around each letter,
+   with a pale grey copy set slightly off behind it. */
+.blackletter-outline {
+  font-family: "CL Antique No 55", "UnifrakturMaguntia", serif;
+  letter-spacing: 0.01em;
+  color: transparent;
+  -webkit-text-stroke: 0.75px #191919;
+  text-shadow: 0.04em -0.03em 0 rgba(204, 204, 204, 0.5);
+}
+
+/* Sizes that follow the screen width, with a floor for phones and a cap for
+   very wide screens. */
+.wordmark-size {
+  font-size: clamp(26px, 4.4vw, 68px);
+}
+.footer-date-size {
+  font-size: clamp(26px, 3.6vw, 56px);
+}
+.footer-link-size {
+  font-size: clamp(18px, 1.9vw, 30px);
 }

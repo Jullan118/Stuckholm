@@ -5,7 +5,7 @@ export function InStock() {
   const state = useShopProducts("in-stock");
 
   return (
-    <div className="relative z-10 w-full pt-24 pb-16">
+    <div className="relative z-10 w-full pt-0 pb-16">
       {state.status === "loading" && <p className="text-center text-black/50 text-xs">Loading…</p>}
       {state.status === "error" && (
         <p className="text-center text-black/50 text-xs">

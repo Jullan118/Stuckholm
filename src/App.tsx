@@ -3,11 +3,8 @@ import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router
 // Vercel (stuckholm.se) uses normal URLs. The Shopify theme build sets
 // VITE_USE_HASH_ROUTER, because Shopify can only serve the root page.
 const Router = import.meta.env.VITE_USE_HASH_ROUTER ? HashRouter : BrowserRouter;
-import { MainNav } from "@/components/MainNav";
-import { MiniGlobe } from "@/components/MiniGlobe";
-import { HeaderBar } from "@/components/HeaderBar";
+import { SiteHeader } from "@/components/SiteHeader";
 import { ScrollToTop } from "@/components/ScrollToTop";
-import { CartCorner } from "@/components/CartCorner";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
 import { CartProvider } from "@/lib/cart";
@@ -16,12 +13,8 @@ import { InStockProduct } from "@/pages/InStockProduct";
 import { About } from "@/pages/About";
 import { Login } from "@/pages/Login";
 import { Contact } from "@/pages/Contact";
-import { InfoPage } from "@/pages/InfoPage";
-import { Cookies } from "@/pages/Cookies";
-import { Privacy } from "@/pages/Privacy";
-import { Terms } from "@/pages/Terms";
-import { Shipping } from "@/pages/Shipping";
-import { Refund } from "@/pages/Refund";
+import { ShippingReturns } from "@/pages/ShippingReturns";
+import { TermsPrivacy } from "@/pages/TermsPrivacy";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
 import { Consume } from "@/pages/Consume";
@@ -32,10 +25,7 @@ function App() {
       <CartProvider>
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative">
         <ScrollToTop />
-        <HeaderBar />
-        <MiniGlobe />
-        <MainNav />
-        <CartCorner />
+        <SiteHeader />
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -48,14 +38,15 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/shipping" element={<Shipping />} />
-          <Route path="/returns" element={<Navigate to="/refund" replace />} />
-          <Route path="/refund" element={<Refund />} />
-          <Route path="/payments" element={<InfoPage title="Betalning" />} />
-          <Route path="/faq" element={<InfoPage title="FAQ" />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/cookies" element={<Cookies />} />
-          <Route path="/terms" element={<Terms />} />
+          <Route path="/shipping-returns" element={<ShippingReturns />} />
+          <Route path="/terms-privacy" element={<TermsPrivacy />} />
+          {/* Old addresses of the pages that were merged. */}
+          <Route path="/shipping" element={<Navigate to="/shipping-returns" replace />} />
+          <Route path="/refund" element={<Navigate to="/shipping-returns" replace />} />
+          <Route path="/returns" element={<Navigate to="/shipping-returns" replace />} />
+          <Route path="/terms" element={<Navigate to="/terms-privacy" replace />} />
+          <Route path="/privacy" element={<Navigate to="/terms-privacy" replace />} />
+          <Route path="/cookies" element={<Navigate to="/terms-privacy" replace />} />
         </Routes>
 
         <SiteFooter />

@@ -57,7 +57,7 @@ export function ShopProductPage({
   return (
     <>
     <GreyStarfield />
-    <div className="relative z-10 w-full max-w-5xl px-4 sm:px-8 pt-28 pb-16">
+    <div className="relative z-10 w-full max-w-5xl px-4 sm:px-8 pt-6 pb-16">
       <button
         type="button"
         onClick={() => {

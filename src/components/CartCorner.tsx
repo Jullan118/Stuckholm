@@ -1,24 +1,16 @@
-import * as React from "react";
-import { useLocation } from "react-router-dom";
 import { useCart } from "@/lib/cart";
 
-// Bag icon pinned to the top-right corner on every page, mirroring the
-// mini globe logo in the top-left (see MiniGlobe). Shows how many items are
-// in the cart and opens the cart drawer (CartDrawer).
-// On the home page the hero is a dark starfield, so it switches to white
-// there like the rest of the corner UI.
+// Bag icon in the top-right corner of the home page, white over the dark
+// sky. Shows how many items are in the cart and opens the cart drawer
+// (CartDrawer). Other pages have "cart" in the menu instead (see SiteHeader).
 export function CartCorner() {
-  const { pathname } = useLocation();
-  const isHome = pathname === "/";
   const { totalQuantity, openCart } = useCart();
 
   return (
     <button
       type="button"
       onClick={openCart}
-      className={`${isHome ? "fixed" : "absolute"} top-1 h-16 right-4 sm:right-8 z-20 flex items-center gap-1 transition-transform duration-200 hover:scale-110 ${
-        isHome ? "text-white home-ink" : "text-black"
-      }`}
+      className="fixed top-1 h-16 right-4 sm:right-8 z-20 flex items-center gap-1 transition-transform duration-200 hover:scale-110 text-white home-ink"
       aria-label={`Cart, ${totalQuantity} item${totalQuantity === 1 ? "" : "s"}`}
     >
       <svg

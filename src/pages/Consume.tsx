@@ -6,17 +6,17 @@ import { BlurredBackdrop } from "@/components/BlurredBackdrop";
 
 // One Shopify collection as a product grid. /collections/all shows every
 // product; /collections/apparel, /collections/descartes etc. show their own.
-// Categories live in the header (see MainNav).
+// Categories live in the header (see SiteHeader).
 export function Consume() {
   const { handle = CONSUME_HANDLE } = useParams();
   const state = useCollectionProducts(handle);
-  // The entrance (/collections/all, reached from Consume on the home page) is
+  // The entrance (/collections/all, reached from Enter on the home page) is
   // fully blurred over the products; category pages show them on white.
   const isEntrance = handle === CONSUME_HANDLE;
 
   return (
     <>
-    <div className="relative z-10 w-full pt-24 pb-16 animate-blur-fade-in">
+    <div className="relative z-10 w-full pt-0 pb-16 animate-blur-fade-in">
       {state.status === "loading" && <p className="text-center text-black/50 text-xs">Loading…</p>}
       {state.status === "error" && (
         <p className="text-center text-black/50 text-xs">
