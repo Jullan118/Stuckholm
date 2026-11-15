@@ -135,7 +135,7 @@ export function MainNav() {
       {isHome && (
         <Link
           to={`/collections/${CONSUME_HANDLE}`}
-          className={`fixed top-4 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
+          className={`fixed top-6 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
         >
           Enter
         </Link>
