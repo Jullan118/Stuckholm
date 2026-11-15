@@ -1,8 +1,26 @@
 import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { CATEGORIES, CONSUME_HANDLE, type Category } from "@/lib/categories";
+import { CATEGORIES, CONSUME_HANDLE } from "@/lib/categories";
+import { usePastHeaderGrid } from "@/components/HeaderBar";
+import apparelUrl from "@/assets/portal-apparel.svg?inline";
+import secondHandUrl from "@/assets/portal-2ndhand.svg?inline";
+import artworkUrl from "@/assets/portal-artwork.svg?inline";
 
-// Centred navigation: the categories, shown on the shop pages (/collections/...).
+// The drawn portal for each category, by collection handle. `height` is the
+// height of the drawing in its own units; the three are drawn at the same
+// scale, so keeping the ratio keeps their sizes right next to each other.
+const PORTALS: Record<string, { src: string; height: number }> = {
+  apparel: { src: apparelUrl, height: 210.39 },
+  "2ndhand": { src: secondHandUrl, height: 193.03 },
+  artwork: { src: artworkUrl, height: 137.86 },
+};
+const TALLEST_PORTAL = 210.39;
+
+// Centred navigation: the categories as drawn portals, shown on the shop pages
+// (/collections/...). At the top of the page the portals stand in the grid
+// drawing and scroll away with it. Once the grid is gone they come back small,
+// fixed in the white strip. The portal of the category you are in is a bit
+// larger than the others.
 // "Consume" is not in this menu. On the home page it is the only link, in the
 // top-left corner, and it is the way in to the shop. Hovering (or clicking) a
 // category shows its sub-categories directly under it. Moving the mouse away,
@@ -15,6 +33,7 @@ export function MainNav() {
   const isConsume = pathname === "/consume" || pathname.startsWith("/collections/");
   const [active, setActive] = React.useState<string | null>(null);
   const navRef = React.useRef<HTMLDivElement>(null);
+  const compact = usePastHeaderGrid();
 
   // Close the sub-row when the page changes.
   React.useEffect(() => setActive(null), [pathname]);
@@ -47,70 +66,94 @@ export function MainNav() {
     ? "text-white home-ink hover:opacity-70"
     : "text-black hover:text-black/70";
 
+  // Height of the tallest portal. Large: a little less than the grid, so the
+  // enlarged portal still fits inside it. Compact: fits the fixed white strip.
+  const portalHeight = compact ? "56px" : "calc(var(--header-grid-h) - 34px)";
+
   return (
-    <div
-      ref={navRef}
-      className="fixed inset-x-0 top-1 z-20 h-16 flex items-center justify-center px-20 sm:px-32 pointer-events-none"
-    >
-    <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-10">
+    <>
       {isHome && (
         <Link
           to={`/collections/${CONSUME_HANDLE}`}
-          className={`pointer-events-auto fixed top-4 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
+          className={`fixed top-4 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
         >
           Consume
         </Link>
       )}
 
-      {isConsume &&
-        CATEGORIES.map((cat, i) => (
-          <div
-            key={cat.label}
-            className="relative animate-slide-in-left"
-            style={{ animationDelay: `${120 + i * 90}ms` }}
-            onMouseEnter={() => cat.children && setActive(cat.label)}
-            onMouseLeave={() => setActive(null)}
-          >
-            <CategoryLink
-              category={cat}
-              inkClass={inkClass}
-              onOpen={() => cat.children && setActive(cat.label)}
-            />
+      {isConsume && (
+        <div
+          ref={navRef}
+          key={compact ? "compact" : "large"}
+          className={`inset-x-0 top-0 z-20 flex items-end justify-center px-20 sm:px-32 pointer-events-none ${
+            compact
+              ? "fixed h-20 pb-3 animate-blur-fade-in"
+              : "absolute h-[var(--header-grid-h)] pb-1.5"
+          }`}
+        >
+          <div className="pointer-events-auto flex items-end justify-center gap-x-5 sm:gap-x-12 md:gap-x-20">
+            {CATEGORIES.map((cat, i) => {
+              const portal = PORTALS[cat.handle];
+              const isCurrent = currentCategory?.label === cat.label;
+              const showChildren = cat.children && (active === cat.label || (isCurrent && !compact));
+              return (
+                <div
+                  key={cat.label}
+                  className={`relative ${compact ? "" : "animate-slide-in-left"}`}
+                  style={compact ? undefined : { animationDelay: `${120 + i * 90}ms` }}
+                  onMouseEnter={() => cat.children && setActive(cat.label)}
+                  onMouseLeave={() => setActive(null)}
+                >
+                  <Link
+                    to={`/collections/${cat.handle}`}
+                    aria-label={cat.label}
+                    aria-current={isCurrent ? "page" : undefined}
+                    onFocus={() => cat.children && setActive(cat.label)}
+                    className={`block origin-bottom transition-transform duration-200 ${
+                      isCurrent ? "scale-[1.18]" : "hover:scale-110"
+                    }`}
+                  >
+                    {portal ? (
+                      <img
+                        src={portal.src}
+                        alt=""
+                        draggable={false}
+                        className="block w-auto max-w-none select-none"
+                        style={{ height: `calc(${portalHeight} * ${portal.height / TALLEST_PORTAL})` }}
+                      />
+                    ) : (
+                      <span className={`text-sm sm:text-base ${inkClass}`}>{cat.label}</span>
+                    )}
+                  </Link>
 
-            {cat.children && (active === cat.label || currentCategory?.label === cat.label) && (
-              <ul className="absolute left-0 top-full pt-3 flex gap-6 sm:gap-8 whitespace-nowrap animate-blur-fade-in">
-                {cat.children.map((child) => (
-                  <li key={child.label}>
-                    <Link
-                      to={`/collections/${child.handle}`}
-                      className={`text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
-                    >
-                      {child.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
+                  {/* Centred under the portal. The outer div does the centring,
+                      because the fade-in animation on the list sets its own transform. */}
+                  {showChildren && (
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full">
+                      <ul
+                        className={`flex gap-5 sm:gap-8 whitespace-nowrap animate-blur-fade-in ${
+                          compact ? "pt-4 pb-2 px-4 bg-white" : "pt-3"
+                        }`}
+                      >
+                        {cat.children!.map((child) => (
+                          <li key={child.label}>
+                            <Link
+                              to={`/collections/${child.handle}`}
+                              className={`text-sm sm:text-base transition-opacity duration-200 ${inkClass}`}
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        ))}
-    </div>
-    </div>
-  );
-}
-
-function CategoryLink({
-  category,
-  inkClass,
-  onOpen,
-}: {
-  category: Category;
-  inkClass: string;
-  onOpen: () => void;
-}) {
-  const base = `inline-block text-sm sm:text-base transition-opacity duration-200 ${inkClass}`;
-  return (
-    <Link to={`/collections/${category.handle}`} className={base} onFocus={onOpen}>
-      {category.label}
-    </Link>
+        </div>
+      )}
+    </>
   );
 }

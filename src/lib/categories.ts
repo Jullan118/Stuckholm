@@ -22,7 +22,6 @@ export const CATEGORIES: Category[] = [
       { label: "Stuckholm", handle: "stuckholm" },
     ],
   },
-  { label: "Artwork", handle: "artwork" },
   {
     label: "2ndhand",
     handle: "2ndhand",
@@ -32,5 +31,5 @@ export const CATEGORIES: Category[] = [
       { label: "Cashmere Corner", handle: "cashmere-corner" },
     ],
   },
-  { label: "E01", handle: "e01" },
+  { label: "Artwork", handle: "artwork" },
 ];

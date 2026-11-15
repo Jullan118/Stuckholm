@@ -5,6 +5,32 @@ import gridUrl from "@/assets/header-grid.svg?inline";
 
 // Height of the fixed row holding the logo, nav and cart.
 const FIXED_ROW_PX = 80;
+// The grid height is the CSS variable --header-grid-h (see index.css).
+const HEADER_GRID_ID = "header-grid";
+
+// True once the grid has scrolled out from behind the fixed row. Also true
+// on pages without the grid as soon as the page is scrolled a little.
+// The nav (MainNav) uses it too, to switch to its small fixed version.
+export function usePastHeaderGrid() {
+  const { pathname } = useLocation();
+  const [pastGrid, setPastGrid] = React.useState(false);
+
+  React.useEffect(() => {
+    const update = () => {
+      const height = document.getElementById(HEADER_GRID_ID)?.offsetHeight ?? 0;
+      setPastGrid(window.scrollY > Math.max(height - FIXED_ROW_PX, 8));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [pathname]);
+
+  return pastGrid;
+}
 
 // Header background on every page except the home page and the blurred
 // entrance page (/collections/all), which have no header background.
@@ -14,24 +40,8 @@ const FIXED_ROW_PX = 80;
 // strip, product images and text would show through between the header items.
 export function HeaderBar() {
   const { pathname } = useLocation();
-  const gridRef = React.useRef<HTMLDivElement>(null);
-  const [pastGrid, setPastGrid] = React.useState(false);
+  const pastGrid = usePastHeaderGrid();
   const isBare = pathname === "/" || pathname === `/collections/${CONSUME_HANDLE}`;
-
-  React.useEffect(() => {
-    if (isBare) return;
-    const update = () => {
-      const height = gridRef.current?.offsetHeight ?? 0;
-      setPastGrid(window.scrollY > height - FIXED_ROW_PX);
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [isBare, pathname]);
 
   if (isBare) return null;
 
@@ -42,9 +52,9 @@ export function HeaderBar() {
           as tall as the drawing and shows its top half (the horizon). The image is
           scaled up a little to hide the frame line on its right and bottom edge. */}
       <div
-        ref={gridRef}
+        id={HEADER_GRID_ID}
         aria-hidden="true"
-        className="w-full -mb-12 aspect-[2560/300] min-h-[120px] overflow-hidden"
+        className="w-full -mb-12 h-[var(--header-grid-h)] overflow-hidden"
       >
         <img
           src={gridUrl}

@@ -140,3 +140,9 @@ html.hero-light .home-ink {
     background-position: 0 0;
   }
 }
+
+/* Height of the grid drawing behind the header (HeaderBar). The portals in the
+   nav (MainNav) are sized from the same value so they always fit inside it. */
+:root {
+  --header-grid-h: max(120px, 11.72vw);
+}
