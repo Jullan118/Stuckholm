@@ -11,7 +11,13 @@ body,
 body {
   margin: 0;
   background-color: #ffffff;
-  font-family: "krete", Georgia, serif;
+  /* Site font: Didot.
+     "linotype-didot" is the web font from the Adobe Fonts project loaded in
+     index.html and layout/theme.liquid. It works for every visitor once
+     Linotype Didot is added to that project.
+     "Didot" is the copy built into Mac, iPhone and iPad, used until then.
+     Other devices fall back to Bodoni or Georgia. */
+  font-family: "linotype-didot", Didot, "Bodoni MT", Georgia, serif;
   letter-spacing: -0.01em;
 }
 

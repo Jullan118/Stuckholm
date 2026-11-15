@@ -36,9 +36,11 @@ export default {
         marquee: "marquee 40s linear infinite",
       },
       fontFamily: {
-        manrope: ['"krete"', 'Georgia', 'serif'],
-        cormorant: ['"krete"', 'Georgia', 'serif'],
-        instrument: ['"krete"', 'Georgia', 'serif'],
+        // The site font is Didot (see the note in src/index.css). These three
+        // names are old; they all mean "the site font".
+        manrope: ['"linotype-didot"', 'Didot', '"Bodoni MT"', 'Georgia', 'serif'],
+        cormorant: ['"linotype-didot"', 'Didot', '"Bodoni MT"', 'Georgia', 'serif'],
+        instrument: ['"linotype-didot"', 'Didot', '"Bodoni MT"', 'Georgia', 'serif'],
         plexmono: ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
       },
     },
