@@ -10,7 +10,7 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
       {products.map((product) => (
         <div key={product.id} className="border-r border-b" style={{ borderColor: "rgba(0,0,0,0.08)" }}>
           <Link to={product.href}>
-            <div className="relative aspect-[4/5] overflow-hidden bg-[#f2f2f2]">
+            <div className="relative aspect-[4/5] overflow-hidden bg-white">
               {product.image ? (
                 <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
               ) : (

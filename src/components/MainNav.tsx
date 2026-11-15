@@ -6,6 +6,7 @@ import apparelUrl from "@/assets/portal-apparel.svg?inline";
 import secondHandUrl from "@/assets/portal-2ndhand.svg?inline";
 import artworkUrl from "@/assets/portal-artwork.svg?inline";
 import signAllUrl from "@/assets/sign-all.svg?inline";
+import signCashmereCornerUrl from "@/assets/sign-cashmere-corner.svg?inline";
 import signDescartesUrl from "@/assets/sign-descartes.svg?inline";
 import signRoyaleUrl from "@/assets/sign-royale.svg?inline";
 import signStuckholmUrl from "@/assets/sign-stuckholm.svg?inline";
@@ -31,6 +32,7 @@ const SIGNS: Record<string, { src: string; width: number; height: number }> = {
   descartes: { src: signDescartesUrl, width: 192.11, height: 42.98 },
   stuckholm: { src: signStuckholmUrl, width: 194.1, height: 42.98 },
   "stuck-royale": { src: signRoyaleUrl, width: 132.45, height: 42.98 },
+  "cashmere-corner": { src: signCashmereCornerUrl, width: 325.49, height: 42.05 },
 };
 const SIGN_UNITS = 42.98;
 
@@ -205,7 +207,7 @@ export function MainNav() {
               >
                 <ul
                   key={shown.label}
-                  className={`flex items-center justify-center gap-x-4 sm:gap-x-8 md:gap-x-10 whitespace-nowrap animate-blur-fade-in ${
+                  className={`flex items-center justify-center gap-x-5 sm:gap-x-10 md:gap-x-16 whitespace-nowrap animate-blur-fade-in ${
                     compact ? "pt-4 pb-3 px-5 bg-white" : "pt-3 px-2"
                   }`}
                 >

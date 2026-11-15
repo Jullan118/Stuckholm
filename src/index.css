@@ -143,10 +143,11 @@ html.hero-light .home-ink {
 
 /* Header sizes, shared by the grid drawing (HeaderBar) and the nav (MainNav).
    --header-grid-h: height of the grid drawing. On wide screens it is the full
-   drawing (2560 x 600); the minimum keeps room for both rows on phones.
+   drawing (2560 x 600) less 10px cut off the bottom; the minimum keeps room
+   for both rows on phones.
    --header-portal-row-h: the top part of the grid, where the portals stand.
    The sub-category row sits under it, still inside the grid. */
 :root {
-  --header-grid-h: max(190px, 23.44vw);
+  --header-grid-h: calc(max(190px, 23.44vw) - 10px);
   --header-portal-row-h: max(120px, 15vw);
 }
