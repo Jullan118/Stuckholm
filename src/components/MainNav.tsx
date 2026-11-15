@@ -198,7 +198,7 @@ export function MainNav() {
               >
                 <ul
                   key={shown.label}
-                  className={`flex items-center justify-center gap-x-5 sm:gap-x-10 md:gap-x-16 whitespace-nowrap animate-blur-fade-in pt-3 px-2`}
+                  className={`flex items-center justify-center gap-x-5 sm:gap-x-10 md:gap-x-16 whitespace-nowrap animate-blur-fade-in pt-[22px] px-2`}
                 >
                   {shown.children.map((child) => {
                     const sign = SIGNS[child.handle];
