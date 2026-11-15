@@ -38,18 +38,19 @@ export function HeaderBar() {
   return (
     <>
       {/* The pages below keep their own top padding (made for the old fixed
-          strip), so the negative margin pulls them up closer to the grid. The image is
+          strip), so the negative margin pulls them up closer to the grid. The box is half
+          as tall as the drawing and shows its top half (the horizon). The image is
           scaled up a little to hide the frame line on its right and bottom edge. */}
       <div
         ref={gridRef}
         aria-hidden="true"
-        className="w-full -mb-12 aspect-[2560/600] min-h-[170px] overflow-hidden"
+        className="w-full -mb-12 aspect-[2560/300] min-h-[120px] overflow-hidden"
       >
         <img
           src={gridUrl}
           alt=""
           draggable={false}
-          className="w-full h-full object-cover object-center select-none origin-top-left scale-[1.03]"
+          className="w-full h-full object-cover object-top select-none origin-top-left scale-[1.03]"
         />
       </div>
       <div
