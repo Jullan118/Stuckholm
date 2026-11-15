@@ -6,13 +6,14 @@ import apparelUrl from "@/assets/portal-apparel.svg?inline";
 import secondHandUrl from "@/assets/portal-2ndhand.svg?inline";
 import artworkUrl from "@/assets/portal-artwork.svg?inline";
 
-// The drawn portal for each category, by collection handle. `height` is the
-// height of the drawing in its own units; the three are drawn at the same
-// scale, so keeping the ratio keeps their sizes right next to each other.
+// The drawn portal for each category, by collection handle. `height` sets how
+// tall the portal is shown next to the others (the tallest fills the row).
+// Apparel and 2nd hand use the height of their drawing; Art work is shown
+// about 20% larger than its drawing (137.86) so it does not look too small.
 const PORTALS: Record<string, { src: string; height: number }> = {
   apparel: { src: apparelUrl, height: 210.39 },
   "2ndhand": { src: secondHandUrl, height: 193.03 },
-  artwork: { src: artworkUrl, height: 137.86 },
+  artwork: { src: artworkUrl, height: 166 },
 };
 const TALLEST_PORTAL = 210.39;
 
