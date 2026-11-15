@@ -43,26 +43,27 @@ export function SiteHeader() {
         Stuck in Stuckholm
       </Link>
 
-      <nav className="flex flex-col items-end text-right text-black pt-1 sm:pt-4">
+      {/* Every line in the menu starts at the same left edge. */}
+      <nav className="flex flex-col items-start text-left text-black pt-1 sm:pt-3">
         {CATEGORIES.map((cat) => {
           const isCurrent = currentCategory?.label === cat.label;
           return (
-            <div key={cat.label} className="flex flex-col items-end">
+            <div key={cat.label} className="flex flex-col items-start">
               <Link
                 to={`/collections/${cat.handle}`}
                 aria-current={isCurrent && routeHandle === cat.handle ? "page" : undefined}
-                className="uppercase text-lg sm:text-2xl leading-snug hover:opacity-60 transition-opacity"
+                className="uppercase text-sm sm:text-lg leading-snug hover:opacity-60 transition-opacity"
               >
                 {cat.label}
               </Link>
               {isCurrent && cat.children && (
-                <ul className="flex flex-col items-end pr-3 sm:pr-4 pb-1 animate-blur-fade-in">
+                <ul className="flex flex-col items-start pb-1 animate-blur-fade-in">
                   {cat.children.map((child) => (
                     <li key={child.label}>
                       <Link
                         to={`/collections/${child.handle}`}
                         aria-current={routeHandle === child.handle ? "page" : undefined}
-                        className={`text-base sm:text-xl leading-snug hover:opacity-60 transition-opacity ${
+                        className={`text-sm sm:text-base leading-snug hover:opacity-60 transition-opacity ${
                           routeHandle === child.handle ? "underline underline-offset-4 decoration-1" : ""
                         }`}
                       >
@@ -80,7 +81,7 @@ export function SiteHeader() {
           type="button"
           onClick={openCart}
           aria-label={`Cart, ${totalQuantity} item${totalQuantity === 1 ? "" : "s"}`}
-          className="mt-5 sm:mt-7 pr-3 sm:pr-4 text-lg sm:text-2xl leading-snug hover:opacity-60 transition-opacity"
+          className="mt-4 sm:mt-6 text-sm sm:text-lg leading-snug hover:opacity-60 transition-opacity"
         >
           cart{totalQuantity > 0 ? ` (${totalQuantity})` : ""}
         </button>
