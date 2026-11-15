@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-// Today's date and time in Stockholm, e.g. "15 November 19:41". It is the
+// Today's date and time in Stockholm, e.g. "15 November 19:41:07". It is the
 // same for every visitor, wherever they are.
 function stockholmNow() {
   const parts = new Intl.DateTimeFormat("en-GB", {
@@ -10,10 +10,11 @@ function stockholmNow() {
     month: "long",
     hour: "2-digit",
     minute: "2-digit",
+    second: "2-digit",
     hour12: false,
   }).formatToParts(new Date());
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  return { date: `${get("day")} ${get("month")}`, time: `${get("hour")}:${get("minute")}` };
+  return { date: `${get("day")} ${get("month")}`, time: `${get("hour")}:${get("minute")}:${get("second")}` };
 }
 
 function stockholmYear() {
@@ -28,7 +29,7 @@ const linkClass = "blackletter-outline hover:opacity-60 transition-opacity";
 export function SiteFooter() {
   const [now, setNow] = React.useState(stockholmNow);
 
-  // Re-check every second so the minute changes on time.
+  // Update every second, for the seconds.
   React.useEffect(() => {
     const timer = window.setInterval(() => {
       setNow((prev) => {
@@ -40,11 +41,11 @@ export function SiteFooter() {
   }, []);
 
   return (
-    // Wide screens: date in the left 40%, links from there, year at the right
+    // Wide screens: date at the left (at least 40% wide), links after it, year at the right
     // edge. Narrow screens: the three parts stack.
-    <footer className="relative z-10 w-full mt-32 sm:mt-48 px-4 sm:px-8 pb-6 sm:pb-8 flex flex-col gap-y-8 lg:grid lg:grid-cols-[40%_1fr_auto] lg:items-end text-black">
+    <footer className="relative z-10 w-full mt-32 sm:mt-48 px-4 sm:px-8 pb-6 sm:pb-8 flex flex-col gap-y-8 lg:grid lg:grid-cols-[minmax(40%,auto)_1fr_auto] lg:gap-x-12 lg:items-end text-black">
       <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap">
-        {now.date} <span className="ml-[0.35em]">{now.time}</span>
+        {now.date} <span className="ml-[0.35em] tabular-nums">{now.time}</span>
       </p>
 
       <div className="flex gap-x-10 sm:gap-x-16 footer-link-size leading-tight">
