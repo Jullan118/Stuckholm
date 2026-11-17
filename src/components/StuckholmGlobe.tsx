@@ -597,8 +597,12 @@ function SkyField({ progress }: { progress: number }) {
 
 export function StuckholmGlobe({
   scrollProgress = 0,
+  backgroundOnly = false,
 }: {
   scrollProgress?: number;
+  // Only the sky, stars and line grid, without the globe. Used as the faint
+  // background on the other pages (see SpaceBackdrop).
+  backgroundOnly?: boolean;
 }) {
   const dragRef = React.useRef<DragState>({
     dragging: false,
@@ -655,7 +659,9 @@ export function StuckholmGlobe({
         <SceneBackground progress={scrollProgress} />
         <SkyField progress={scrollProgress} />
         <FitCamera />
-        <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
+        {!backgroundOnly && (
+          <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
+        )}
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
           wells={[MAIN_WELL]}
