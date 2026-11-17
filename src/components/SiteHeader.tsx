@@ -20,7 +20,7 @@ export function SiteHeader() {
       <>
         <Link
           to={`/collections/${CONSUME_HANDLE}`}
-          className="fixed top-6 left-4 sm:left-8 z-20 inline-block text-sm sm:text-base transition-opacity duration-200 text-white home-ink hover:opacity-60"
+          className="fixed top-6 left-4 sm:left-8 z-20 inline-block text-base sm:text-xl transition-opacity duration-200 text-white home-ink hover:opacity-60"
         >
           Enter
         </Link>
