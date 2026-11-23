@@ -802,12 +802,13 @@ export function StuckholmGlobe({
   );
 }
 
-// The hand is black (it only shows over the light grey globe); the arrow out
-// in space stays white. Size of the pointing hand, in pixels wide. Its fingertip is at (38, 32) in
-// the drawing's 100 x 120 box, so that point is moved onto the mouse.
-const HAND_W = 56;
-const HAND_TIP_X = HAND_W * 0.38;
-const HAND_TIP_Y = HAND_W * 0.32;
+// The hand and "Enter" are white, like the arrow. Size of the pointing hand,
+// in pixels wide. The fingertip sits at about 37 % across and 21 % down the
+// drawing, so that point is moved onto the mouse.
+const HAND_W = 72;
+const HAND_RATIO = 642.67 / 547.07;
+const HAND_TIP_X = HAND_W * 0.37;
+const HAND_TIP_Y = HAND_W * HAND_RATIO * 0.21;
 const ENTER_SHOWN = `translate(${-HAND_TIP_X}px, ${-HAND_TIP_Y}px) scale(1)`;
 const ENTER_HIDDEN = `translate(${-HAND_TIP_X}px, ${-HAND_TIP_Y}px) scale(0.85)`;
 
@@ -888,7 +889,7 @@ function GlobeCursor({
           it. The fingertip sits exactly on the mouse position. */}
       <div
         ref={enterRef}
-        className="absolute top-0 left-0 flex flex-col items-start text-black transition-[opacity,transform] duration-200"
+        className="absolute top-0 left-0 flex flex-col items-start text-white transition-[opacity,transform] duration-200"
         style={{
           opacity: 0,
           transform: ENTER_HIDDEN,
@@ -898,28 +899,41 @@ function GlobeCursor({
         {/* "Enter" above the hand, centred on the fingertip, so it is clear
             that clicking takes you in. */}
         <span
-          className="absolute bottom-full mb-1 whitespace-nowrap text-lg sm:text-xl leading-none"
+          className="absolute bottom-full mb-1 whitespace-nowrap text-2xl sm:text-3xl leading-none"
           style={{ left: HAND_TIP_X, transform: "translateX(-50%)" }}
         >
           Enter
         </span>
+        {/* Julia's own hand drawing (cklick.svg), drawn twice slightly offset. */}
         <svg
           width={HAND_W}
-          height={HAND_W * 1.2}
-          viewBox="0 0 100 120"
+          height={HAND_W * HAND_RATIO}
+          viewBox="0 0 547.07 642.67"
           fill="none"
           stroke="currentColor"
-          strokeWidth="5"
+          strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          {/* click rays */}
-          <path d="M38 3 V15 M15 10 L24 19 M61 10 L52 19 M5 30 H18 M58 30 H71" />
-          {/* index finger, three folded fingers, thumb and wrist */}
-          <path d="M33 74 V38 a5.5 5.5 0 0 1 11 0 V66" />
-          <path d="M44 56 a5.5 5.5 0 0 1 11 0 V68" />
-          <path d="M55 60 a5.5 5.5 0 0 1 11 0 V70" />
-          <path d="M66 64 a5.5 5.5 0 0 1 11 0 V90 Q77 100 70 105 V116 H42 V107 L25 87 Q19 80 25 74 L33 68" />
+          <path vectorEffect="non-scaling-stroke" d="Layer_1" />
+          <path vectorEffect="non-scaling-stroke" d="M383.29,291.55c3.82-2.31,6.93-5.78,9.91-9.49,8.1-10.08,18.02-12.28,28.5-8.83,11.03,3.64,17.84,13.18,20.67,27.3,6.15,30.65,12.46,61.26,18.56,91.93,3.9,19.62,8.79,38.99,11.42,58.95,4.04,30.79-.72,59.87-13.01,86.86-10.56,23.16-25.78,40.21-44.75,51.96-9.35,5.79-19.44,9.1-29.35,12.88-10.68,4.07-21.3,8.4-32.07,12.12-8.05,2.79-16.17,4.32-24.57,4.62-12.21.43-24.06-1.35-35.68-6.1-7.48-3.05-14.5-7.3-21.4-12-36.25-24.67-72.72-48.79-109.02-73.33-19.48-13.16-38.94-26.37-58.62-39.05-14.2-9.14-16.22-30.42-5.59-44.53,5.68-7.53,12.04-12.89,20.25-15.03,7.26-1.9,14.18-.92,21.01,2.12,26.12,11.61,52.33,22.93,78.5,34.36,4.29,1.87,8.89,2.26,13.45,1.08" />
+          <path vectorEffect="non-scaling-stroke" d="M276.68,363.98h-3.86c-4.2-17.87-8.72-35.57-12.78-53.45-2.52-11.07-6.26-21.7-6.85-33.46-.18-3.5-.23-7.01-.22-10.49,0-2.13-.49-3.68-1.66-4.99-6.42-7.18-7.45-17.56-9.82-27.01-4.13-16.42-7.59-33.12-12.07-49.38-4.26-15.5-13.66-24.1-26.46-24.82-17.7-1-30.15,16.55-30.61,35.76-.2,8.18,1.89,15.52,3.74,22.96q8.6,34.68,16.88,69.49c9.52,39.62,19.31,79.14,28.65,118.83,3.1,13.18,6.23,26.36,9.62,39.41,1.49,5.74,2.07,11.39,1.27,17-.46,3.17.4,4.69,1.76,6.54,1.45,1.98,4.01,2.95,3.77,6.49" />
+          <path vectorEffect="non-scaling-stroke" d="M386.06,321.02c-2.71-8.34-3.29-17.08-3.18-25.97.02-1.9.06-3.47-1.48-5.13-2.9-3.13-4.64-7.56-6.47-11.83-10.16-23.74-33.7-26.44-47.53-9.03-2.69,3.38-5.61,6.45-9.11,8.5" />
+          <path vectorEffect="non-scaling-stroke" d="M329.39,347.49c.28-3.46-.34-6.74-1.19-9.99q-4.7-18.1-8.71-36.46c-1.42-6.54-1.72-13.23-1.61-19.98.04-1.9.17-3.55-1.5-5.11-3.01-2.84-4.6-7.3-6.39-11.39-6.48-14.8-16.42-21.7-29.74-20.39-6.75.66-12.6,4.43-17.42,10.45-2.86,3.56-5.9,6.73-9.53,8.96" />
+          <path vectorEffect="non-scaling-stroke" d="M137.58,224.62c.27,2.07-.2,3.34-1.98,4.03-20.9,8.21-41.42,17.87-62.2,26.53-1.5.62-2.89.86-4.39.91" />
+          <path vectorEffect="non-scaling-stroke" d="M158.58,32.81c6.82,25.89,13.94,51.65,21,77.43.89,3.23,1.48,6.53,1.19,9.98" />
+          <path vectorEffect="non-scaling-stroke" d="M342.07,141.45c-9.9.31-18.6,6.04-27.73,9.79-14.45,5.95-28.74,12.52-43.19,18.51-1.74.72-3.42.88-5.17.92" />
+          <path vectorEffect="non-scaling-stroke" d="M265.19,37.81c.09,1.75-.16,3.38-.78,5-9.54,25.04-19.86,49.6-29.03,74.87-.62,1.71-1.14,3.22-1.1,5.04" />
+          <path vectorEffect="non-scaling-stroke" d="M78.13,118.73c-.15,1.97.28,3.07,1.95,4.08q29.59,18.05,59.06,36.42c2.25,1.4,4.5.71,6.76.95" />
+          <path vectorEffect="non-scaling-stroke" d="M377.11,286.21c3.82-2.31,6.94-5.79,9.91-9.49,8.11-10.09,18.02-12.28,28.5-8.83,11.04,3.64,17.84,13.18,20.67,27.3,6.16,30.65,12.47,61.26,18.56,91.93,3.9,19.62,8.8,38.99,11.42,58.95,4.04,30.78-.72,59.87-13.01,86.85-10.55,23.17-25.77,40.21-44.74,51.97-9.36,5.79-19.45,9.1-29.35,12.88-10.68,4.07-21.31,8.4-32.07,12.12-8.05,2.78-16.18,4.32-24.57,4.62-12.22.43-24.07-1.36-35.68-6.1-7.49-3.05-14.51-7.31-21.4-12-36.25-24.67-72.73-48.8-109.03-73.33-19.47-13.17-38.94-26.37-58.62-39.05-14.2-9.15-16.21-30.42-5.58-44.53,5.67-7.53,12.04-12.89,20.24-15.04,7.26-1.89,14.19-.91,21.02,2.13,26.12,11.61,52.32,22.93,78.49,34.36,4.29,1.87,8.89,2.26,13.46,1.08" />
+          <path vectorEffect="non-scaling-stroke" d="M270.51,358.63h-3.86c-4.21-17.86-8.72-35.57-12.79-53.44-2.52-11.07-6.25-21.71-6.85-33.46-.17-3.51-.22-7.01-.22-10.5.01-2.12-.48-3.68-1.65-4.99-6.43-7.17-7.45-17.55-9.83-27.01-4.13-16.41-7.58-33.11-12.06-49.37-4.27-15.51-13.67-24.1-26.47-24.82-17.69-1-30.15,16.55-30.61,35.76-.2,8.18,1.9,15.52,3.74,22.95q8.6,34.69,16.89,69.49c9.51,39.63,19.31,79.15,28.64,118.84,3.1,13.18,6.24,26.36,9.63,39.41,1.49,5.74,2.06,11.39,1.26,17-.45,3.17.41,4.68,1.77,6.54,1.45,1.98,4,2.95,3.76,6.49" />
+          <path vectorEffect="non-scaling-stroke" d="M379.89,315.68c-2.72-8.34-3.29-17.09-3.18-25.98.02-1.9.05-3.47-1.49-5.13-2.9-3.13-4.64-7.55-6.47-11.82-10.16-23.74-33.7-26.44-47.53-9.04-2.69,3.39-5.61,6.46-9.1,8.51" />
+          <path vectorEffect="non-scaling-stroke" d="M323.21,342.15c.29-3.46-.34-6.74-1.18-9.99q-4.7-18.1-8.72-36.46c-1.41-6.55-1.71-13.24-1.6-19.98.03-1.9.16-3.55-1.5-5.12-3.02-2.83-4.6-7.29-6.39-11.38-6.49-14.8-16.43-21.7-29.74-20.39-6.76.66-12.61,4.43-17.42,10.44-2.86,3.57-5.91,6.74-9.54,8.97" />
+          <path vectorEffect="non-scaling-stroke" d="M131.4,219.28c.27,2.06-.2,3.33-1.97,4.03-20.91,8.21-41.42,17.87-62.21,26.52-1.49.63-2.89.87-4.38.91" />
+          <path vectorEffect="non-scaling-stroke" d="M152.4,27.47c6.82,25.89,13.94,51.64,21,77.42.89,3.23,1.48,6.53,1.2,9.99" />
+          <path vectorEffect="non-scaling-stroke" d="M335.9,136.11c-9.9.3-18.61,6.04-27.73,9.79-14.46,5.95-28.75,12.52-43.19,18.51-1.75.72-3.42.88-5.18.92" />
+          <path vectorEffect="non-scaling-stroke" d="M259.01,32.47c.1,1.75-.16,3.38-.77,5-9.55,25.04-19.86,49.6-29.03,74.87-.62,1.7-1.14,3.21-1.11,5.04" />
+          <path vectorEffect="non-scaling-stroke" d="M71.95,113.38c-.15,1.97.28,3.07,1.95,4.09q29.6,18.04,59.07,36.42c2.24,1.4,4.5.71,6.75.95" />
         </svg>
       </div>
     </div>
