@@ -21,7 +21,7 @@ function stockholmYear() {
   return new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Stockholm", year: "numeric" }).format(new Date());
 }
 
-// The info links are in the body font, Cormorant Garamond, in light grey (RGB 204, 204, 204).
+// The info links are in the body font, Cormorant Garamond, in light grey (RGB 180, 180, 180).
 // Fits the two lines of links to the date: the tops of the first-line words
 // (Shipping, Terms, Insta) line up with the top of the clock's digits, and
 // the bottom of the "y" in "Privacy" with the bottom of the digits. Measured from the real fonts in
@@ -82,7 +82,7 @@ function useFitLinksToDate(
   }, [dateRef, linksRef]);
 }
 
-const linkClass = "font-cormorant font-semibold text-[rgb(204,204,204)] hover:opacity-60 transition-opacity";
+const linkClass = "font-cormorant font-semibold text-[rgb(180,180,180)] hover:opacity-60 transition-opacity";
 
 // Site-wide footer, at the bottom of every page (in normal document flow).
 // Left: the live date and time in Stockholm. Middle: the info links.
@@ -150,7 +150,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap lg:text-right">©{stockholmYear()}</p>
+      <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap lg:text-right"><span className="text-[0.55em] align-[0.35em] mr-[0.08em]">©</span>{stockholmYear()}</p>
     </footer>
   );
 }
