@@ -33,12 +33,13 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
         // Like Acne Studios: the whole cell (grid line to grid line) is one
         // link; the picture sits with a wide white margin inside it, name and
         // price run close to the cell's edges, and on hover the cell gets a
-        // thin black frame.
+        // thin black frame. A faint line under each cell separates the rows,
+        // like the grid lines between the columns.
         <Link
           key={product.id}
           to={product.href}
           state={{ background: location }}
-          className="group relative block pb-3 sm:pb-4 outline-none"
+          className="group relative block pb-8 sm:pb-12 border-b-[0.75px] border-black/20 outline-none"
         >
           <div className="relative aspect-[4/5] overflow-hidden bg-white p-[9%]">
             {product.image ? (

@@ -246,11 +246,11 @@ html.hero-light .home-ink {
   padding-left: 2.35%;
   padding-right: 2.62%;
   grid-template-columns: 1fr 1fr;
-  row-gap: 3rem;
+  row-gap: 0;
 }
 @media (min-width: 768px) {
   .products-on-grid {
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    row-gap: 4rem;
+    row-gap: 0;
   }
 }
