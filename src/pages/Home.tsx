@@ -16,9 +16,9 @@ const QUOTE_AFTER = " is nasty, brutish and short.";
 
 // How long each word stays before it glitches over to the other, and how
 // long the glitch itself lasts (milliseconds).
-const NATURE_MS = 3200;
+const NATURE_MS = 5000;
 const STUCKHOLM_MS = 1800;
-const GLITCH_MS = 380;
+const GLITCH_MS = 200;
 
 // A word that every few seconds glitches (shakes, splits into blue and red)
 // and swaps between "nature" and "stuckholm".
