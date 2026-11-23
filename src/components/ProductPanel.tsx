@@ -154,14 +154,14 @@ function PanelContent({ product }: { product: ShopProduct }) {
       <div className="w-full md:w-[38%] lg:w-[32%] shrink-0">
         <div className="md:sticky md:top-0 p-6 md:p-10 pt-20 md:pt-28 flex flex-col gap-6 text-left">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xl sm:text-2xl leading-snug text-black">{product.title}</h1>
+            <h1 className="text-base sm:text-lg leading-snug text-black">{product.title}</h1>
             {product.priceText && (
-              <p className="text-xl sm:text-2xl leading-snug text-[rgb(204,204,204)]">{product.priceText}</p>
+              <p className="text-base sm:text-lg leading-snug text-[rgb(204,204,204)]">{product.priceText}</p>
             )}
           </div>
 
           {product.description && (
-            <p className="text-black/80 text-base sm:text-lg leading-relaxed whitespace-pre-line">
+            <p className="text-black text-base sm:text-lg leading-snug whitespace-pre-line">
               {product.description}
             </p>
           )}

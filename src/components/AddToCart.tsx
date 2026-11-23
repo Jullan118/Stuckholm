@@ -77,7 +77,7 @@ export function AddToCart({
                     setSelected((s) => ({ ...s, [option.name]: value }));
                     setError(false);
                   }}
-                  className={`min-w-[3rem] h-12 px-3 border text-xs transition-colors ${
+                  className={`min-w-[3rem] h-12 px-3 border text-base sm:text-lg transition-colors ${
                     picked
                       ? "bg-black text-white border-black"
                       : available
