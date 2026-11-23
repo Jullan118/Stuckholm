@@ -16,9 +16,9 @@ const QUOTE_AFTER = " is nasty, brutish and short.";
 
 // How long each word is shown in total, including the glitch at each end,
 // and how long the glitch itself lasts (milliseconds). Loops forever:
-// nature 3 s, stuckholm 0.2 s, nature 3 s, ...
+// nature 3 s, stuckholm 1 s, nature 3 s, ...
 const NATURE_MS = 3000;
-const STUCKHOLM_MS = 200;
+const STUCKHOLM_MS = 1000;
 const GLITCH_MS = 120;
 
 // A word that every few seconds glitches (shakes, splits into blue and red)
