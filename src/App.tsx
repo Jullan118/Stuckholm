@@ -1,4 +1,4 @@
-import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // Vercel (stuckholm.se) uses normal URLs. The Shopify theme build sets
 // VITE_USE_HASH_ROUTER, because Shopify can only serve the root page.
@@ -7,7 +7,6 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
-import { SpaceBackdrop } from "@/components/SpaceBackdrop";
 import { CartProvider } from "@/lib/cart";
 import { Home } from "@/pages/Home";
 import { InStockProduct } from "@/pages/InStockProduct";
@@ -23,21 +22,11 @@ import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
 import { Consume } from "@/pages/Consume";
 
-// The faint space background, on every page except home (which has its own).
-function PageBackdrop() {
-  const { pathname } = useLocation();
-  // No space background on the home page (it has the real one) or on the
-  // shop pages (product lists and single products), which are plain white.
-  const isProductPage = /^\/(collections|in-stock|trash)(\/|$)/.test(pathname);
-  return pathname === "/" || isProductPage ? null : <SpaceBackdrop />;
-}
-
 function App() {
   return (
     <Router>
       <CartProvider>
       <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative isolate">
-        <PageBackdrop />
         <ScrollToTop />
         <SiteHeader />
 
