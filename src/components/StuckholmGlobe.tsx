@@ -982,7 +982,7 @@ function TowerGlobeModel() {
   }, [gltf.scene]);
   const spinRef = React.useRef<THREE.Group>(null);
   useFrame((_, delta) => {
-    if (spinRef.current) spinRef.current.rotation.y -= delta * 0.4;
+    if (spinRef.current) spinRef.current.rotation.y -= delta * 0.06; // super slow: one turn in about 1 minute 45 s
   });
   return (
     // Lean: about 30 degrees to the right, top tipped forward (towards the
