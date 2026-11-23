@@ -805,7 +805,7 @@ export function StuckholmGlobe({
 // The arrow out in space (Julia's drawing). Its width in pixels, and the
 // direction it points in the drawing itself (from tail to tip, down and to
 // the right), which is subtracted so the tip ends up aimed at the globe.
-const ARROW_W = 46;
+const ARROW_W = 36;
 // Line look for the arrow and the hand: same thin line as the letters that
 // orbit the globe (1 px), and a bit see-through.
 const SYMBOL_LINE = 1;
@@ -815,7 +815,7 @@ const ARROW_ANGLE = Math.atan2(223.83 - 12.2, 151.7 - 31.5);
 // The hand and "Enter" are white, like the arrow. Size of the pointing hand,
 // in pixels wide. The fingertip sits at about 37 % across and 21 % down the
 // drawing, so that point is moved onto the mouse.
-const HAND_W = 72;
+const HAND_W = 56;
 const HAND_RATIO = 642.67 / 547.07;
 const HAND_TIP_X = HAND_W * 0.37;
 const HAND_TIP_Y = HAND_W * HAND_RATIO * 0.21;
@@ -923,7 +923,7 @@ function GlobeCursor({
         {/* "Enter" above the hand, centred on the fingertip, so it is clear
             that clicking takes you in. */}
         <span
-          className="absolute bottom-full mb-1 whitespace-nowrap text-2xl sm:text-3xl leading-none"
+          className="absolute bottom-full mb-1 whitespace-nowrap text-xl sm:text-2xl leading-none"
           style={{ left: HAND_TIP_X, transform: "translateX(-50%)" }}
         >
           Enter
