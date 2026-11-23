@@ -26,7 +26,7 @@ const HOUSE_W = 3627.28;
 const HOUSE_H = 1437.9;
 // The header shows this band of the drawing: from a little above the globe
 // (room for its letter ring) down to the bottom edge of the grid.
-const CROP_TOP = -50;
+const CROP_TOP = -70;
 const GRID_BOTTOM = 870;
 const HEADER_H = GRID_BOTTOM - CROP_TOP;
 // The house's ground line.
@@ -60,7 +60,7 @@ const PORTALS: Portal[] = [
 
 // The globe on the left tower, where the drawing had its flat globe picture.
 // The box is roomy so the letter ring around the globe is never cut off.
-const GLOBE_BOX = { x: 288, y: -45, size: 250 };
+const GLOBE_BOX = { x: 253, y: -82, size: 325 }; // 30 % larger, same centre
 
 // Loose scatter for sub-categories under a portal: offsets from the portal's
 // centre (x) and from the ground line (y), in drawing units, and a slight
