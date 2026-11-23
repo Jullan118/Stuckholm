@@ -172,3 +172,18 @@ html.hero-light .home-ink {
 .footer-link-size {
   font-size: clamp(18px, 1.9vw, 30px);
 }
+
+/* Short glitch on a single word (home page quote): jumps sideways and splits
+   into blue and red, in the same colours as the globe's glitch. */
+.word-glitch {
+  animation: word-glitch 0.38s steps(1) both;
+}
+@keyframes word-glitch {
+  0% { transform: translateX(0); text-shadow: 3px 0 rgba(0, 120, 255, 0.9), -3px 0 rgba(255, 40, 90, 0.8); }
+  15% { transform: translateX(-4px) skewX(-8deg); text-shadow: -4px 0 rgba(0, 120, 255, 0.9), 4px 0 rgba(255, 40, 90, 0.8); clip-path: inset(10% 0 45% 0); }
+  30% { transform: translateX(5px); text-shadow: 5px 0 rgba(0, 120, 255, 0.9), -2px 0 rgba(255, 40, 90, 0.8); clip-path: inset(55% 0 5% 0); }
+  45% { transform: translateX(-2px) skewX(6deg); text-shadow: -2px 0 rgba(0, 120, 255, 0.9), 3px 0 rgba(255, 40, 90, 0.8); clip-path: none; }
+  60% { transform: translateX(3px); text-shadow: 4px 0 rgba(0, 120, 255, 0.9), -4px 0 rgba(255, 40, 90, 0.8); clip-path: inset(30% 0 20% 0); }
+  80% { transform: translateX(-1px); text-shadow: -1px 0 rgba(0, 120, 255, 0.9), 1px 0 rgba(255, 40, 90, 0.8); clip-path: none; }
+  100% { transform: translateX(0); text-shadow: none; clip-path: none; }
+}

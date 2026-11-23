@@ -802,6 +802,16 @@ export function StuckholmGlobe({
   );
 }
 
+// The arrow out in space (Julia's drawing). Its width in pixels, and the
+// direction it points in the drawing itself (from tail to tip, down and to
+// the right), which is subtracted so the tip ends up aimed at the globe.
+const ARROW_W = 46;
+// Line look for the arrow and the hand: same thin line as the letters that
+// orbit the globe (1 px), and a bit see-through.
+const SYMBOL_LINE = 1;
+const SYMBOL_OPACITY = 0.7;
+const ARROW_ANGLE = Math.atan2(223.83 - 12.2, 151.7 - 31.5);
+
 // The hand and "Enter" are white, like the arrow. Size of the pointing hand,
 // in pixels wide. The fingertip sits at about 37 % across and 21 % down the
 // drawing, so that point is moved onto the mouse.
@@ -853,7 +863,7 @@ function GlobeCursor({
       const y = ((1 - it.pointer.y) / 2) * h;
       root.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       const angle = Math.atan2(it.globeY - y, it.globeX - x);
-      arrow.style.transform = `translate(-50%, -50%) rotate(${angle}rad)`;
+      arrow.style.transform = `translate(-50%, -50%) rotate(${angle - ARROW_ANGLE}rad)`;
       if (it.hovering !== lastHover) {
         lastHover = it.hovering;
         arrow.style.opacity = it.hovering ? "0" : "1";
@@ -875,14 +885,28 @@ function GlobeCursor({
       className="pointer-events-none absolute top-0 left-0 z-10 text-white transition-opacity duration-200"
       style={{ opacity: 0 }}
     >
-      {/* Arrow pointing right; rotated each frame to aim at the globe. */}
+      {/* The arrow; rotated each frame so its tip aims at the globe. */}
       <div
         ref={arrowRef}
         className="absolute top-0 left-0 transition-opacity duration-200"
         style={{ transform: "translate(-50%, -50%)" }}
       >
-        <svg width="34" height="18" viewBox="0 0 34 18" fill="none">
-          <path d="M1 9 H31 M23 2 L31 9 L23 16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Julia's own arrow drawing (muen.svg), drawn twice slightly offset. */}
+        <svg
+          width={ARROW_W}
+          height={ARROW_W * (254.85 / 192.41)}
+          viewBox="0 0 192.41 254.85"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={SYMBOL_LINE}
+          strokeOpacity={SYMBOL_OPACITY}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polyline vectorEffect="non-scaling-stroke" points="30.28 15.87 149.78 223.83 159.09 154.98" />
+          <line vectorEffect="non-scaling-stroke" x1="80.65" y1="202.99" x2="152.8" y2="224.96" />
+          <polyline vectorEffect="non-scaling-stroke" points="32.81 8.57 153.7 223.83 163.11 152.56" />
+          <line vectorEffect="non-scaling-stroke" x1="74.91" y1="194.52" x2="150.21" y2="220.1" />
         </svg>
       </div>
       {/* Over the globe: "Enter", with a pointing hand with click rays under
@@ -911,7 +935,8 @@ function GlobeCursor({
           viewBox="0 0 547.07 642.67"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth={SYMBOL_LINE}
+          strokeOpacity={SYMBOL_OPACITY}
           strokeLinecap="round"
           strokeLinejoin="round"
         >

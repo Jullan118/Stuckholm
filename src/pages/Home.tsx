@@ -9,10 +9,50 @@ import { CONSUME_HANDLE } from "@/lib/categories";
 // spinning in place the entire time, it never shrinks or flies away.
 const SPIN_AWAY_VH = 200;
 
-// About text shown above the footer, on the home page only. Edit this text
-// freely; it is placeholder copy for now.
-const ABOUT_TEXT =
-  "stuckholm is an independent brand. blablabka ";
+// The quote above the footer, on the home page only. The word "nature"
+// glitches back and forth into "stuckholm" (see GlitchWord).
+const QUOTE_BEFORE = "life in ";
+const QUOTE_AFTER = " is nasty, brutish and short.";
+
+// How long each word stays before it glitches over to the other, and how
+// long the glitch itself lasts (milliseconds).
+const NATURE_MS = 3200;
+const STUCKHOLM_MS = 1800;
+const GLITCH_MS = 380;
+
+// A word that every few seconds glitches (shakes, splits into blue and red)
+// and swaps between "nature" and "stuckholm".
+function GlitchWord() {
+  const [showStuckholm, setShowStuckholm] = React.useState(false);
+  const [glitching, setGlitching] = React.useState(false);
+
+  React.useEffect(() => {
+    let timer: number;
+    let stuck = false;
+    const next = () => {
+      timer = window.setTimeout(() => {
+        setGlitching(true);
+        // Swap the word halfway through the glitch.
+        timer = window.setTimeout(() => {
+          stuck = !stuck;
+          setShowStuckholm(stuck);
+          timer = window.setTimeout(() => {
+            setGlitching(false);
+            next();
+          }, GLITCH_MS / 2);
+        }, GLITCH_MS / 2);
+      }, stuck ? STUCKHOLM_MS : NATURE_MS);
+    };
+    next();
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <span className={`inline-block ${glitching ? "word-glitch" : ""}`}>
+      {showStuckholm ? "stuckholm" : "nature"}
+    </span>
+  );
+}
 
 export function Home() {
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -68,7 +108,9 @@ export function Home() {
 
       <section className="w-full px-4 sm:px-8 py-16 font-instrument text-black">
         <p className="mx-auto max-w-3xl text-xs sm:text-base leading-relaxed">
-          {ABOUT_TEXT}
+          {QUOTE_BEFORE}
+          <GlitchWord />
+          {QUOTE_AFTER}
         </p>
       </section>
     </>
