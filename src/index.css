@@ -176,7 +176,7 @@ html.hero-light .home-ink {
 /* Short glitch on a single word (home page quote): jumps sideways and splits
    into blue and red, in the same colours as the globe's glitch. */
 .word-glitch {
-  animation: word-glitch 0.2s steps(1) both;
+  animation: word-glitch 0.12s steps(1) both;
 }
 @keyframes word-glitch {
   0% { transform: translateX(0); text-shadow: 3px 0 rgba(0, 120, 255, 0.9), -3px 0 rgba(255, 40, 90, 0.8); }

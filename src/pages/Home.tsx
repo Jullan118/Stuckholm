@@ -14,11 +14,12 @@ const SPIN_AWAY_VH = 200;
 const QUOTE_BEFORE = "life in ";
 const QUOTE_AFTER = " is nasty, brutish and short.";
 
-// How long each word stays before it glitches over to the other, and how
-// long the glitch itself lasts (milliseconds).
-const NATURE_MS = 5000;
-const STUCKHOLM_MS = 1800;
-const GLITCH_MS = 200;
+// How long each word is shown in total, including the glitch at each end,
+// and how long the glitch itself lasts (milliseconds). Loops forever:
+// nature 3 s, stuckholm 0.2 s, nature 3 s, ...
+const NATURE_MS = 3000;
+const STUCKHOLM_MS = 200;
+const GLITCH_MS = 120;
 
 // A word that every few seconds glitches (shakes, splits into blue and red)
 // and swaps between "nature" and "stuckholm".
@@ -41,7 +42,7 @@ function GlitchWord() {
             next();
           }, GLITCH_MS / 2);
         }, GLITCH_MS / 2);
-      }, stuck ? STUCKHOLM_MS : NATURE_MS);
+      }, Math.max(0, (stuck ? STUCKHOLM_MS : NATURE_MS) - GLITCH_MS));
     };
     next();
     return () => window.clearTimeout(timer);
