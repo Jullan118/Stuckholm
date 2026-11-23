@@ -203,17 +203,24 @@ html.hero-light .home-ink {
   width: 100%;
   height: 100%;
 }
-/* The grid's lines: hairlines at any screen width, very faint. */
-.house-grid path {
-  vector-effect: non-scaling-stroke;
-  stroke-width: 0.75px !important;
-}
 .house-sub {
-  font-size: clamp(11px, 1.15vw, 19px);
+  font-size: clamp(10px, 1vw, 17px);
 }
-/* The grid: very low opacity, so it only just shows. */
-.house-grid {
-  opacity: 0.45;
+/* Check out: on hover the gate rattles, as if someone shook it to get out. */
+.house-gate {
+  transform-origin: 50% 100%;
+}
+.house-checkout:hover .house-gate,
+.house-checkout:focus-visible .house-gate {
+  animation: gate-rattle 0.45s ease-in-out infinite;
+}
+@keyframes gate-rattle {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-0.6%, 0) rotate(-0.8deg); }
+  30% { transform: translate(0.7%, -0.3%) rotate(0.9deg); }
+  45% { transform: translate(-0.5%, 0.2%) rotate(-0.6deg); }
+  60% { transform: translate(0.6%, 0) rotate(0.7deg); }
+  75% { transform: translate(-0.3%, -0.2%) rotate(-0.4deg); }
 }
 
 /* Product grid lined up with the header grid's lines (see ProductGrid). */
@@ -227,14 +234,14 @@ html.hero-light .home-ink {
 }
 .products-on-grid {
   display: grid;
-  padding-left: 2.35%;
-  padding-right: 2.62%;
-  grid-template-columns: 47.43fr 47.6fr;
+  padding-left: 9.24%;
+  padding-right: 8.86%;
+  grid-template-columns: 1fr 1fr;
   row-gap: 3rem;
 }
 @media (min-width: 768px) {
   .products-on-grid {
-    grid-template-columns: 23.9fr 23.53fr 23.6fr 24fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     row-gap: 4rem;
   }
 }

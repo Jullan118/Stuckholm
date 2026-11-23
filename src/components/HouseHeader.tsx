@@ -1,76 +1,80 @@
 import * as React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import houseSvg from "@/assets/house/house.svg?raw";
-import gridSvg from "@/assets/house/grid.svg?raw";
-import apparelSvg from "@/assets/house/apparel.svg?raw";
-import artworkSvg from "@/assets/house/artwork.svg?raw";
-import secondhandSvg from "@/assets/house/secondhand.svg?raw";
-import checkoutSvg from "@/assets/house/checkout.svg?raw";
+import houseSvg from "@/assets/house2/house.svg?raw";
+import gateSvg from "@/assets/house2/gate.svg?raw";
+import apparelRaw from "@/assets/house/apparel.svg?raw";
+import artworkRaw from "@/assets/house/artwork.svg?raw";
+import secondhandRaw from "@/assets/house/secondhand.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
 
-// The shop header (every page except home): Julia's drawing of the house,
-// standing on her perspective grid. The portals in the house are the menu:
-// Apparel, Art work and 2nd hand open their collection, Check out opens the
-// cart. A portal grows a little on hover. When you are inside a category
-// that has sub-categories, they are tossed out in a loose, random-looking
+// The shop header (every page except home): Julia's drawing of the house
+// on her perspective grid (header.svg). The portals in the house are the
+// menu: Apparel, Art work and 2nd hand open their collection and grow to
+// 1.5x on hover; Check out opens the cart, and on hover its gate (the right
+// part) rattles, as if someone were shaking it to get out. When you are
+// inside a category that has sub-categories, they are tossed out in a loose
 // scatter under its portal. The 3D globe on the left tower goes home.
 //
-// Everything is placed in the house drawing's own units (its viewBox), so
-// the whole header scales with the screen width and the parts stay in place.
+// The house drawing has holes where the portals and the gate are; those are
+// drawn on top as separate pieces (from the portal files, fitted to this
+// drawing), so they can move. Everything is placed in the drawing's own
+// units (its viewBox), so the header scales with the screen width.
 
-const HOUSE_W = 3510.58;
-const HOUSE_H = 1296.21;
-// The grid drawing, scaled to the house's width. Its top sits this far below
-// the top of the house, so that the house's (fragmented) ground line, at
-// y = 1232, lies exactly on one of the grid's horizontal lines (702 grid
-// units down = 817 house units).
-const GROUND_Y = 1232;
-const GRID_TOP = GROUND_Y - (702 * HOUSE_W) / 3017.07;
-const GRID_H = (853 * HOUSE_W) / 3017.07;
-// The drawing has empty sky above the globe; the header starts this far
-// down, just above the globe, so there is no big white band at the top.
-const CROP_TOP = 105;
-const HEADER_H = GRID_TOP + GRID_H - CROP_TOP;
+const HOUSE_W = 3627.28;
+const HOUSE_H = 1437.9;
+// The header shows this band of the drawing: from a little above the globe
+// (room for its letter ring) down to the bottom edge of the grid.
+const CROP_TOP = -50;
+const GRID_BOTTOM = 870;
+const HEADER_H = GRID_BOTTOM - CROP_TOP;
+// The house's ground line.
+const GROUND_Y = 746;
 
-// Each portal file is cut from the same artboard as the house, so these are
-// the exact spots where they sit in the house drawing.
-const PORTAL_H = 403.89;
+// The portal files keep their own proportions; this drawing is slightly
+// squashed in height, so they are stretched to their box.
+const fit = (svg: string) => svg.replace("<svg ", '<svg preserveAspectRatio="none" ');
+const apparelSvg = fit(apparelRaw);
+const artworkSvg = fit(artworkRaw);
+const secondhandSvg = fit(secondhandRaw);
+
 type Portal = {
   key: string;
   label: string;
-  svg: string;
+  svg?: string;
   x: number;
   y: number;
   w: number;
+  h: number;
   handle?: string; // collection it opens
   cart?: boolean; // opens the cart instead
 };
 const PORTALS: Portal[] = [
-  { key: "apparel", label: "Apparel", svg: apparelSvg, x: 640.09, y: 850.58, w: 344.42, handle: "apparel" },
-  { key: "artwork", label: "Art work", svg: artworkSvg, x: 1169.45, y: 871.19, w: 344.42, handle: "artwork" },
-  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 1685.05, y: 843.59, w: 344.42, handle: "2ndhand" },
-  { key: "checkout", label: "Check out (cart)", svg: checkoutSvg, x: 2928.92, y: 853.68, w: 419.1, cart: true },
+  { key: "apparel", label: "Apparel", svg: apparelSvg, x: 705.21, y: 405.92, w: 344.05, h: 359.99, handle: "apparel" },
+  { key: "artwork", label: "Art work", svg: artworkSvg, x: 1234.01, y: 424.29, w: 344.05, h: 359.99, handle: "artwork" },
+  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 1749.06, y: 399.69, w: 344.05, h: 359.99, handle: "2ndhand" },
+  // Check out: the text stays in the house; only the gate is drawn on top.
+  { key: "checkout", label: "Check out (cart)", x: 2991.62, y: 408.68, w: 418.66, h: 359.99, cart: true },
 ];
 
-// The globe on the left tower, where the drawing had its sketched globe.
+// The globe on the left tower, where the drawing had its flat globe picture.
 // The box is roomy so the letter ring around the globe is never cut off.
-const GLOBE_BOX = { x: -50, y: -100, size: 800 };
+const GLOBE_BOX = { x: 288, y: -45, size: 250 };
 
 // Loose scatter for sub-categories under a portal: offsets from the portal's
-// centre (x) and from the ground line (y), in house units, and a slight tilt.
-// Fixed values, so the scatter looks random but doesn't jump around.
+// centre (x) and from the ground line (y), in drawing units, and a slight
+// tilt. Fixed values, so the scatter looks random but doesn't jump around.
 const SCATTER = [
-  { dx: -120, dy: 50, rot: -7 },
-  { dx: 105, dy: 75, rot: 5 },
-  { dx: -70, dy: 115, rot: 3 },
-  { dx: 125, dy: 140, rot: -4 },
-  { dx: -150, dy: 150, rot: 8 },
+  { dx: -165, dy: 38, rot: -7 },
+  { dx: 55, dy: 30, rot: 5 },
+  { dx: -45, dy: 95, rot: 3 },
+  { dx: 175, dy: 88, rot: -4 },
+  { dx: -205, dy: 100, rot: 8 },
 ];
 
 const pctX = (v: number) => `${(v / HOUSE_W) * 100}%`;
-// Vertical positions are given in house units from the top of the drawing.
+// Vertical positions are given in drawing units from the top of the drawing.
 const pctY = (v: number) => `${((v - CROP_TOP) / HEADER_H) * 100}%`;
 const pctH = (v: number) => `${(v / HEADER_H) * 100}%`;
 
@@ -100,14 +104,7 @@ export function HouseHeader() {
       className="house-header relative z-20 w-full select-none"
       style={{ aspectRatio: `${HOUSE_W} / ${HEADER_H}` }}
     >
-      {/* The grid, very faint, behind the house. */}
-      <Svg
-        markup={gridSvg}
-        className="house-grid absolute left-0 w-full pointer-events-none"
-        style={{ top: pctY(GRID_TOP) }}
-      />
-
-      {/* The house itself (without the portals, which are drawn on top). */}
+      {/* The house on its grid (with holes where the portals and gate go). */}
       <Svg
         markup={houseSvg}
         className="house-svg absolute left-0 w-full pointer-events-none"
@@ -136,15 +133,19 @@ export function HouseHeader() {
           left: pctX(p.x),
           top: pctY(p.y),
           width: pctX(p.w),
-          height: pctH(PORTAL_H),
+          height: pctH(p.h),
         };
-        const inner = <Svg markup={p.svg} className="house-portal-art" />;
-        const className =
-          "house-portal absolute block origin-bottom transition-transform duration-300 ease-out hover:scale-[1.1] focus-visible:scale-[1.1] outline-none";
         if (p.cart) {
           return (
-            <button key={p.key} type="button" aria-label={p.label} onClick={openCart} className={className} style={style}>
-              {inner}
+            <button
+              key={p.key}
+              type="button"
+              aria-label={p.label}
+              onClick={openCart}
+              className="house-checkout absolute block outline-none"
+              style={style}
+            >
+              <Svg markup={gateSvg} className="house-portal-art house-gate" />
               {totalQuantity > 0 && (
                 <span className="absolute top-[18%] right-[8%] text-[10px] sm:text-xs tabular-nums text-black/70">
                   {totalQuantity}
@@ -154,8 +155,14 @@ export function HouseHeader() {
           );
         }
         return (
-          <Link key={p.key} to={`/collections/${p.handle}`} aria-label={p.label} className={className} style={style}>
-            {inner}
+          <Link
+            key={p.key}
+            to={`/collections/${p.handle}`}
+            aria-label={p.label}
+            className="house-portal absolute block origin-bottom transition-transform duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 outline-none"
+            style={style}
+          >
+            <Svg markup={p.svg ?? ""} className="house-portal-art" />
           </Link>
         );
       })}
