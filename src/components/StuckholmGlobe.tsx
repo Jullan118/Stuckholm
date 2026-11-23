@@ -884,7 +884,7 @@ function GlobeCursor({
           <path d="M1 9 H31 M23 2 L31 9 L23 16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      {/* Over the globe: a pointing hand with click rays, and "Enter" under
+      {/* Over the globe: "Enter", with a pointing hand with click rays under
           it. The fingertip sits exactly on the mouse position. */}
       <div
         ref={enterRef}
@@ -895,6 +895,14 @@ function GlobeCursor({
           transformOrigin: `${HAND_TIP_X}px ${HAND_TIP_Y}px`,
         }}
       >
+        {/* "Enter" above the hand, centred on the fingertip, so it is clear
+            that clicking takes you in. */}
+        <span
+          className="absolute bottom-full mb-1 whitespace-nowrap text-lg sm:text-xl leading-none"
+          style={{ left: HAND_TIP_X, transform: "translateX(-50%)" }}
+        >
+          Enter
+        </span>
         <svg
           width={HAND_W}
           height={HAND_W * 1.2}
@@ -913,12 +921,6 @@ function GlobeCursor({
           <path d="M55 60 a5.5 5.5 0 0 1 11 0 V70" />
           <path d="M66 64 a5.5 5.5 0 0 1 11 0 V90 Q77 100 70 105 V116 H42 V107 L25 87 Q19 80 25 74 L33 68" />
         </svg>
-        <span
-          className="whitespace-nowrap text-lg sm:text-xl leading-none mt-1"
-          style={{ width: HAND_W, textAlign: "center" }}
-        >
-          Enter
-        </span>
       </div>
     </div>
   );
