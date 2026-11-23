@@ -21,11 +21,13 @@ function stockholmYear() {
   return new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Stockholm", year: "numeric" }).format(new Date());
 }
 
-const linkClass = "blackletter-outline hover:opacity-60 transition-opacity";
+// The info links are in the body font, Cormorant Garamond, in solid black.
+const linkClass = "font-cormorant hover:opacity-60 transition-opacity";
 
 // Site-wide footer, at the bottom of every page (in normal document flow).
 // Left: the live date and time in Stockholm. Middle: the info links.
-// Right: the year. All in the blackletter display font.
+// Right: the year. Date and year in the blackletter display font; the links
+// in Cormorant Garamond.
 export function SiteFooter() {
   const [now, setNow] = React.useState(stockholmNow);
 
