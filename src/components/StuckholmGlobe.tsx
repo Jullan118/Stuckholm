@@ -970,10 +970,19 @@ function GlobeCursor({
 // side and slowly spinning, on a transparent background.
 function TowerGlobeModel() {
   const gltf = useGLTF(BLOB_MODEL_URL);
-  const { blob, letters } = React.useMemo(() => createBlobFromModel(gltf.scene), [gltf.scene]);
+  const { blob, letters } = React.useMemo(() => {
+    const parts = createBlobFromModel(gltf.scene);
+    // The letter ring is drawn in white for the dark sky on the home page;
+    // on the white shop pages it would vanish, so it gets the ink colour.
+    parts.letters.traverse((child) => {
+      const line = child as THREE.LineSegments;
+      if (line.isLineSegments) (line.material as THREE.LineBasicMaterial).color.set(INK);
+    });
+    return parts;
+  }, [gltf.scene]);
   const spinRef = React.useRef<THREE.Group>(null);
   useFrame((_, delta) => {
-    if (spinRef.current) spinRef.current.rotation.y -= delta * 0.25;
+    if (spinRef.current) spinRef.current.rotation.y -= delta * 0.4;
   });
   return (
     // Lean: about 30 degrees to the right, top tipped slightly back.
@@ -990,7 +999,7 @@ export function TowerGlobe() {
   return (
     <Canvas
       dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 9.2], fov: 40 }}
+      camera={{ position: [0, 0, 12.3], fov: 40 }}
       gl={{ toneMapping: THREE.NoToneMapping, alpha: true }}
       style={{ background: "transparent" }}
     >
