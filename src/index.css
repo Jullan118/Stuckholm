@@ -206,6 +206,14 @@ html.hero-light .home-ink {
 .house-sub {
   font-size: clamp(10px, 1vw, 17px);
 }
+/* The grid behind the house: hairlines at any screen width, very faint. */
+.house-grid {
+  opacity: 0.45;
+}
+.house-grid path {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 0.75px !important;
+}
 /* Check out: on hover the gate rattles, as if someone shook it to get out. */
 .house-gate {
   transform-origin: 50% 100%;
@@ -234,8 +242,8 @@ html.hero-light .home-ink {
 }
 .products-on-grid {
   display: grid;
-  padding-left: 9.24%;
-  padding-right: 8.86%;
+  padding-left: 2.35%;
+  padding-right: 2.62%;
   grid-template-columns: 1fr 1fr;
   row-gap: 3rem;
 }
