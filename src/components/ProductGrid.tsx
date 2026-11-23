@@ -43,10 +43,14 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
               )}
             </div>
           </Link>
+          {/* Name on the left and price on the right, on one line; the price
+              in light grey (RGB 204, 204, 204). Colour, if any, under the name. */}
           <Link to={product.href} className="block pt-4 sm:pt-6 text-base sm:text-xl leading-snug lowercase text-black">
-            <span className="block">{product.title}</span>
+            <span className="flex items-baseline justify-between gap-3">
+              <span className="min-w-0">{product.title}</span>
+              <span className="shrink-0 whitespace-nowrap text-[rgb(204,204,204)]">{product.priceText}</span>
+            </span>
             {product.colour && <span className="block">{product.colour}</span>}
-            <span className="block">{product.priceText}</span>
           </Link>
         </div>
       ))}
