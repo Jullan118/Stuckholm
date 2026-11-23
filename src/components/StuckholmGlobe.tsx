@@ -802,8 +802,17 @@ export function StuckholmGlobe({
   );
 }
 
+// The hand is black (it only shows over the light grey globe); the arrow out
+// in space stays white. Size of the pointing hand, in pixels wide. Its fingertip is at (38, 32) in
+// the drawing's 100 x 120 box, so that point is moved onto the mouse.
+const HAND_W = 56;
+const HAND_TIP_X = HAND_W * 0.38;
+const HAND_TIP_Y = HAND_W * 0.32;
+const ENTER_SHOWN = `translate(${-HAND_TIP_X}px, ${-HAND_TIP_Y}px) scale(1)`;
+const ENTER_HIDDEN = `translate(${-HAND_TIP_X}px, ${-HAND_TIP_Y}px) scale(0.85)`;
+
 // The mouse on the home page. Out in space it is an arrow that always points
-// at the globe; over the globe it turns into the word "Enter". It is drawn
+// at the globe; over the globe it turns into a pointing hand with "Enter". It is drawn
 // as a normal page element following the mouse (the real cursor is hidden
 // while it shows). On touch screens nothing is drawn: tapping the globe
 // enters directly.
@@ -848,7 +857,7 @@ function GlobeCursor({
         lastHover = it.hovering;
         arrow.style.opacity = it.hovering ? "0" : "1";
         enter.style.opacity = it.hovering ? "1" : "0";
-        enter.style.transform = `translate(-50%, -50%) scale(${it.hovering ? 1 : 0.85})`;
+        enter.style.transform = it.hovering ? ENTER_SHOWN : ENTER_HIDDEN;
       }
     };
     frame = requestAnimationFrame(tick);
@@ -875,13 +884,41 @@ function GlobeCursor({
           <path d="M1 9 H31 M23 2 L31 9 L23 16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
-      {/* "Enter", shown over the globe. */}
+      {/* Over the globe: a pointing hand with click rays, and "Enter" under
+          it. The fingertip sits exactly on the mouse position. */}
       <div
         ref={enterRef}
-        className="absolute top-0 left-0 whitespace-nowrap text-xl sm:text-2xl transition-[opacity,transform] duration-200"
-        style={{ opacity: 0, transform: "translate(-50%, -50%) scale(0.85)" }}
+        className="absolute top-0 left-0 flex flex-col items-start text-black transition-[opacity,transform] duration-200"
+        style={{
+          opacity: 0,
+          transform: ENTER_HIDDEN,
+          transformOrigin: `${HAND_TIP_X}px ${HAND_TIP_Y}px`,
+        }}
       >
-        Enter
+        <svg
+          width={HAND_W}
+          height={HAND_W * 1.2}
+          viewBox="0 0 100 120"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {/* click rays */}
+          <path d="M38 3 V15 M15 10 L24 19 M61 10 L52 19 M5 30 H18 M58 30 H71" />
+          {/* index finger, three folded fingers, thumb and wrist */}
+          <path d="M33 74 V38 a5.5 5.5 0 0 1 11 0 V66" />
+          <path d="M44 56 a5.5 5.5 0 0 1 11 0 V68" />
+          <path d="M55 60 a5.5 5.5 0 0 1 11 0 V70" />
+          <path d="M66 64 a5.5 5.5 0 0 1 11 0 V90 Q77 100 70 105 V116 H42 V107 L25 87 Q19 80 25 74 L33 68" />
+        </svg>
+        <span
+          className="whitespace-nowrap text-lg sm:text-xl leading-none mt-1"
+          style={{ width: HAND_W, textAlign: "center" }}
+        >
+          Enter
+        </span>
       </div>
     </div>
   );
