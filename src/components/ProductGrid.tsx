@@ -7,11 +7,28 @@ import { isSoldOut } from "@/lib/commerce";
 // comes from the product's "colour:..." tag in Shopify and is left out when
 // there is no such tag.
 // Sold-out items get a "Sold out" tag centred near the bottom of the image.
+//
+// The columns sit between the header grid's lines, continued straight down
+// the page: every other line of the grid drawing meets the bottom edge at
+// these points (percent of the width), so four columns fit exactly between
+// them (two on phones, using every fourth line).
+const LINES_WIDE = [2.35, 26.25, 49.78, 73.38, 97.38];
+const LINES_NARROW = [2.35, 49.78, 97.38];
+
 export function ProductGrid({ products }: { products: ShopProduct[] }) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-10 gap-y-12 sm:gap-y-16 px-4 sm:px-8">
+    <div className="relative w-full">
+      {LINES_WIDE.map((x) => (
+        <span
+          key={x}
+          aria-hidden="true"
+          className={`grid-continue-line ${LINES_NARROW.includes(x) ? "" : "hidden md:block"}`}
+          style={{ left: `${x}%` }}
+        />
+      ))}
+      <div className="products-on-grid">
       {products.map((product) => (
-        <div key={product.id}>
+        <div key={product.id} className="px-[1.2vw] md:px-[1.4vw]">
           <Link to={product.href}>
             <div className="relative aspect-[4/5] overflow-hidden bg-white">
               {product.image ? (
@@ -33,6 +50,7 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
           </Link>
         </div>
       ))}
+      </div>
     </div>
   );
 }

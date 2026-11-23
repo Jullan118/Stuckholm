@@ -964,3 +964,41 @@ function GlobeCursor({
     </div>
   );
 }
+
+// The small globe on the house's left tower (the shop header, see
+// HouseHeader). Same model as the big one on the home page, leaning to the
+// side and slowly spinning, on a transparent background.
+function TowerGlobeModel() {
+  const gltf = useGLTF(BLOB_MODEL_URL);
+  const { blob, letters } = React.useMemo(() => createBlobFromModel(gltf.scene), [gltf.scene]);
+  const spinRef = React.useRef<THREE.Group>(null);
+  useFrame((_, delta) => {
+    if (spinRef.current) spinRef.current.rotation.y -= delta * 0.25;
+  });
+  return (
+    // Lean: about 30 degrees to the right, top tipped slightly back.
+    <group rotation={[GLOBE_BASE_PITCH, 0, -Math.PI / 6]}>
+      <group ref={spinRef}>
+        <primitive object={blob} />
+        <primitive object={letters} />
+      </group>
+    </group>
+  );
+}
+
+export function TowerGlobe() {
+  return (
+    <Canvas
+      dpr={[1, 1.5]}
+      camera={{ position: [0, 0, 9.2], fov: 40 }}
+      gl={{ toneMapping: THREE.NoToneMapping, alpha: true }}
+      style={{ background: "transparent" }}
+    >
+      <ambientLight intensity={1.4} />
+      <directionalLight position={[-8, 6, 6]} intensity={2.2} />
+      <React.Suspense fallback={null}>
+        <TowerGlobeModel />
+      </React.Suspense>
+    </Canvas>
+  );
+}

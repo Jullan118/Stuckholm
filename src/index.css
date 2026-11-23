@@ -191,3 +191,50 @@ html.hero-light .home-ink {
   80% { transform: translateX(-1px); text-shadow: -1px 0 rgba(0, 120, 255, 0.9), 1px 0 rgba(255, 40, 90, 0.8); clip-path: none; }
   100% { transform: translateX(0); text-shadow: none; clip-path: none; }
 }
+
+/* Shop header: the house drawing on the grid (see HouseHeader). */
+.house-header svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.house-portal-art,
+.house-portal-art svg {
+  width: 100%;
+  height: 100%;
+}
+/* The grid's lines: hairlines at any screen width, very faint. */
+.house-grid path {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 0.75px !important;
+}
+.house-sub {
+  font-size: clamp(11px, 1.15vw, 19px);
+}
+/* The grid: very low opacity, so it only just shows. */
+.house-grid {
+  opacity: 0.45;
+}
+
+/* Product grid lined up with the header grid's lines (see ProductGrid). */
+.grid-continue-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0.75px;
+  background: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+.products-on-grid {
+  display: grid;
+  padding-left: 2.35%;
+  padding-right: 2.62%;
+  grid-template-columns: 47.43fr 47.6fr;
+  row-gap: 3rem;
+}
+@media (min-width: 768px) {
+  .products-on-grid {
+    grid-template-columns: 23.9fr 23.53fr 23.6fr 24fr;
+    row-gap: 4rem;
+  }
+}
