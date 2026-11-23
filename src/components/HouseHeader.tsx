@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import houseSvg from "@/assets/house3/house.svg?raw";
 import gridSvg from "@/assets/house3/grid.svg?raw";
 import gateSvg from "@/assets/house3/gate.svg?raw";
@@ -83,8 +83,7 @@ const pctX = (v: number) => `${(v / HOUSE_W) * 100}%`;
 const pctY = (v: number) => `${((v - CROP_TOP) / HEADER_H) * 100}%`;
 const pctH = (v: number) => `${(v / HEADER_H) * 100}%`;
 
-export function HouseHeader() {
-  const { pathname } = useLocation();
+export function HouseHeader({ pathname }: { pathname: string }) {
   const navigate = useNavigate();
   const { totalQuantity, openCart } = useCart();
 

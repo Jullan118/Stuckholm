@@ -1,4 +1,4 @@
-import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, HashRouter, Routes, Route, Navigate, useLocation, type Location } from "react-router-dom";
 
 // Vercel (stuckholm.se) uses normal URLs. The Shopify theme build sets
 // VITE_USE_HASH_ROUTER, because Shopify can only serve the root page.
@@ -21,16 +21,34 @@ import { Cookies } from "@/pages/Cookies";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
 import { Consume } from "@/pages/Consume";
+import { ProductPanel } from "@/components/ProductPanel";
 
 function App() {
   return (
     <Router>
       <CartProvider>
-      <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative isolate">
-        <ScrollToTop />
-        <SiteHeader />
+        <Shell />
+      </CartProvider>
+    </Router>
+  );
+}
 
-        <Routes>
+// A product opened from a product list carries the list's location along
+// (state.background). Then the list stays rendered underneath and the
+// product opens as a panel on top (ProductPanel). A product opened straight
+// from a link has no background and shows as a full page.
+function Shell() {
+  const location = useLocation();
+  const background = (location.state as { background?: Location } | null)?.background;
+  const shown = background ?? location;
+
+  return (
+    <>
+      <main className="min-h-screen w-full bg-[#ffffff] flex flex-col items-center relative isolate">
+        <ScrollToTop pathname={shown.pathname} />
+        <SiteHeader pathname={shown.pathname} />
+
+        <Routes location={shown}>
           <Route path="/" element={<Home />} />
           <Route path="/consume" element={<Navigate to="/collections/all" replace />} />
           <Route path="/collections/:handle" element={<Consume />} />
@@ -63,9 +81,16 @@ function App() {
 
         <SiteFooter />
       </main>
+
+      {background && (
+        <Routes>
+          <Route path="/in-stock/:slug" element={<ProductPanel />} />
+          <Route path="/trash/:slug" element={<ProductPanel />} />
+        </Routes>
+      )}
+
       <CartDrawer />
-      </CartProvider>
-    </Router>
+    </>
   );
 }
 
