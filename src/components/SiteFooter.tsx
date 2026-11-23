@@ -22,9 +22,9 @@ function stockholmYear() {
 }
 
 // The info links are in the body font, Cormorant Garamond, in light grey (RGB 204, 204, 204).
-// Fits the two lines of links to the date: the top of the "T" in "Terms"
-// lines up with the top of the clock's digits, and the bottom of the "p" in
-// "Shipping" with the bottom of the digits. Measured from the real fonts in
+// Fits the two lines of links to the date: the tops of the first-line words
+// (Shipping, Terms, Insta) line up with the top of the clock's digits, and
+// the bottom of the "y" in "Privacy" with the bottom of the digits. Measured from the real fonts in
 // the browser (after they have loaded), and again when the window resizes.
 const LINK_LINE_HEIGHT = 0.95; // line spacing of the links, in their own font size
 
@@ -54,8 +54,8 @@ function useFitLinksToDate(
 
       // Links, measured at 100 px and scaled.
       ctx.font = `${linkWeight} 100px ${linkFamily}`;
-      const top = ctx.measureText("Terms & Privacy");
-      const bottom = ctx.measureText("Shipping & Returns");
+      const top = ctx.measureText("Shipping Terms Insta");
+      const bottom = ctx.measureText("Returns Privacy Contact");
       const cap = top.actualBoundingBoxAscent / 100;
       const desc = bottom.actualBoundingBoxDescent / 100;
       const fAsc = top.fontBoundingBoxAscent / 100;
@@ -126,12 +126,16 @@ export function SiteFooter() {
         </span>
       </p>
 
-      {/* Links in two columns. Size and position are set by useFitLinksToDate
+      {/* Links in three columns. Size and position are set by useFitLinksToDate
           so the two lines span exactly the height of the clock's digits. */}
       <div ref={linksRef} className="flex gap-x-[2.5em] footer-link-half leading-none">
         <div className="flex flex-col">
-          <Link to="/terms-privacy" className={linkClass}>Terms &amp; Privacy</Link>
-          <Link to="/shipping-returns" className={linkClass}>Shipping &amp; Returns</Link>
+          <Link to="/shipping" className={linkClass}>Shipping</Link>
+          <Link to="/returns" className={linkClass}>Returns</Link>
+        </div>
+        <div className="flex flex-col">
+          <Link to="/terms" className={linkClass}>Terms</Link>
+          <Link to="/privacy" className={linkClass}>Privacy</Link>
         </div>
         <div className="flex flex-col">
           <a

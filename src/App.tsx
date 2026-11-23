@@ -14,8 +14,11 @@ import { InStockProduct } from "@/pages/InStockProduct";
 import { About } from "@/pages/About";
 import { Login } from "@/pages/Login";
 import { Contact } from "@/pages/Contact";
-import { ShippingReturns } from "@/pages/ShippingReturns";
-import { TermsPrivacy } from "@/pages/TermsPrivacy";
+import { Shipping } from "@/pages/Shipping";
+import { Refund } from "@/pages/Refund";
+import { Terms } from "@/pages/Terms";
+import { Privacy } from "@/pages/Privacy";
+import { Cookies } from "@/pages/Cookies";
 import { Trash } from "@/pages/Trash";
 import { TrashProduct } from "@/pages/TrashProduct";
 import { Consume } from "@/pages/Consume";
@@ -49,15 +52,24 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/shipping-returns" element={<ShippingReturns />} />
-          <Route path="/terms-privacy" element={<TermsPrivacy />} />
-          {/* Old addresses of the pages that were merged. */}
-          <Route path="/shipping" element={<Navigate to="/shipping-returns" replace />} />
-          <Route path="/refund" element={<Navigate to="/shipping-returns" replace />} />
-          <Route path="/returns" element={<Navigate to="/shipping-returns" replace />} />
-          <Route path="/terms" element={<Navigate to="/terms-privacy" replace />} />
-          <Route path="/privacy" element={<Navigate to="/terms-privacy" replace />} />
-          <Route path="/cookies" element={<Navigate to="/terms-privacy" replace />} />
+          {/* Info pages, one per footer link. Cookie information sits under
+              Privacy (no separate cookies page). Old addresses redirect. */}
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/returns" element={<Refund />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route
+            path="/privacy"
+            element={
+              <>
+                <Privacy />
+                <Cookies />
+              </>
+            }
+          />
+          <Route path="/shipping-returns" element={<Navigate to="/shipping" replace />} />
+          <Route path="/refund" element={<Navigate to="/returns" replace />} />
+          <Route path="/terms-privacy" element={<Navigate to="/terms" replace />} />
+          <Route path="/cookies" element={<Navigate to="/privacy" replace />} />
         </Routes>
 
         <SiteFooter />
