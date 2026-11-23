@@ -107,7 +107,7 @@ export function Home() {
       </div>
 
       <section className="w-full px-4 sm:px-8 py-16 font-instrument text-black">
-        <p className="mx-auto max-w-3xl text-xs sm:text-base leading-relaxed">
+        <p className="mx-auto max-w-3xl text-base sm:text-xl leading-relaxed">
           {QUOTE_BEFORE}
           <GlitchWord />
           {QUOTE_AFTER}
