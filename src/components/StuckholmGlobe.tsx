@@ -178,6 +178,26 @@ export function createBlobFromModel(scene: THREE.Object3D, fillColor: string = G
 
 type DragState = { dragging: boolean; deltaX: number; deltaY: number };
 
+// Shared between the 3D scene and the custom cursor drawn on top of it.
+// The scene writes where the globe is on screen and whether the mouse is over
+// it; the cursor reads that every frame.
+type InteractState = {
+  // Mouse position in the canvas, -1..1 (null when the mouse is outside).
+  pointer: THREE.Vector2 | null;
+  // Globe centre and radius on screen, in pixels from the canvas top left.
+  globeX: number;
+  globeY: number;
+  globeR: number;
+  // True while the mouse is over the globe (and the globe is still visible).
+  hovering: boolean;
+  // False once the globe has faded out on scroll.
+  active: boolean;
+};
+
+// How much of the globe's outline counts as "over the globe" (1 = its full
+// bounding circle; a bit less, since the blob is not perfectly round).
+const HOVER_RADIUS = 0.85;
+
 // Sideways drag spins the globe around its vertical axis (no limit). Vertical
 // drag tilts it, but never past this angle, so it can't end up upside down.
 const PITCH_LIMIT = 0.9; // radians, about 50 degrees
@@ -195,9 +215,11 @@ const DRAG_SPEED = 0.0032; // radians per pixel of mouse travel
 function DriftingGlobe({
   scrollProgress,
   dragRef,
+  interactRef,
 }: {
   scrollProgress: number;
   dragRef: React.MutableRefObject<DragState>;
+  interactRef: React.MutableRefObject<InteractState>;
 }) {
   const groupRef = React.useRef<THREE.Group>(null);
   const ringRef = React.useRef<THREE.Group>(null);
@@ -223,6 +245,22 @@ function DriftingGlobe({
     });
     return list;
   }, [blob]);
+
+  // The globe's bounding sphere in its own space, measured once. Used for the
+  // hover check (a circle on screen is cheap and forgiving, unlike testing
+  // every triangle of the model).
+  const localSphere = React.useMemo(() => {
+    // Measured in world space, then moved back into the blob's own space so
+    // its own scale isn't counted twice later.
+    blob.updateMatrixWorld(true);
+    const sphere = new THREE.Sphere();
+    new THREE.Box3().setFromObject(blob).getBoundingSphere(sphere);
+    return sphere.applyMatrix4(blob.matrixWorld.clone().invert());
+  }, [blob]);
+  const tmp = React.useMemo(
+    () => ({ centre: new THREE.Vector3(), edge: new THREE.Vector3(), scale: new THREE.Vector3(), right: new THREE.Vector3() }),
+    []
+  );
 
   useFrame((state, delta) => {
     const group = groupRef.current;
@@ -258,6 +296,29 @@ function DriftingGlobe({
 
     // The letter ring has no spin of its own: it turns with the globe, in the
     // same direction and speed, and follows drag too.
+
+    // Where the globe is on screen, and whether the mouse is over it.
+    const it = interactRef.current;
+    const { camera, size } = state;
+    blob.updateWorldMatrix(true, false);
+    tmp.centre.copy(localSphere.center).applyMatrix4(blob.matrixWorld);
+    blob.getWorldScale(tmp.scale);
+    const worldR = localSphere.radius * tmp.scale.x;
+    tmp.right.setFromMatrixColumn(camera.matrixWorld, 0);
+    tmp.edge.copy(tmp.centre).addScaledVector(tmp.right, worldR).project(camera);
+    tmp.centre.project(camera);
+    it.globeX = ((tmp.centre.x + 1) / 2) * size.width;
+    it.globeY = ((1 - tmp.centre.y) / 2) * size.height;
+    const edgeX = ((tmp.edge.x + 1) / 2) * size.width;
+    it.globeR = Math.abs(edgeX - it.globeX);
+    it.active = fade > 0.4;
+    if (it.pointer && it.active) {
+      const px = ((it.pointer.x + 1) / 2) * size.width;
+      const py = ((1 - it.pointer.y) / 2) * size.height;
+      it.hovering = Math.hypot(px - it.globeX, py - it.globeY) < it.globeR * HOVER_RADIUS;
+    } else {
+      it.hovering = false;
+    }
   });
 
   // rotationIntensity 0 stops Float's small wobble, which tilted the globe
@@ -598,20 +659,48 @@ function SkyField({ progress }: { progress: number }) {
 export function StuckholmGlobe({
   scrollProgress = 0,
   backgroundOnly = false,
+  onEnter,
 }: {
   scrollProgress?: number;
   // Only the sky, stars and line grid, without the globe. Used as the faint
   // background on the other pages (see SpaceBackdrop).
   backgroundOnly?: boolean;
+  // Called when the visitor clicks (or taps) the globe. When set, the mouse
+  // becomes an arrow pointing at the globe out in space, and turns into
+  // "Enter" over the globe.
+  onEnter?: () => void;
 }) {
   const dragRef = React.useRef<DragState>({
     dragging: false,
     deltaX: 0,
     deltaY: 0,
   });
+  const interactRef = React.useRef<InteractState>({
+    pointer: null,
+    globeX: 0,
+    globeY: 0,
+    globeR: 0,
+    hovering: false,
+    active: false,
+  });
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  // Where the press started, to tell a click from a drag.
+  const downRef = React.useRef<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = React.useState(false);
+  const interactive = !!onEnter && !backgroundOnly;
+
+  const setPointer = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    const it = interactRef.current;
+    if (it.pointer) it.pointer.set(x, y);
+    else it.pointer = new THREE.Vector2(x, y);
+  };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    setPointer(e);
+    downRef.current = { x: e.clientX, y: e.clientY };
     dragRef.current.dragging = true;
     dragRef.current.deltaX = 0;
     dragRef.current.deltaY = 0;
@@ -620,6 +709,7 @@ export function StuckholmGlobe({
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    setPointer(e);
     if (!dragRef.current.dragging) return;
     dragRef.current.deltaX += e.movementX;
     dragRef.current.deltaY += e.movementY;
@@ -633,21 +723,51 @@ export function StuckholmGlobe({
     }
   };
 
+  // A press and release on the globe without moving more than a few pixels
+  // counts as a click: go in to the shop. A longer move is a drag (rotate).
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const down = downRef.current;
+    downRef.current = null;
+    endDrag(e);
+    if (!interactive || !down) return;
+    const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+    if (moved < 6) {
+      // Check the globe at the release point (taps have no hover first).
+      setPointer(e);
+      const it = interactRef.current;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      if (it.active && Math.hypot(px - it.globeX, py - it.globeY) < it.globeR * HOVER_RADIUS) {
+        onEnter?.();
+      }
+    }
+  };
+
+  const handlePointerLeave = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "mouse") interactRef.current.pointer = null;
+    endDrag(e);
+  };
+
   return (
     <div
-      className="w-full h-full stuck-glitch"
+      ref={containerRef}
+      className="relative w-full h-full stuck-glitch"
       style={{
-        cursor: isDragging ? "grabbing" : "grab",
+        cursor: interactive ? undefined : isDragging ? "grabbing" : "grab",
         // "pan-y" keeps vertical swipes for page scrolling on touch screens,
         // while horizontal swipes still drive the globe.
         touchAction: "pan-y",
       }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
-      onPointerUp={endDrag}
-      onPointerLeave={endDrag}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
       onPointerCancel={endDrag}
     >
+      {interactive && (
+        <GlobeCursor containerRef={containerRef} interactRef={interactRef} />
+      )}
       {/* No tone mapping: it would grey out the pure white and darken the ink. */}
       <Canvas
         dpr={[1, 1.5]}
@@ -660,7 +780,7 @@ export function StuckholmGlobe({
         <SkyField progress={scrollProgress} />
         <FitCamera />
         {!backgroundOnly && (
-          <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} />
+          <DriftingGlobe scrollProgress={scrollProgress} dragRef={dragRef} interactRef={interactRef} />
         )}
         {/* Linjenätet under globen. Tonas bort när bakgrunden blir vit. */}
         <GravityGrid
@@ -678,6 +798,91 @@ export function StuckholmGlobe({
           opacity={0.45 * (1 - scrollProgress)}
         />
       </Canvas>
+    </div>
+  );
+}
+
+// The mouse on the home page. Out in space it is an arrow that always points
+// at the globe; over the globe it turns into the word "Enter". It is drawn
+// as a normal page element following the mouse (the real cursor is hidden
+// while it shows). On touch screens nothing is drawn: tapping the globe
+// enters directly.
+function GlobeCursor({
+  containerRef,
+  interactRef,
+}: {
+  containerRef: React.RefObject<HTMLDivElement>;
+  interactRef: React.MutableRefObject<InteractState>;
+}) {
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  const arrowRef = React.useRef<HTMLDivElement>(null);
+  const enterRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    let frame = 0;
+    let lastHover: boolean | null = null;
+    let lastVisible: boolean | null = null;
+    const tick = () => {
+      frame = requestAnimationFrame(tick);
+      const root = rootRef.current;
+      const container = containerRef.current;
+      const arrow = arrowRef.current;
+      const enter = enterRef.current;
+      if (!root || !container || !arrow || !enter) return;
+      const it = interactRef.current;
+      const visible = !!it.pointer && it.active;
+      if (visible !== lastVisible) {
+        lastVisible = visible;
+        root.style.opacity = visible ? "1" : "0";
+        container.style.cursor = visible ? "none" : "auto";
+      }
+      if (!it.pointer) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      const x = ((it.pointer.x + 1) / 2) * w;
+      const y = ((1 - it.pointer.y) / 2) * h;
+      root.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      const angle = Math.atan2(it.globeY - y, it.globeX - x);
+      arrow.style.transform = `translate(-50%, -50%) rotate(${angle}rad)`;
+      if (it.hovering !== lastHover) {
+        lastHover = it.hovering;
+        arrow.style.opacity = it.hovering ? "0" : "1";
+        enter.style.opacity = it.hovering ? "1" : "0";
+        enter.style.transform = `translate(-50%, -50%) scale(${it.hovering ? 1 : 0.85})`;
+      }
+    };
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      if (containerRef.current) containerRef.current.style.cursor = "";
+    };
+  }, [containerRef, interactRef]);
+
+  return (
+    <div
+      ref={rootRef}
+      aria-hidden
+      className="pointer-events-none absolute top-0 left-0 z-10 text-white transition-opacity duration-200"
+      style={{ opacity: 0 }}
+    >
+      {/* Arrow pointing right; rotated each frame to aim at the globe. */}
+      <div
+        ref={arrowRef}
+        className="absolute top-0 left-0 transition-opacity duration-200"
+        style={{ transform: "translate(-50%, -50%)" }}
+      >
+        <svg width="34" height="18" viewBox="0 0 34 18" fill="none">
+          <path d="M1 9 H31 M23 2 L31 9 L23 16" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      {/* "Enter", shown over the globe. */}
+      <div
+        ref={enterRef}
+        className="absolute top-0 left-0 whitespace-nowrap text-xl sm:text-2xl transition-[opacity,transform] duration-200"
+        style={{ opacity: 0, transform: "translate(-50%, -50%) scale(0.85)" }}
+      >
+        Enter
+      </div>
     </div>
   );
 }

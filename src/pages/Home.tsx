@@ -1,5 +1,7 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { StuckholmGlobe } from "@/components/StuckholmGlobe";
+import { CONSUME_HANDLE } from "@/lib/categories";
 
 // How much extra scrolling (in viewport-heights) it takes for the sky
 // behind the globe to fully fade from the starry night down to white. The
@@ -14,6 +16,7 @@ const ABOUT_TEXT =
 
 export function Home() {
   const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
@@ -54,7 +57,12 @@ export function Home() {
         style={{ height: `${100 + SPIN_AWAY_VH}vh` }}
       >
         <div className="sticky top-0 left-0 w-full h-[100svh] overflow-hidden bg-[#04050c]">
-          <StuckholmGlobe scrollProgress={progress} />
+          {/* Clicking the globe is the way in to the shop (replaces the old
+              "Enter" link in the top left corner). */}
+          <StuckholmGlobe
+            scrollProgress={progress}
+            onEnter={() => navigate(`/collections/${CONSUME_HANDLE}`)}
+          />
         </div>
       </div>
 

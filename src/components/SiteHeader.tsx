@@ -1,11 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { CATEGORIES, CONSUME_HANDLE } from "@/lib/categories";
+import { CATEGORIES } from "@/lib/categories";
 import { useCart } from "@/lib/cart";
 import { CartCorner } from "@/components/CartCorner";
 
 // The header.
-// Home page: only the "Enter" link (top left, the way in to the shop) and the
-// cart icon (top right), white over the dark sky.
+// Home page: only the cart icon (top right), white over the dark sky. The way
+// in to the shop is clicking the globe (see StuckholmGlobe, "Enter" on hover).
 // Every other page: the wordmark "Stuck in Stuckholm" top left (links home)
 // and the menu top right: the shop categories, then "cart". Clicking a
 // category opens its page and shows its sub-categories under it; they stay
@@ -18,12 +18,6 @@ export function SiteHeader() {
   if (pathname === "/") {
     return (
       <>
-        <Link
-          to={`/collections/${CONSUME_HANDLE}`}
-          className="fixed top-6 left-4 sm:left-8 z-20 inline-block text-base sm:text-xl transition-opacity duration-200 text-white home-ink hover:opacity-60"
-        >
-          Enter
-        </Link>
         <CartCorner />
       </>
     );
