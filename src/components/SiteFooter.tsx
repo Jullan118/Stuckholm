@@ -22,12 +22,12 @@ function stockholmYear() {
 }
 
 // The info links are in the body font, Cormorant Garamond, in solid black.
-const linkClass = "font-cormorant hover:opacity-60 transition-opacity";
+const linkClass = "font-cormorant font-semibold hover:opacity-60 transition-opacity";
 
 // Site-wide footer, at the bottom of every page (in normal document flow).
 // Left: the live date and time in Stockholm. Middle: the info links.
-// Right: the year. Date and year in the blackletter display font; the links
-// in Cormorant Garamond.
+// Right: "©" and the year. Date and year in the outlined blackletter display
+// font; the links small, in Cormorant Garamond semibold.
 export function SiteFooter() {
   const [now, setNow] = React.useState(stockholmNow);
 
@@ -50,25 +50,26 @@ export function SiteFooter() {
         {now.date} <span className="ml-[0.35em] tabular-nums">{now.time}</span>
       </p>
 
-      <div className="flex gap-x-10 sm:gap-x-16 footer-link-size leading-tight">
+      {/* Small links, two columns. */}
+      <div className="flex gap-x-16 sm:gap-x-20 text-[13px] sm:text-sm leading-tight lg:self-center">
         <div className="flex flex-col">
-          <Link to="/shipping-returns" className={linkClass}>shipping &amp; returns</Link>
-          <Link to="/terms-privacy" className={linkClass}>terms &amp; privacy</Link>
+          <Link to="/terms-privacy" className={linkClass}>Terms &amp; Privacy</Link>
+          <Link to="/shipping-returns" className={linkClass}>Shipping &amp; Returns</Link>
         </div>
         <div className="flex flex-col">
-          <Link to="/contact" className={linkClass}>contact</Link>
           <a
             href="https://www.instagram.com/stuckholm.se/"
             target="_blank"
             rel="noreferrer"
             className={linkClass}
           >
-            insta
+            Insta
           </a>
+          <Link to="/contact" className={linkClass}>Contact</Link>
         </div>
       </div>
 
-      <p className="font-blackletter footer-date-size leading-none lg:text-right">{stockholmYear()}</p>
+      <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap lg:text-right">©{stockholmYear()}</p>
     </footer>
   );
 }
