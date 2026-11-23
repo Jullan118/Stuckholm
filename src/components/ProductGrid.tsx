@@ -30,11 +30,13 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
       ))}
       <div className="products-on-grid">
       {products.map((product) => (
-        <div key={product.id} className="px-[1.2vw] md:px-[1.4vw]">
+        // Generous white margin inside each column, so even a tightly cropped
+        // picture keeps clear of the grid lines.
+        <div key={product.id} className="px-[5vw] md:px-[2.6vw] pt-[5vw] md:pt-[2.4vw]">
           <Link to={product.href} state={{ background: location }}>
             <div className="relative aspect-[4/5] overflow-hidden bg-white">
               {product.image ? (
-                <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                <img src={product.image} alt={product.title} className="w-full h-full object-contain" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-black/60">Image</div>
               )}

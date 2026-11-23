@@ -105,14 +105,38 @@ function CloseButton({ onClick }: { onClick: () => void }) {
 function PanelContent({ product }: { product: ShopProduct }) {
   const images = product.images;
   const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
-  const imageRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
+  const [active, setActive] = React.useState(0);
+  const thumbRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Picking a colour (or size) scrolls to that variant's picture, if it has one.
+  React.useEffect(() => setActive(0), [product.handle]);
+
+  const go = React.useCallback(
+    (i: number) => {
+      if (images.length === 0) return;
+      const next = (i + images.length) % images.length;
+      setActive(next);
+      thumbRefs.current[next]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+    },
+    [images.length]
+  );
+
+  // Arrow keys flip through the pictures (unless the big view is open).
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (lightboxIndex !== null) return;
+      if (e.key === "ArrowRight") go(active + 1);
+      if (e.key === "ArrowLeft") go(active - 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [active, go, lightboxIndex]);
+
+  // Picking a colour (or size) shows that variant's picture, if it has one.
   function showVariantImage(variantId: string | null) {
     if (!variantId) return;
     const url = product.variantImages[variantId];
     const index = url ? images.indexOf(url) : -1;
-    imageRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (index >= 0) go(index);
   }
 
   const meta: [string, string][] = [];
@@ -158,23 +182,67 @@ function PanelContent({ product }: { product: ShopProduct }) {
         </div>
       </div>
 
-      {/* Right: the pictures, one under the other. Click to see larger. */}
-      <div className="w-full md:flex-1 flex flex-col gap-2 md:gap-3 md:py-3 md:pr-3">
+      {/* Right: a carousel. One big picture that always fits on the screen,
+          arrows to flip, and all pictures as small thumbnails underneath.
+          Click the big picture to see it larger. */}
+      <div className="w-full md:flex-1 md:sticky md:top-0 md:h-screen flex flex-col gap-3 px-6 pb-8 md:p-6 md:pl-0 min-w-0">
         {images.length > 0 ? (
-          images.map((src, i) => (
-            <button
-              type="button"
-              key={src + i}
-              ref={(el) => {
-                imageRefs.current[i] = el;
-              }}
-              onClick={() => setLightboxIndex(i)}
-              className="block w-full cursor-zoom-in scroll-mt-3"
-              aria-label={`View image ${i + 1} larger`}
-            >
-              <FadeImage src={src} alt={i === 0 ? product.title : ""} />
-            </button>
-          ))
+          <>
+            <div className="relative flex-1 min-h-0 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => setLightboxIndex(active)}
+                className="h-full w-full flex items-center justify-center cursor-zoom-in"
+                aria-label="View picture larger"
+              >
+                <FadeImage key={images[active]} src={images[active]} alt={product.title} />
+              </button>
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => go(active - 1)}
+                    aria-label="Previous picture"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 px-3 py-6 text-3xl leading-none text-black/40 hover:text-black transition-colors"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => go(active + 1)}
+                    aria-label="Next picture"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 px-3 py-6 text-3xl leading-none text-black/40 hover:text-black transition-colors"
+                  >
+                    ›
+                  </button>
+                </>
+              )}
+            </div>
+
+            {images.length > 1 && (
+              <div className="overflow-x-auto shrink-0 pb-1">
+                <div className="flex gap-2 w-max mx-auto px-1 pt-1">
+                {images.map((src, i) => (
+                  <button
+                    type="button"
+                    key={src + i}
+                    ref={(el) => {
+                      thumbRefs.current[i] = el;
+                    }}
+                    onClick={() => go(i)}
+                    aria-label={`Show picture ${i + 1}`}
+                    aria-current={i === active ? "true" : undefined}
+                    className={`shrink-0 w-14 h-[4.4rem] md:w-16 md:h-20 overflow-hidden transition-opacity ${
+                      i === active ? "opacity-100 outline outline-1 outline-black outline-offset-2" : "opacity-50 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="aspect-[4/5] w-full flex items-center justify-center text-black/50">Image</div>
         )}
@@ -193,7 +261,8 @@ function PanelContent({ product }: { product: ShopProduct }) {
   );
 }
 
-// Pictures fade in once they have loaded, instead of popping in.
+// Pictures fade in once they have loaded (and when switching), instead of
+// popping in. Fits inside its box without cropping.
 function FadeImage({ src, alt }: { src: string; alt: string }) {
   const [loaded, setLoaded] = React.useState(false);
   return (
@@ -204,7 +273,7 @@ function FadeImage({ src, alt }: { src: string; alt: string }) {
       ref={(el) => {
         if (el?.complete && el.naturalWidth > 0 && !loaded) setLoaded(true);
       }}
-      className={`w-full h-auto block transition-opacity duration-700 ease-out ${loaded ? "opacity-100" : "opacity-0"}`}
+      className={`block max-w-full max-h-[70vh] md:max-h-full w-auto h-auto object-contain transition-opacity duration-500 ease-out ${loaded ? "opacity-100" : "opacity-0"}`}
     />
   );
 }
