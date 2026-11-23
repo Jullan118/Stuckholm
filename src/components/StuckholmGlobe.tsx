@@ -985,8 +985,9 @@ function TowerGlobeModel() {
     if (spinRef.current) spinRef.current.rotation.y -= delta * 0.4;
   });
   return (
-    // Lean: about 30 degrees to the right, top tipped slightly back.
-    <group rotation={[GLOBE_BASE_PITCH, 0, -Math.PI / 6]}>
+    // Lean: about 30 degrees to the right, top tipped forward (towards the
+    // viewer), the opposite of the home page globe, which tips back.
+    <group rotation={[-GLOBE_BASE_PITCH, 0, -Math.PI / 6]}>
       <group ref={spinRef}>
         <primitive object={blob} />
         <primitive object={letters} />
