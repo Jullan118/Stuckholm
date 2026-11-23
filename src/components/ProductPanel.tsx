@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AddToCart } from "@/components/AddToCart";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { useShopProduct, type ShopProduct } from "@/lib/shopProducts";
@@ -68,21 +68,23 @@ export function ProductPanel() {
         }`}
         style={{ transitionDuration: `${SLIDE_MS}ms` }}
       >
+        {/* CLOSE in the panel's top-left corner. */}
+        <div className="absolute top-4 left-5 md:top-5 md:left-6 z-10">
+          <CloseButton onClick={close} />
+        </div>
         {state.status === "loading" && (
-          <div className="p-6 md:p-10">
-            <CloseButton onClick={close} />
-            <p className="mt-10 text-black/50 text-sm">Loading…</p>
+          <div className="p-6 md:p-10 pt-20 md:pt-24">
+            <p className="text-black/50 text-sm">Loading…</p>
           </div>
         )}
         {(state.status === "error" || (state.status === "ready" && !state.data)) && (
-          <div className="p-6 md:p-10">
-            <CloseButton onClick={close} />
-            <p className="mt-10 text-black">
+          <div className="p-6 md:p-10 pt-20 md:pt-24">
+            <p className="text-black">
               {state.status === "error" ? "Couldn't load this product." : "Not found."}
             </p>
           </div>
         )}
-        {state.status === "ready" && state.data && <PanelContent product={state.data} onClose={close} />}
+        {state.status === "ready" && state.data && <PanelContent product={state.data} />}
       </div>
     </div>
   );
@@ -100,7 +102,7 @@ function CloseButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-function PanelContent({ product, onClose }: { product: ShopProduct; onClose: () => void }) {
+function PanelContent({ product }: { product: ShopProduct }) {
   const images = product.images;
   const [lightboxIndex, setLightboxIndex] = React.useState<number | null>(null);
   const imageRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
@@ -123,13 +125,11 @@ function PanelContent({ product, onClose }: { product: ShopProduct; onClose: () 
 
   return (
     <div className="flex flex-col md:flex-row min-h-full">
-      {/* Left: close, name, price, add to cart, text. Stays in view while the
+      {/* Left: name, price, text, add to cart. Stays in view while the
           pictures scroll. */}
       <div className="w-full md:w-[38%] lg:w-[32%] shrink-0">
-        <div className="md:sticky md:top-0 p-6 md:p-10 flex flex-col gap-6 text-left">
-          <CloseButton onClick={onClose} />
-
-          <div className="flex flex-col gap-1 pt-4 md:pt-10">
+        <div className="md:sticky md:top-0 p-6 md:p-10 pt-20 md:pt-28 flex flex-col gap-6 text-left">
+          <div className="flex flex-col gap-1">
             <h1 className="text-xl sm:text-2xl leading-snug text-black">{product.title}</h1>
             {product.priceText && (
               <p className="text-xl sm:text-2xl leading-snug text-[rgb(204,204,204)]">{product.priceText}</p>
@@ -155,14 +155,6 @@ function PanelContent({ product, onClose }: { product: ShopProduct; onClose: () 
             </dl>
           )}
 
-          <div className="flex flex-col gap-2 pt-4 text-sm uppercase tracking-[0.08em]">
-            <Link to="/shipping" className="hover:opacity-60 transition-opacity">
-              Shipping
-            </Link>
-            <Link to="/returns" className="hover:opacity-60 transition-opacity">
-              Returns
-            </Link>
-          </div>
         </div>
       </div>
 
