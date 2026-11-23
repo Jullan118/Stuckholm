@@ -234,6 +234,7 @@ html.hero-light .home-ink {
 /* Product grid lined up with the header grid's lines (see ProductGrid). */
 .grid-continue-line {
   position: absolute;
+  z-index: 10;
   top: 0;
   bottom: 0;
   width: 0.75px;
