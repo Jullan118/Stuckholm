@@ -169,6 +169,10 @@ html.hero-light .home-ink {
 .footer-date-size {
   font-size: clamp(26px, 3.6vw, 56px);
 }
+/* Footer links: exactly half of .footer-date-size, so two lines = one date line. */
+.footer-link-half {
+  font-size: clamp(13px, 1.8vw, 28px);
+}
 .footer-link-size {
   font-size: clamp(18px, 1.9vw, 30px);
 }

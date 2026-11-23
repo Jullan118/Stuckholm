@@ -47,11 +47,25 @@ export function SiteFooter() {
     // edge. Narrow screens: the three parts stack.
     <footer className="relative z-10 w-full mt-32 sm:mt-48 px-4 sm:px-8 pb-6 sm:pb-8 flex flex-col gap-y-8 lg:grid lg:grid-cols-[minmax(40%,auto)_1fr_auto] lg:gap-x-12 lg:items-end text-black">
       <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap">
-        {now.date} <span className="ml-[0.35em] tabular-nums">{now.time}</span>
+        {now.date}{" "}
+        <span className="ml-[0.35em]">
+          {/* Each character gets a fixed width, so the clock is always equally
+              wide and nothing next to it moves when the seconds change. */}
+          {now.time.split("").map((ch, i) => (
+            <span
+              key={i}
+              className="inline-block text-center"
+              style={{ width: ch === ":" ? "0.3em" : "0.62em" }}
+            >
+              {ch}
+            </span>
+          ))}
+        </span>
       </p>
 
-      {/* Small links, two columns. */}
-      <div className="flex gap-x-16 sm:gap-x-20 text-[13px] sm:text-sm leading-tight lg:self-center">
+      {/* Links in two columns. Half the date's text size with no extra line
+          spacing, so two lines of links are exactly as tall as the date line. */}
+      <div className="flex gap-x-[2.5em] footer-link-half leading-none">
         <div className="flex flex-col">
           <Link to="/terms-privacy" className={linkClass}>Terms &amp; Privacy</Link>
           <Link to="/shipping-returns" className={linkClass}>Shipping &amp; Returns</Link>
