@@ -23,7 +23,10 @@ import { Consume } from "@/pages/Consume";
 // The faint space background, on every page except home (which has its own).
 function PageBackdrop() {
   const { pathname } = useLocation();
-  return pathname === "/" ? null : <SpaceBackdrop />;
+  // No space background on the home page (it has the real one) or on the
+  // shop pages (product lists and single products), which are plain white.
+  const isProductPage = /^\/(collections|in-stock|trash)(\/|$)/.test(pathname);
+  return pathname === "/" || isProductPage ? null : <SpaceBackdrop />;
 }
 
 function App() {
