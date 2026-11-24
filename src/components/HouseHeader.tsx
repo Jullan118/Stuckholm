@@ -37,14 +37,14 @@ const GRID_H = 600;
 // (HOUSE_GROUND, house units) lies on the floor row at GROUND_ROW (grid units).
 const HOUSE_W = 2080.97;
 const HOUSE_H = 435.65;
-const HOUSE_S = 1.0;
+const HOUSE_S = 1.04;
 const HOUSE_GROUND = 367;
-const GROUND_ROW = 370;
-const HOUSE_X = -65;
+const GROUND_ROW = 389;
+const HOUSE_X = -107;
 const HOUSE_Y = GROUND_ROW - HOUSE_GROUND * HOUSE_S;
 // The header shows the grid from a little above the globe down to the floor's
 // front edge.
-const CROP_TOP = -110;
+const CROP_TOP = -63;
 const HEADER_H = GRID_H - CROP_TOP;
 
 // House units to grid units.
@@ -84,7 +84,7 @@ const CHECKOUT_HIT = { x: 1720, y: 220, w: 205, h: 160 };
 // The globe resting on the left tower's slanted top, in grid units. The box
 // is roomy so the letter ring around the globe is never cut off (its empty
 // top may stick out above the header).
-const GLOBE_BOX = { x: 109, y: -172, size: 387 };
+const GLOBE_BOX = { x: 74, y: -175, size: 402 };
 
 // Loose scatter for sub-categories under a portal: offsets from the portal's
 // centre (x) and from the ground line (y), in grid units, and a slight
