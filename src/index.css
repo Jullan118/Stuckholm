@@ -204,7 +204,32 @@ html.hero-light .home-ink {
   height: 100%;
 }
 .house-sub {
-  font-size: clamp(10px, 1vw, 17px);
+  font-size: clamp(13px, 1.45vw, 25px);
+}
+/* Port 4, under construction: on hover the portal rocks a little and its
+   two banners sway, out of step with each other. */
+.house-construction-arch { transform-origin: 50% 100%; }
+.house-banner1 { transform-origin: 64% 50%; }
+.house-banner2 { transform-origin: 54% 48%; }
+.house-construction:hover .house-construction-arch {
+  animation: construction-rock 1.8s ease-in-out infinite;
+}
+.house-construction:hover .house-banner1 {
+  animation: banner-sway 1.4s ease-in-out infinite;
+}
+.house-construction:hover .house-banner2 {
+  animation: banner-sway 1.4s ease-in-out infinite reverse;
+  animation-delay: -0.5s;
+}
+@keyframes construction-rock {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-1.2deg); }
+  75% { transform: rotate(1.2deg); }
+}
+@keyframes banner-sway {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  30% { transform: rotate(3deg) translateY(-1%); }
+  70% { transform: rotate(-2.5deg) translateY(1%); }
 }
 /* The grid behind the house: hairlines at any screen width, very faint. */
 .house-grid path {

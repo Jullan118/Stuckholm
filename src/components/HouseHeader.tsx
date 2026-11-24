@@ -6,6 +6,9 @@ import gateSvg from "@/assets/house4/gate.svg?raw";
 import apparelSvg from "@/assets/house4/apparel.svg?raw";
 import artworkSvg from "@/assets/house4/artwork.svg?raw";
 import secondhandSvg from "@/assets/house4/secondhand.svg?raw";
+import constructionSvg from "@/assets/house4/construction.svg?raw";
+import banner1Svg from "@/assets/house4/banner1.svg?raw";
+import banner2Svg from "@/assets/house4/banner2.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
@@ -68,6 +71,13 @@ const PORTALS: Portal[] = [
   // covers text and gate, and only the gate is a separate (rattling) piece.
   { key: "checkout", label: "Check out (cart)", svg: gateSvg, x: 1800, y: 220, w: 125, h: 160, cart: true },
 ];
+// Port 4, "under construction" (house units). Not a link; on hover the portal
+// rocks a little and its two banners sway, each on its own.
+const CONSTRUCTION = { x: 1215, y: 222, w: 185, h: 158 };
+// While you are in a category, its portal stays big and the other portals
+// fade to this opacity.
+const OTHER_PORTAL_OPACITY = 0.5;
+
 // Clickable area for Check out (text + gate), house units.
 const CHECKOUT_HIT = { x: 1720, y: 220, w: 205, h: 160 };
 
@@ -80,11 +90,11 @@ const GLOBE_BOX = { x: 109, y: -150, size: 387 };
 // centre (x) and from the ground line (y), in grid units, and a slight
 // tilt. Fixed values, so the scatter looks random but doesn't jump around.
 const SCATTER = [
-  { dx: -85, dy: 26, rot: -7 },
-  { dx: 32, dy: 22, rot: 5 },
-  { dx: -28, dy: 64, rot: 3 },
-  { dx: 95, dy: 58, rot: -4 },
-  { dx: -110, dy: 72, rot: 8 },
+  { dx: -105, dy: 30, rot: -7 },
+  { dx: 45, dy: 26, rot: 5 },
+  { dx: -35, dy: 78, rot: 3 },
+  { dx: 120, dy: 70, rot: -4 },
+  { dx: -140, dy: 88, rot: 8 },
 ];
 
 // The stars from the home page (dots and eight-point sparkles), faint, in the
@@ -227,6 +237,23 @@ export function HouseHeader({ pathname }: { pathname: string }) {
         <TowerGlobe />
       </button>
 
+      {/* Port 4, under construction: rocks and its banners sway on hover. */}
+      <div
+        aria-hidden="true"
+        className="house-construction absolute transition-opacity duration-300"
+        style={{
+          left: pctX(hx(CONSTRUCTION.x)),
+          top: pctY(hy(CONSTRUCTION.y)),
+          width: pctX(CONSTRUCTION.w * HOUSE_S),
+          height: pctH(CONSTRUCTION.h * HOUSE_S),
+          opacity: currentCategory ? OTHER_PORTAL_OPACITY : 1,
+        }}
+      >
+        <Svg markup={constructionSvg} className="house-portal-art house-construction-arch absolute inset-0" />
+        <Svg markup={banner1Svg} className="house-portal-art house-banner1 absolute inset-0" />
+        <Svg markup={banner2Svg} className="house-portal-art house-banner2 absolute inset-0" />
+      </div>
+
       {/* The portals. */}
       {PORTALS.map((p) => {
         const style: React.CSSProperties = {
@@ -264,13 +291,17 @@ export function HouseHeader({ pathname }: { pathname: string }) {
             </button>
           );
         }
+        // In this portal's category: it stays big. In another: it fades.
+        const isCurrent = currentCategory?.handle === p.handle;
+        const faded = !!currentCategory && !isCurrent;
         return (
           <Link
             key={p.key}
             to={`/collections/${p.handle}`}
             aria-label={p.label}
-            className="house-portal absolute block origin-bottom transition-transform duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 outline-none"
-            style={style}
+            aria-current={isCurrent ? "page" : undefined}
+            className={`house-portal absolute block origin-bottom transition-[transform,opacity] duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 hover:!opacity-100 outline-none ${isCurrent ? "scale-150 z-30" : ""}`}
+            style={{ ...style, opacity: faded ? OTHER_PORTAL_OPACITY : 1 }}
           >
             <Svg markup={p.svg} className="house-portal-art" />
           </Link>
