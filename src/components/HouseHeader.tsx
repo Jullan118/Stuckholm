@@ -7,6 +7,7 @@ import apparelSvg from "@/assets/house4/apparel.svg?raw";
 import artworkSvg from "@/assets/house4/artwork.svg?raw";
 import secondhandSvg from "@/assets/house4/secondhand.svg?raw";
 import constructionSvg from "@/assets/house4/construction.svg?raw";
+import construction2Svg from "@/assets/house4/construction2.svg?raw";
 import banner1Svg from "@/assets/house4/banner1.svg?raw";
 import banner2Svg from "@/assets/house4/banner2.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
@@ -71,9 +72,15 @@ const PORTALS: Portal[] = [
   // covers text and gate, and only the gate is a separate (rattling) piece.
   { key: "checkout", label: "Check out (cart)", svg: gateSvg, x: 1800, y: 220, w: 125, h: 160, cart: true },
 ];
-// Port 4, "under construction" (house units). Not a link; on hover the portal
-// rocks a little and its two banners sway, each on its own.
-const CONSTRUCTION = { x: 1215, y: 222, w: 185, h: 158 };
+// Ports 4 and 5, "under construction" (house units). Not links; on hover the
+// portal rocks a little and its two banners sway, each on its own. The
+// banners were drawn on port 4 (box BANNER_W wide from x 1215); port 5 gets
+// the same banners, centred on its arch at bannerX.
+const BANNER_W = 185;
+const CONSTRUCTIONS = [
+  { key: "c4", svg: constructionSvg, x: 1215, y: 222, w: 185, h: 158, bannerX: 1215 },
+  { key: "c5", svg: construction2Svg, x: 1490, y: 222, w: 162, h: 158, bannerX: 1478.5 },
+];
 // While you are in a category, its portal stays big and the other portals
 // fade to this opacity.
 const OTHER_PORTAL_OPACITY = 0.5;
@@ -293,22 +300,32 @@ export function HouseHeader({ pathname }: { pathname: string }) {
         <TowerGlobe />
       </button>
 
-      {/* Port 4, under construction: rocks and its banners sway on hover. */}
-      <div
-        aria-hidden="true"
-        className="house-construction absolute transition-opacity duration-300"
-        style={{
-          left: pctX(hx(CONSTRUCTION.x)),
-          top: pctY(hy(CONSTRUCTION.y)),
-          width: pctX(CONSTRUCTION.w * HOUSE_S),
-          height: pctH(CONSTRUCTION.h * HOUSE_S),
-          opacity: currentCategory ? OTHER_PORTAL_OPACITY : 1,
-        }}
-      >
-        <Svg markup={constructionSvg} className="house-portal-art house-construction-arch absolute inset-0" />
-        <Svg markup={banner1Svg} className="house-portal-art house-banner1 absolute inset-0" />
-        <Svg markup={banner2Svg} className="house-portal-art house-banner2 absolute inset-0" />
-      </div>
+      {/* Ports 4 and 5, under construction: rock and their banners sway on
+          hover. */}
+      {CONSTRUCTIONS.map((c) => {
+        const bannerStyle: React.CSSProperties = {
+          left: `${((c.bannerX - c.x) / c.w) * 100}%`,
+          width: `${(BANNER_W / c.w) * 100}%`,
+        };
+        return (
+          <div
+            key={c.key}
+            aria-hidden="true"
+            className="house-construction absolute transition-opacity duration-300"
+            style={{
+              left: pctX(hx(c.x)),
+              top: pctY(hy(c.y)),
+              width: pctX(c.w * HOUSE_S),
+              height: pctH(c.h * HOUSE_S),
+              opacity: currentCategory ? OTHER_PORTAL_OPACITY : 1,
+            }}
+          >
+            <Svg markup={c.svg} className="house-portal-art house-construction-arch absolute inset-0" />
+            <Svg markup={banner1Svg} className="house-portal-art house-banner1 absolute top-0 h-full" style={bannerStyle} />
+            <Svg markup={banner2Svg} className="house-portal-art house-banner2 absolute top-0 h-full" style={bannerStyle} />
+          </div>
+        );
+      })}
 
       {/* The portals. */}
       {PORTALS.map((p) => {
