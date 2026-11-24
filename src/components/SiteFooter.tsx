@@ -82,7 +82,7 @@ function useFitLinksToDate(
   }, [dateRef, linksRef]);
 }
 
-const linkClass = "font-cormorant font-semibold text-[rgb(180,180,180)] hover:opacity-60 transition-opacity";
+const linkClass = "font-cormorant font-normal text-black hover:opacity-60 transition-opacity";
 
 // Site-wide footer, at the bottom of every page (in normal document flow).
 // Left: the live date and time in Stockholm. Middle: the info links.
