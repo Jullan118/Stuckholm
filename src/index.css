@@ -204,7 +204,7 @@ html.hero-light .home-ink {
   height: 100%;
 }
 .house-sub {
-  font-size: clamp(13px, 1.45vw, 25px);
+  font-size: clamp(16px, 1.8vw, 32px);
 }
 /* Port 4, under construction: on hover the portal rocks a little and its
    two banners sway, out of step with each other. */

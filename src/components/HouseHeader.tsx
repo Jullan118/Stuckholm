@@ -90,11 +90,11 @@ const GLOBE_BOX = { x: 109, y: -172, size: 387 };
 // centre (x) and from the ground line (y), in grid units, and a slight
 // tilt. Fixed values, so the scatter looks random but doesn't jump around.
 const SCATTER = [
-  { dx: -105, dy: 30, rot: -7 },
-  { dx: 45, dy: 26, rot: 5 },
-  { dx: -35, dy: 78, rot: 3 },
-  { dx: 120, dy: 70, rot: -4 },
-  { dx: -140, dy: 88, rot: 8 },
+  { dx: -150, dy: 34, rot: -7 },
+  { dx: 70, dy: 30, rot: 5 },
+  { dx: -50, dy: 100, rot: 3 },
+  { dx: 175, dy: 92, rot: -4 },
+  { dx: -205, dy: 118, rot: 8 },
 ];
 
 // The stars from the home page (dots and eight-point sparkles), faint, in the
@@ -321,7 +321,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               key={child.handle}
               to={`/collections/${child.handle}`}
               aria-current={active ? "page" : undefined}
-              className={`house-sub absolute hidden sm:block whitespace-nowrap blackletter-outline leading-none animate-blur-fade-in hover:opacity-60 transition-opacity ${active ? "underline underline-offset-4" : ""}`}
+              className={`house-sub absolute hidden sm:block whitespace-nowrap font-cormorant text-black leading-none animate-blur-fade-in hover:opacity-60 transition-opacity ${active ? "underline underline-offset-4" : ""}`}
               style={{
                 left: pctX(centre + s.dx),
                 top: pctY(GROUND_ROW + s.dy),
@@ -346,7 +346,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               key={child.handle}
               to={`/collections/${child.handle}`}
               aria-current={active ? "page" : undefined}
-              className={`blackletter-outline text-base leading-none ${active ? "underline underline-offset-4" : ""}`}
+              className={`font-cormorant text-black text-lg leading-none ${active ? "underline underline-offset-4" : ""}`}
               style={{ transform: `rotate(${SCATTER[i % SCATTER.length].rot}deg) translateY(${(i % 2) * 6}px)` }}
             >
               {child.label}
