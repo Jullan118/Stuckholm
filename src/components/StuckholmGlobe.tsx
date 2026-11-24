@@ -985,9 +985,11 @@ function TowerGlobeModel() {
     if (spinRef.current) spinRef.current.rotation.y -= delta * 0.06; // super slow: one turn in about 1 minute 45 s
   });
   return (
-    // Lean: about 30 degrees to the right, top tipped forward (towards the
-    // viewer), the opposite of the home page globe, which tips back.
-    <group rotation={[-GLOBE_BASE_PITCH, 0, -Math.PI / 6]}>
+    // Lean: about 75 degrees to the right, so the cross points right and a
+    // little up, as if the globe had rolled onto the slanted tower top; top
+    // tipped forward (towards the viewer), the opposite of the home page
+    // globe, which tips back.
+    <group rotation={[-GLOBE_BASE_PITCH, 0, -Math.PI * 0.42]}>
       <group ref={spinRef}>
         <primitive object={blob} />
         <primitive object={letters} />

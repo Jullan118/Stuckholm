@@ -41,7 +41,7 @@ const HOUSE_X = -65;
 const HOUSE_Y = GROUND_ROW - HOUSE_GROUND * HOUSE_S;
 // The header shows the grid from a little above the globe down to the floor's
 // front edge.
-const CROP_TOP = -89;
+const CROP_TOP = -110;
 const HEADER_H = GRID_H - CROP_TOP;
 
 // House units to grid units.
@@ -71,9 +71,10 @@ const PORTALS: Portal[] = [
 // Clickable area for Check out (text + gate), house units.
 const CHECKOUT_HIT = { x: 1720, y: 220, w: 205, h: 160 };
 
-// The globe above the left tower, in grid units. The box is roomy so the
-// letter ring around the globe is never cut off.
-const GLOBE_BOX = { x: 161, y: -85, size: 245 };
+// The globe resting on the left tower's slanted top, in grid units. The box
+// is roomy so the letter ring around the globe is never cut off (its empty
+// top may stick out above the header).
+const GLOBE_BOX = { x: 109, y: -150, size: 387 };
 
 // Loose scatter for sub-categories under a portal: offsets from the portal's
 // centre (x) and from the ground line (y), in grid units, and a slight
