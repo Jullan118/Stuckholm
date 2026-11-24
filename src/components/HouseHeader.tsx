@@ -200,8 +200,64 @@ export function HouseHeader({ pathname }: { pathname: string }) {
 
   return (
     <>
+    {/* Phones: the whole house would be too small to read, so only the
+        globe and the portals stand in a row on a ground line. */}
+    <nav className="house-header sm:hidden relative z-20 w-full select-none px-3 pt-4">
+      <div className="flex items-end gap-1 border-b-[0.75px] border-black/70 pb-px">
+        <button
+          type="button"
+          aria-label="Stuck in Stuckholm, home"
+          onClick={() => navigate("/")}
+          className="relative flex-1 aspect-square cursor-pointer"
+        >
+          <span className="absolute -left-1/4 -right-1/4 bottom-0 aspect-square">
+            <TowerGlobe />
+          </span>
+        </button>
+        {PORTALS.map((p) => {
+          const isCurrent = currentCategory?.handle === p.handle;
+          const faded = !!currentCategory && !isCurrent && !p.cart;
+          const art = (
+            <Svg
+              markup={p.svg}
+              className="house-portal-art block w-full"
+              style={{ aspectRatio: `${p.w} / ${p.h}` }}
+            />
+          );
+          if (p.cart) {
+            return (
+              <button
+                key={p.key}
+                type="button"
+                aria-label={p.label}
+                onClick={openCart}
+                className="house-checkout relative flex-1 flex flex-col items-center outline-none"
+              >
+                <span className="font-cormorant text-sm leading-none mb-1">
+                  cash out{totalQuantity > 0 ? ` (${totalQuantity})` : ""}
+                </span>
+                <span className="house-gate block w-[80%]">{art}</span>
+              </button>
+            );
+          }
+          return (
+            <Link
+              key={p.key}
+              to={`/collections/${p.handle}`}
+              aria-label={p.label}
+              aria-current={isCurrent ? "page" : undefined}
+              className="relative flex-1 block transition-opacity duration-300 outline-none"
+              style={{ opacity: faded ? OTHER_PORTAL_OPACITY : 1 }}
+            >
+              {art}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+
     <header
-      className="house-header relative z-20 w-full select-none"
+      className="house-header hidden sm:block relative z-20 w-full select-none"
       style={{ aspectRatio: `${GRID_W} / ${HEADER_H}` }}
     >
       {/* Faint stars from the home page, in the sky. */}
@@ -338,7 +394,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
     {/* Phones: the house is small, so the sub-categories go in a loose,
         slightly tilted row under it instead. */}
     {subs.length > 0 && (
-      <nav className="sm:hidden relative z-20 w-full flex flex-wrap justify-center gap-x-5 gap-y-2 px-4 pt-1 pb-4">
+      <nav className="sm:hidden relative z-20 w-full flex flex-wrap justify-center gap-x-5 gap-y-2 px-4 pt-3 pb-4">
         {subs.map((child, i) => {
           const active = routeHandle === child.handle;
           return (
