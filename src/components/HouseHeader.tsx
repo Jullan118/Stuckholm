@@ -32,7 +32,7 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 
 // The grid drawing: its width, and its height down to the floor's front edge.
 const GRID_W = 1900.34;
-const GRID_H = 588.5;
+const GRID_H = 600;
 // The house drawing, and where it stands in the grid: its ground line
 // (HOUSE_GROUND, house units) lies on the floor row at GROUND_ROW (grid units).
 const HOUSE_W = 2080.97;
@@ -84,7 +84,7 @@ const CHECKOUT_HIT = { x: 1720, y: 220, w: 205, h: 160 };
 // The globe resting on the left tower's slanted top, in grid units. The box
 // is roomy so the letter ring around the globe is never cut off (its empty
 // top may stick out above the header).
-const GLOBE_BOX = { x: 109, y: -150, size: 387 };
+const GLOBE_BOX = { x: 109, y: -172, size: 387 };
 
 // Loose scatter for sub-categories under a portal: offsets from the portal's
 // centre (x) and from the ground line (y), in grid units, and a slight

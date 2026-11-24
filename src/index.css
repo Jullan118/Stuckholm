@@ -267,12 +267,15 @@ html.hero-light .home-ink {
   display: grid;
   padding-left: 2.35%;
   padding-right: 2.62%;
-  grid-template-columns: 1fr 1fr;
+  /* Column widths follow the column lines in Julia's grid drawing (the
+     header), so the lines run straight on from the floor: 2.35, 50.01 and
+     97.38% (phones), 2.35, 26.42, 50.01, 73.72 and 97.38% (wider). */
+  grid-template-columns: 47.66fr 47.37fr;
   row-gap: 0;
 }
 @media (min-width: 768px) {
   .products-on-grid {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 24.07fr 23.59fr 23.71fr 23.66fr;
     row-gap: 0;
   }
 }
