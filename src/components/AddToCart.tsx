@@ -62,7 +62,7 @@ export function AddToCart({
     <div className="flex flex-col gap-3">
       {!hasOnlyDefaultVariant(product) &&
         product.options.map((option) => (
-          <div key={option.name} className="flex flex-wrap gap-2">
+          <div key={option.name} className="flex gap-2">
             {option.values.map((value) => {
               const available = isOptionValueAvailable(product, selected, option.name, value);
               const picked = selected[option.name] === value;
@@ -77,7 +77,7 @@ export function AddToCart({
                     setSelected((s) => ({ ...s, [option.name]: value }));
                     setError(false);
                   }}
-                  className={`min-w-[3rem] h-12 px-3 border text-base sm:text-lg transition-colors ${
+                  className={`flex-auto min-w-0 h-12 px-2 whitespace-nowrap border text-base sm:text-lg transition-colors ${
                     picked
                       ? "bg-black text-white border-black"
                       : available
