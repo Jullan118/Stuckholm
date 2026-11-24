@@ -198,6 +198,18 @@ html.hero-light .home-ink {
   width: 100%;
   height: auto;
 }
+/* The house's lines stay at least one screen pixel wide at any size, so they
+   read as solid black lines instead of thin grey ones. */
+.house-svg path,
+.house-svg line,
+.house-svg polygon,
+.house-svg polyline,
+.house-portal-art path,
+.house-portal-art line,
+.house-portal-art polygon,
+.house-portal-art polyline {
+  vector-effect: non-scaling-stroke;
+}
 .house-portal-art,
 .house-portal-art svg {
   width: 100%;

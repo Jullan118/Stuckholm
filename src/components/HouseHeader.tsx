@@ -102,7 +102,7 @@ const SCATTER = [
 const HORIZON_Y = 214; // the grid's horizon line, grid units
 const SKY_DOTS = 60;
 const SKY_SPARKLES = 10;
-const SKY_OPACITY = 0.3;
+const SKY_OPACITY = 0.6;
 
 function seeded(seed: number) {
   let v = seed;
