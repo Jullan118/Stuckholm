@@ -36,12 +36,12 @@ const HOUSE_W = 2080.97;
 const HOUSE_H = 435.65;
 const HOUSE_S = 1.0;
 const HOUSE_GROUND = 367;
-const GROUND_ROW = 389;
+const GROUND_ROW = 370;
 const HOUSE_X = -65;
 const HOUSE_Y = GROUND_ROW - HOUSE_GROUND * HOUSE_S;
 // The header shows the grid from a little above the globe down to the floor's
 // front edge.
-const CROP_TOP = -70;
+const CROP_TOP = -89;
 const HEADER_H = GRID_H - CROP_TOP;
 
 // House units to grid units.
@@ -73,7 +73,7 @@ const CHECKOUT_HIT = { x: 1720, y: 220, w: 205, h: 160 };
 
 // The globe above the left tower, in grid units. The box is roomy so the
 // letter ring around the globe is never cut off.
-const GLOBE_BOX = { x: 161, y: -66, size: 245 };
+const GLOBE_BOX = { x: 161, y: -85, size: 245 };
 
 // Loose scatter for sub-categories under a portal: offsets from the portal's
 // centre (x) and from the ground line (y), in grid units, and a slight
@@ -85,6 +85,83 @@ const SCATTER = [
   { dx: 95, dy: 58, rot: -4 },
   { dx: -110, dy: 72, rot: 8 },
 ];
+
+// The stars from the home page (dots and eight-point sparkles), faint, in the
+// sky above the horizon. A seeded scatter, so they are the same on every visit.
+const HORIZON_Y = 214; // the grid's horizon line, grid units
+const SKY_DOTS = 150;
+const SKY_SPARKLES = 26;
+const SKY_OPACITY = 0.3;
+
+function seeded(seed: number) {
+  let v = seed;
+  return () => {
+    v = (v * 1664525 + 1013904223) % 4294967296;
+    return v / 4294967296;
+  };
+}
+
+// Same shape as the home page sparkles: eight tips (long and short in turn),
+// joined by curves pinched towards the centre.
+function sparklePath(size: number, pinch = 0.12) {
+  const tips = Array.from({ length: 8 }, (_, i) => {
+    const a = (i / 8) * Math.PI * 2 + Math.PI / 2;
+    const l = size * (i % 2 === 0 ? 1 : 0.45);
+    return [Math.cos(a) * l, Math.sin(a) * l];
+  });
+  let d = `M${tips[0][0].toFixed(2)},${tips[0][1].toFixed(2)}`;
+  for (let i = 0; i < 8; i++) {
+    const a = tips[i];
+    const b = tips[(i + 1) % 8];
+    const cx = (a[0] + b[0]) * 0.5 * pinch;
+    const cy = (a[1] + b[1]) * 0.5 * pinch;
+    d += `Q${cx.toFixed(2)},${cy.toFixed(2)} ${b[0].toFixed(2)},${b[1].toFixed(2)}`;
+  }
+  return d + "Z";
+}
+
+function HeaderSky() {
+  const { dots, sparkles } = React.useMemo(() => {
+    const rand = seeded(20261124);
+    const top = CROP_TOP + 4;
+    const span = HORIZON_Y - 8 - top;
+    return {
+      dots: Array.from({ length: SKY_DOTS }, () => ({
+        x: rand() * GRID_W,
+        y: top + rand() * span,
+        r: 0.9 + rand() * 0.9,
+      })),
+      sparkles: Array.from({ length: SKY_SPARKLES }, (_, i) => ({
+        x: rand() * GRID_W,
+        y: top + rand() * span,
+        d: sparklePath(i < 16 ? 6 + rand() * 4 : 3.5 + rand() * 2.5),
+      })),
+    };
+  }, []);
+  return (
+    <svg
+      aria-hidden="true"
+      className="house-sky absolute left-0 top-0 w-full pointer-events-none"
+      viewBox={`0 ${CROP_TOP} ${GRID_W} ${HORIZON_Y - CROP_TOP}`}
+      style={{ opacity: SKY_OPACITY }}
+    >
+      {dots.map((s, i) => (
+        <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#191919" />
+      ))}
+      {sparkles.map((s, i) => (
+        <path
+          key={i}
+          d={s.d}
+          transform={`translate(${s.x.toFixed(1)} ${s.y.toFixed(1)})`}
+          fill="none"
+          stroke="#191919"
+          strokeWidth={0.75}
+          vectorEffect="non-scaling-stroke"
+        />
+      ))}
+    </svg>
+  );
+}
 
 function Svg({ markup, className, style }: { markup: string; className?: string; style?: React.CSSProperties }) {
   return <div className={className} style={style} dangerouslySetInnerHTML={{ __html: markup }} />;
@@ -116,6 +193,9 @@ export function HouseHeader({ pathname }: { pathname: string }) {
       className="house-header relative z-20 w-full select-none"
       style={{ aspectRatio: `${GRID_W} / ${HEADER_H}` }}
     >
+      {/* Faint stars from the home page, in the sky. */}
+      <HeaderSky />
+
       {/* The grid: sky with stars, horizon and floor. */}
       <Svg
         markup={gridSvg}
