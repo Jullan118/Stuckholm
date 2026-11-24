@@ -965,6 +965,61 @@ function GlobeCursor({
   );
 }
 
+// Line-art look for the tower globe, to match Julia's drawing of the house:
+// flat grey tones (toon shading in three steps instead of smooth light) and
+// a black contour around every part (each part drawn again, slightly fatter
+// and inside out, in black, so only its outline shows).
+const TOON_STEPS = (() => {
+  const data = new Uint8Array([110, 175, 255]);
+  const tex = new THREE.DataTexture(data, data.length, 1, THREE.RedFormat);
+  tex.minFilter = THREE.NearestFilter;
+  tex.magFilter = THREE.NearestFilter;
+  tex.generateMipmaps = false;
+  tex.needsUpdate = true;
+  return tex;
+})();
+const OUTLINE_WIDTH = 0.04; // world units, along each surface normal
+const TOON_GREY = "#a6a6a6"; // lightest tone; the steps give darker greys
+
+function outlineMaterial(width: number) {
+  // Pushed back in depth, so it never shows through the front of a part,
+  // only around its edges.
+  const m = new THREE.MeshBasicMaterial({
+    color: INK,
+    side: THREE.BackSide,
+    polygonOffset: true,
+    polygonOffsetFactor: 4,
+    polygonOffsetUnits: 16,
+  });
+  m.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      "#include <begin_vertex>",
+      `#include <begin_vertex>\n  transformed += normalize(normal) * ${width.toFixed(5)};`
+    );
+  };
+  return m;
+}
+
+function toonify(root: THREE.Object3D) {
+  root.updateMatrixWorld(true);
+  const meshes: THREE.Mesh[] = [];
+  root.traverse((child) => {
+    const mesh = child as THREE.Mesh;
+    if (mesh.isMesh) meshes.push(mesh);
+  });
+  const toon = new THREE.MeshToonMaterial({ color: TOON_GREY, gradientMap: TOON_STEPS });
+  const scale = new THREE.Vector3();
+  meshes.forEach((mesh) => {
+    mesh.material = toon;
+    // The outline is pushed out in the part's own units, so divide by the
+    // part's scale to get the same width on every part.
+    mesh.getWorldScale(scale);
+    const hull = new THREE.Mesh(mesh.geometry, outlineMaterial(OUTLINE_WIDTH / scale.x));
+    hull.renderOrder = -1;
+    mesh.add(hull);
+  });
+}
+
 // The small globe on the house's left tower (the shop header, see
 // HouseHeader). Same model as the big one on the home page, leaning to the
 // side and slowly spinning, on a transparent background.
@@ -978,6 +1033,7 @@ function TowerGlobeModel() {
       const line = child as THREE.LineSegments;
       if (line.isLineSegments) (line.material as THREE.LineBasicMaterial).color.set(INK);
     });
+    toonify(parts.blob);
     return parts;
   }, [gltf.scene]);
   const spinRef = React.useRef<THREE.Group>(null);
@@ -985,11 +1041,11 @@ function TowerGlobeModel() {
     if (spinRef.current) spinRef.current.rotation.y -= delta * 0.06; // super slow: one turn in about 1 minute 45 s
   });
   return (
-    // Lean: about 75 degrees to the right, so the cross points right and a
-    // little up, as if the globe had rolled onto the slanted tower top; top
+    // Lean: about 60 degrees to the right, so the cross points right and
+    // up, as if the globe had rolled onto the slanted tower top; top
     // tipped forward (towards the viewer), the opposite of the home page
     // globe, which tips back.
-    <group rotation={[-GLOBE_BASE_PITCH, 0, -Math.PI * 0.42]}>
+    <group rotation={[-GLOBE_BASE_PITCH, 0, -Math.PI * 0.42 + Math.PI / 12]}>
       <group ref={spinRef}>
         <primitive object={blob} />
         <primitive object={letters} />
