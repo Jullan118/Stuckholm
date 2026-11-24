@@ -107,9 +107,9 @@ export function SiteFooter() {
   }, []);
 
   return (
-    // Wide screens: date at the left (at least 40% wide), links after it, year at the right
-    // edge. Narrow screens: the three parts stack.
-    <footer className="relative z-10 w-full mt-32 sm:mt-48 px-4 sm:px-8 pb-6 sm:pb-8 flex flex-col gap-y-8 lg:grid lg:grid-cols-[minmax(40%,auto)_1fr_auto] lg:gap-x-12 lg:items-start text-black">
+    // Wide screens: date at the left, the links right after it, year at the
+    // right edge. Narrow screens: the three parts stack.
+    <footer className="relative z-10 w-full mt-32 sm:mt-48 px-4 sm:px-8 pb-6 sm:pb-8 flex flex-col gap-y-8 lg:flex-row lg:gap-x-14 lg:items-start text-black">
       <p ref={dateRef} className="blackletter-outline footer-date-size leading-none whitespace-nowrap">
         {now.date}{" "}
         <span className="ml-[0.35em]">
@@ -129,7 +129,7 @@ export function SiteFooter() {
 
       {/* Links in three columns. Size and position are set by useFitLinksToDate
           so the two lines span exactly the height of the clock's digits. */}
-      <div ref={linksRef} className="flex gap-x-[2.5em] footer-link-half leading-none">
+      <div ref={linksRef} className="flex gap-x-[3em] footer-link-half leading-none">
         <div className="flex flex-col">
           <Link to="/shipping" className={linkClass}>Shipping</Link>
           <Link to="/returns" className={linkClass}>Returns</Link>
@@ -151,7 +151,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap lg:text-right"><span className="text-[0.55em] align-[0.35em] mr-[0.08em]">©</span>{stockholmYear()}</p>
+      <p className="blackletter-outline footer-date-size leading-none whitespace-nowrap lg:ml-auto lg:text-right"><span className="text-[0.55em] align-[0.35em] mr-[0.3em]">©</span>{stockholmYear()}</p>
     </footer>
   );
 }
