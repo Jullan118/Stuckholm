@@ -1,4 +1,5 @@
 import * as React from "react";
+import { DriftingStars } from "@/components/DriftingStars";
 import { useNavigate, useParams } from "react-router-dom";
 import { AddToCart } from "@/components/AddToCart";
 import { ImageLightbox } from "@/components/ImageLightbox";
@@ -69,6 +70,13 @@ export function ProductPanel() {
         style={{ transitionDuration: `${SLIDE_MS}ms` }}
       >
         {/* CLOSE in the panel's top-left corner. */}
+        {/* The home page's stars, faint and slowly drifting; they stay put
+            while the panel scrolls. */}
+        <div aria-hidden="true" className="pointer-events-none sticky top-0 h-0 w-full">
+          <div className="h-[100dvh] w-full">
+            <DriftingStars opacity={0.1} />
+          </div>
+        </div>
         <div className="absolute top-5 left-6 md:left-10 z-10">
           <CloseButton onClick={close} />
         </div>
@@ -148,10 +156,12 @@ function PanelContent({ product }: { product: ShopProduct }) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row min-h-full">
+    <div className="relative flex flex-col md:flex-row min-h-full">
       {/* Left: name, price, text, add to cart. Stays in view while the
           pictures scroll. */}
-      <div className="w-full md:w-[38%] lg:w-[32%] shrink-0">
+      {/* Left column, with a thin line to the pictures, like the grid lines
+          on the product list. */}
+      <div className="relative w-full md:w-[38%] lg:w-[32%] shrink-0 md:border-r-[0.75px] md:border-black/20">
         <div className="md:sticky md:top-0 p-6 md:p-10 pt-20 md:pt-28 flex flex-col gap-6 text-left">
           <div className="flex flex-col gap-1">
             <h1 className="text-base sm:text-lg leading-snug text-black">{product.title}</h1>
@@ -210,7 +220,7 @@ function PanelContent({ product }: { product: ShopProduct }) {
       {/* Right: a carousel. One big picture that always fits on the screen,
           arrows to flip (the thumbnails are in the left column, under Add to
           cart). Click the big picture to see it larger. */}
-      <div className="w-full md:flex-1 md:sticky md:top-0 md:h-screen flex flex-col gap-3 px-6 pb-8 md:p-6 md:pl-0 min-w-0">
+      <div className="relative w-full md:flex-1 md:sticky md:top-0 md:h-screen flex flex-col gap-3 px-6 pb-8 md:p-6 min-w-0">
         {images.length > 0 ? (
           <>
             <div className="relative flex-1 min-h-0 flex items-center justify-center">

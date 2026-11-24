@@ -279,3 +279,20 @@ html.hero-light .home-ink {
     row-gap: 0;
   }
 }
+
+/* Faint stars that drift a little and twinkle (DriftingStars). */
+.star-drift {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-name: star-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes star-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 1; }
+  33% { transform: translate(4px, -3px) scale(0.85); opacity: 0.55; }
+  66% { transform: translate(-3px, 3px) scale(1.1); opacity: 0.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .star-drift { animation: none; }
+}
