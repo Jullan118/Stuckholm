@@ -15,7 +15,7 @@ function Mail() {
 export function Shipping() {
   return (
     <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-6 pb-16 font-manrope text-black text-center text-[14px] leading-snug">
-      <h1 className="text-xs sm:text-sm font-light mb-5 text-center">
+      <h1 className="text-base sm:text-lg font-light mb-5 text-center">
         Shipping
       </h1>
 

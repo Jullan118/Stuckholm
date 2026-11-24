@@ -4,14 +4,14 @@ const EMAIL = "stuck@stuckholm.se";
 // are the same as in the Terms (src/pages/Terms.tsx); keep the two in step.
 export function Contact() {
   return (
-    <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-6 pb-16 text-black text-center text-base sm:text-xl leading-relaxed">
-      <h1 className="uppercase mb-6">Contact</h1>
-      <p>
-        <a href={`mailto:${EMAIL}`} className="underline underline-offset-4 decoration-1 hover:opacity-60 transition-opacity">
+    <div className="relative z-10 w-full max-w-2xl px-4 sm:px-8 pt-6 pb-16 font-manrope text-black text-center text-[14px] leading-snug">
+      <h1 className="text-base sm:text-lg font-light mb-5">Contact</h1>
+      <p className="mb-5">
+        <a href={`mailto:${EMAIL}`} className="underline hover:opacity-70 transition-opacity">
           {EMAIL}
         </a>
       </p>
-      <p className="mt-6">
+      <p>
         Sturm und Drang AB
         <br />
         Org. no. 5592733009

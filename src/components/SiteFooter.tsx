@@ -26,6 +26,7 @@ function stockholmYear() {
 // (Shipping, Terms, Insta) line up with the top of the clock's digits, and
 // the bottom of the "y" in "Privacy" with the bottom of the digits. Measured from the real fonts in
 // the browser (after they have loaded), and again when the window resizes.
+const LINK_SIZE = 18; // px, footer links to the info pages
 const LINK_LINE_HEIGHT = 0.95; // line spacing of the links, in their own font size
 
 function useFitLinksToDate(
@@ -61,8 +62,8 @@ function useFitLinksToDate(
       const fAsc = top.fontBoundingBoxAscent / 100;
       const fDesc = top.fontBoundingBoxDescent / 100;
 
-      // Ink height of the two lines = one line step + cap height + descender.
-      const L = (dInkBottom - dInkTop) / (LINK_LINE_HEIGHT + cap + desc);
+      // Links are a fixed 18 px; they stay aligned to the top of the digits.
+      const L = LINK_SIZE;
       const lineH = LINK_LINE_HEIGHT * L;
       const lBaseline = (lineH - (fAsc + fDesc) * L) / 2 + fAsc * L;
       const lInkTop = lBaseline - cap * L;
