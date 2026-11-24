@@ -74,7 +74,7 @@ export function ProductPanel() {
             while the panel scrolls. */}
         <div aria-hidden="true" className="pointer-events-none sticky top-0 h-0 w-full">
           <div className="h-[100dvh] w-full">
-            <DriftingStars opacity={0.1} />
+            <DriftingStars opacity={0.2} />
           </div>
         </div>
         <div className="absolute top-5 left-6 md:left-10 z-10">
