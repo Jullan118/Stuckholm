@@ -207,9 +207,6 @@ html.hero-light .home-ink {
   font-size: clamp(10px, 1vw, 17px);
 }
 /* The grid behind the house: hairlines at any screen width, very faint. */
-.house-grid {
-  opacity: 0.45;
-}
 .house-grid path {
   vector-effect: non-scaling-stroke;
   stroke-width: 0.75px !important;

@@ -1,40 +1,52 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import houseSvg from "@/assets/house3/house.svg?raw";
-import gridSvg from "@/assets/house3/grid.svg?raw";
-import gateSvg from "@/assets/house3/gate.svg?raw";
-import apparelSvg from "@/assets/house3/apparel.svg?raw";
-import artworkSvg from "@/assets/house3/artwork.svg?raw";
-import secondhandSvg from "@/assets/house3/secondhand.svg?raw";
+import houseSvg from "@/assets/house4/house.svg?raw";
+import gridSvg from "@/assets/house4/grid.svg?raw";
+import gateSvg from "@/assets/house4/gate.svg?raw";
+import apparelSvg from "@/assets/house4/apparel.svg?raw";
+import artworkSvg from "@/assets/house4/artwork.svg?raw";
+import secondhandSvg from "@/assets/house4/secondhand.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
 
-// The shop header (every page except home): Julia's drawing of the house
-// (hussss-25.svg) standing on her perspective grid. The portals in the house
-// are the menu: Apparel, Art work and 2nd hand open their collection and
-// grow to 1.5x on hover; Check out opens the cart, and on hover its gate (the
-// right part) rattles, as if someone were shaking it to get out. When you
-// are inside a category that has sub-categories, they are tossed out in a
-// loose scatter under its portal. The 3D globe on the left tower goes home.
+// The shop header (every page except home): Julia's Artboard 6. Her grid
+// (rutnätet.svg: sky with stars, horizon, perspective floor) fills the
+// width, and her house (HUSET.svg) stands on it, its ground line on one of
+// the floor's rows. The floor's front edge is the bottom of the header, where
+// the product list's column lines carry on. The portals in the house are the
+// menu: Apparel, Art work and 2nd hand open their collection and grow to
+// 1.5x on hover; Check out (the "cash out" text and the gate) opens the cart,
+// and on hover the gate rattles, as if someone were shaking it to get out.
+// When you are inside a category that has sub-categories, they are tossed
+// out in a loose scatter under its portal. The 3D globe on the left tower
+// goes home.
 //
-// The portals and the gate were lifted out of the house drawing as separate
-// pieces (same units), so they can move. Everything is placed in the
-// drawing's own units (its viewBox), so the header scales with the width.
+// Everything is placed in the grid's units (its viewBox), so the header
+// scales with the width. The house is placed in the grid with HOUSE_X/Y and
+// HOUSE_S; the portals and the gate were lifted out of the house drawing as
+// separate pieces (in house units), so they can move.
 
-const HOUSE_W = 2838.93;
-const HOUSE_H = 995.28;
-// The house's ground line.
-const GROUND_Y = 920;
-// The grid drawing, scaled to the house's width, placed so the ground line
-// lies on one of its horizontal lines (702 grid units down).
-const GRID_SCALE = HOUSE_W / 3017.07;
-const GRID_TOP = GROUND_Y - 702 * GRID_SCALE;
-const GRID_BOTTOM = GRID_TOP + 853 * GRID_SCALE;
-// The header shows this band: from a little above the globe down to the
-// bottom edge of the grid.
-const CROP_TOP = 110;
-const HEADER_H = GRID_BOTTOM - CROP_TOP;
+// The grid drawing: its width, and its height down to the floor's front edge.
+const GRID_W = 1900.34;
+const GRID_H = 588.5;
+// The house drawing, and where it stands in the grid: its ground line
+// (HOUSE_GROUND, house units) lies on the floor row at GROUND_ROW (grid units).
+const HOUSE_W = 2080.97;
+const HOUSE_H = 435.65;
+const HOUSE_S = 1.0;
+const HOUSE_GROUND = 367;
+const GROUND_ROW = 389;
+const HOUSE_X = -65;
+const HOUSE_Y = GROUND_ROW - HOUSE_GROUND * HOUSE_S;
+// The header shows the grid from a little above the globe down to the floor's
+// front edge.
+const CROP_TOP = -70;
+const HEADER_H = GRID_H - CROP_TOP;
+
+// House units to grid units.
+const hx = (v: number) => HOUSE_X + v * HOUSE_S;
+const hy = (v: number) => HOUSE_Y + v * HOUSE_S;
 
 type Portal = {
   key: string;
@@ -47,39 +59,39 @@ type Portal = {
   handle?: string; // collection it opens
   cart?: boolean; // opens the cart instead
 };
-// Boxes (drawing units) match the viewBox of each piece.
+// Boxes in house units; they match the viewBox of each piece.
 const PORTALS: Portal[] = [
-  { key: "apparel", label: "Apparel", svg: apparelSvg, x: 622, y: 688, w: 266, h: 260, handle: "apparel" },
-  { key: "artwork", label: "Art work", svg: artworkSvg, x: 982, y: 700, w: 226, h: 232, handle: "artwork" },
-  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 1328, y: 700, w: 230, h: 232, handle: "2ndhand" },
-  // Check out: the text stays in the house; the clickable area covers text
-  // and gate, and only the gate is a separate (rattling) piece.
-  { key: "checkout", label: "Check out (cart)", svg: gateSvg, x: 2478, y: 718, w: 150, h: 250, cart: true },
+  { key: "apparel", label: "Apparel", svg: apparelSvg, x: 425, y: 215, w: 165, h: 165, handle: "apparel" },
+  { key: "artwork", label: "Art work", svg: artworkSvg, x: 705, y: 220, w: 170, h: 160, handle: "artwork" },
+  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 1000, y: 210, w: 165, h: 170, handle: "2ndhand" },
+  // Check out: the "cash out" text stays in the house; the clickable area
+  // covers text and gate, and only the gate is a separate (rattling) piece.
+  { key: "checkout", label: "Check out (cart)", svg: gateSvg, x: 1800, y: 220, w: 125, h: 160, cart: true },
 ];
-// Clickable area for Check out (text + gate).
-const CHECKOUT_HIT = { x: 2360, y: 718, w: 268, h: 250 };
+// Clickable area for Check out (text + gate), house units.
+const CHECKOUT_HIT = { x: 1720, y: 220, w: 205, h: 160 };
 
-// The globe on the left tower.
-// The box is roomy so the letter ring around the globe is never cut off.
-const GLOBE_BOX = { x: 118, y: 60, size: 365 };
+// The globe above the left tower, in grid units. The box is roomy so the
+// letter ring around the globe is never cut off.
+const GLOBE_BOX = { x: 161, y: -66, size: 245 };
 
 // Loose scatter for sub-categories under a portal: offsets from the portal's
-// centre (x) and from the ground line (y), in drawing units, and a slight
+// centre (x) and from the ground line (y), in grid units, and a slight
 // tilt. Fixed values, so the scatter looks random but doesn't jump around.
 const SCATTER = [
-  { dx: -125, dy: 35, rot: -7 },
-  { dx: 45, dy: 30, rot: 5 },
-  { dx: -40, dy: 90, rot: 3 },
-  { dx: 135, dy: 82, rot: -4 },
-  { dx: -160, dy: 100, rot: 8 },
+  { dx: -85, dy: 26, rot: -7 },
+  { dx: 32, dy: 22, rot: 5 },
+  { dx: -28, dy: 64, rot: 3 },
+  { dx: 95, dy: 58, rot: -4 },
+  { dx: -110, dy: 72, rot: 8 },
 ];
 
 function Svg({ markup, className, style }: { markup: string; className?: string; style?: React.CSSProperties }) {
   return <div className={className} style={style} dangerouslySetInnerHTML={{ __html: markup }} />;
 }
 
-const pctX = (v: number) => `${(v / HOUSE_W) * 100}%`;
-// Vertical positions are given in drawing units from the top of the drawing.
+const pctX = (v: number) => `${(v / GRID_W) * 100}%`;
+// Vertical positions are given in grid units from the top of the grid.
 const pctY = (v: number) => `${((v - CROP_TOP) / HEADER_H) * 100}%`;
 const pctH = (v: number) => `${(v / HEADER_H) * 100}%`;
 
@@ -102,20 +114,20 @@ export function HouseHeader({ pathname }: { pathname: string }) {
     <>
     <header
       className="house-header relative z-20 w-full select-none"
-      style={{ aspectRatio: `${HOUSE_W} / ${HEADER_H}` }}
+      style={{ aspectRatio: `${GRID_W} / ${HEADER_H}` }}
     >
-      {/* The grid, faint, behind the house. */}
+      {/* The grid: sky with stars, horizon and floor. */}
       <Svg
         markup={gridSvg}
         className="house-grid absolute left-0 w-full pointer-events-none"
-        style={{ top: pctY(GRID_TOP) }}
+        style={{ top: pctY(0) }}
       />
 
       {/* The house (without the portals and gate, which are drawn on top). */}
       <Svg
         markup={houseSvg}
-        className="house-svg absolute left-0 w-full pointer-events-none"
-        style={{ top: pctY(0) }}
+        className="house-svg absolute pointer-events-none"
+        style={{ left: pctX(hx(0)), top: pctY(hy(0)), width: pctX(HOUSE_W * HOUSE_S) }}
       />
 
       {/* The 3D globe on the tower: click to go home. */}
@@ -137,10 +149,10 @@ export function HouseHeader({ pathname }: { pathname: string }) {
       {/* The portals. */}
       {PORTALS.map((p) => {
         const style: React.CSSProperties = {
-          left: pctX(p.x),
-          top: pctY(p.y),
-          width: pctX(p.w),
-          height: pctH(p.h),
+          left: pctX(hx(p.x)),
+          top: pctY(hy(p.y)),
+          width: pctX(p.w * HOUSE_S),
+          height: pctH(p.h * HOUSE_S),
         };
         if (p.cart) {
           const hit = CHECKOUT_HIT;
@@ -151,7 +163,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               aria-label={p.label}
               onClick={openCart}
               className="house-checkout absolute block outline-none"
-              style={{ left: pctX(hit.x), top: pctY(hit.y), width: pctX(hit.w), height: pctH(hit.h) }}
+              style={{ left: pctX(hx(hit.x)), top: pctY(hy(hit.y)), width: pctX(hit.w * HOUSE_S), height: pctH(hit.h * HOUSE_S) }}
             >
               <Svg
                 markup={p.svg}
@@ -188,7 +200,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
       {PORTALS.map((p) => {
         const cat = CATEGORIES.find((c) => c.handle === p.handle);
         if (!cat?.children || currentCategory?.handle !== cat.handle) return null;
-        const centre = p.x + p.w / 2;
+        const centre = hx(p.x + p.w / 2);
         return cat.children.map((child, i) => {
           const s = SCATTER[i % SCATTER.length];
           const active = routeHandle === child.handle;
@@ -200,7 +212,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               className={`house-sub absolute hidden sm:block whitespace-nowrap blackletter-outline leading-none animate-blur-fade-in hover:opacity-60 transition-opacity ${active ? "underline underline-offset-4" : ""}`}
               style={{
                 left: pctX(centre + s.dx),
-                top: pctY(GROUND_Y + s.dy),
+                top: pctY(GROUND_ROW + s.dy),
                 transform: `translate(-50%, -50%) rotate(${s.rot}deg)`,
               }}
             >
