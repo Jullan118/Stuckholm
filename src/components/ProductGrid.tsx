@@ -39,9 +39,9 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
           key={product.id}
           to={product.href}
           state={{ background: location }}
-          className="group relative block pb-8 sm:pb-12 border-b-[0.75px] border-black/20 outline-none"
+          className="group relative block pb-3 sm:pb-4 border-b-[0.75px] border-black/20 outline-none"
         >
-          <div className="relative aspect-[4/5] overflow-hidden bg-white p-[9%]">
+          <div className="relative aspect-[4/5] overflow-hidden bg-white p-[5%]">
             {product.image ? (
               <img src={product.image} alt={product.title} className="w-full h-full object-contain" />
             ) : (
