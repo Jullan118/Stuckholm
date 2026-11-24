@@ -100,8 +100,8 @@ const SCATTER = [
 // The stars from the home page (dots and eight-point sparkles), faint, in the
 // sky above the horizon. A seeded scatter, so they are the same on every visit.
 const HORIZON_Y = 214; // the grid's horizon line, grid units
-const SKY_DOTS = 150;
-const SKY_SPARKLES = 26;
+const SKY_DOTS = 60;
+const SKY_SPARKLES = 10;
 const SKY_OPACITY = 0.3;
 
 function seeded(seed: number) {
@@ -145,7 +145,7 @@ function HeaderSky() {
       sparkles: Array.from({ length: SKY_SPARKLES }, (_, i) => ({
         x: rand() * GRID_W,
         y: top + rand() * span,
-        d: sparklePath(i < 16 ? 6 + rand() * 4 : 3.5 + rand() * 2.5),
+        d: sparklePath(i < 6 ? 6 + rand() * 4 : 3.5 + rand() * 2.5),
       })),
     };
   }, []);
