@@ -36,12 +36,14 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 const GRID_W = 1890.86;
 const HORIZON_Y = 392;
 const FLOOR_Y = 777;
-// The fold-out strip: two rows of cells (Julia's lines at 777, 833 and 895)
-// with dividers where the floor's lines meet the front edge, carried on at
-// the same spacing (the three product column lines are among them).
+// The fold-out strip: two rows of cells (Julia's lines at 777, 833 and 895).
+// Its dividers are the product list's column lines (66, 489.63, 937.93,
+// 1388.43 and 1836, where the floor's lines meet the front edge) with one
+// more halfway across each column, so every line runs straight on into the
+// product list below.
 const STRIP_ROWS = [777, 833, 895];
 const STRIP_H = STRIP_ROWS[STRIP_ROWS.length - 1] - FLOOR_Y;
-const STRIP_CELLS = [66, 265, 489.6, 720, 937.9, 1163, 1388.4, 1612, 1836];
+const STRIP_CELLS = [66, 277.8, 489.63, 713.78, 937.93, 1163.18, 1388.43, 1612.2, 1836];
 // The house drawing, and where it stands: its ground line (HOUSE_GROUND,
 // house units) on the floor's front row, its tower's left edge at about a
 // quarter of the width.

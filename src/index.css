@@ -290,17 +290,17 @@ html.hero-light .home-ink {
 }
 .products-on-grid {
   display: grid;
-  padding-left: 2.35%;
-  padding-right: 2.62%;
+  padding-left: 3.49%;
+  padding-right: 2.9%;
   /* Column widths follow the column lines in Julia's grid drawing (the
-     header), so the lines run straight on from the floor: 2.35, 49.6 and
-     97.38% (phones), 2.35, 25.89, 49.6, 73.43 and 97.38% (wider). */
-  grid-template-columns: 47.25fr 47.78fr;
+     header), so the lines run straight on from the floor: 3.49, 49.6 and
+     97.1% (phones), 3.49, 25.89, 49.6, 73.43 and 97.1% (wider). */
+  grid-template-columns: 46.11fr 47.5fr;
   row-gap: 0;
 }
 @media (min-width: 768px) {
   .products-on-grid {
-    grid-template-columns: 23.54fr 23.71fr 23.83fr 23.95fr;
+    grid-template-columns: 22.4fr 23.71fr 23.82fr 23.67fr;
     row-gap: 0;
   }
 }
