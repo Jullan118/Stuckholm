@@ -1,52 +1,59 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import houseSvg from "@/assets/house4/house.svg?raw";
-import gridSvg from "@/assets/house4/grid.svg?raw";
-import gateSvg from "@/assets/house4/gate.svg?raw";
-import apparelSvg from "@/assets/house4/apparel.svg?raw";
-import artworkSvg from "@/assets/house4/artwork.svg?raw";
-import secondhandSvg from "@/assets/house4/secondhand.svg?raw";
-import constructionSvg from "@/assets/house4/construction.svg?raw";
-import construction2Svg from "@/assets/house4/construction2.svg?raw";
-import banner1Svg from "@/assets/house4/banner1.svg?raw";
-import banner2Svg from "@/assets/house4/banner2.svg?raw";
+import houseSvg from "@/assets/house5/house.svg?raw";
+import gridSvg from "@/assets/house5/grid.svg?raw";
+import firsthandSvg from "@/assets/house5/firsthand.svg?raw";
+import secondhandSvg from "@/assets/house5/secondhand.svg?raw";
+import artworkSvg from "@/assets/house5/artwork.svg?raw";
+import uc1Svg from "@/assets/house5/uc1.svg?raw";
+import uc2Svg from "@/assets/house5/uc2.svg?raw";
+import debtSvg from "@/assets/house5/debt.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
 
-// The shop header (every page except home): Julia's Artboard 6. Her grid
-// (rutnätet.svg: sky with stars, horizon, perspective floor) fills the
-// width, and her house (HUSET.svg) stands on it, its ground line on one of
-// the floor's rows. The floor's front edge is the bottom of the header, where
-// the product list's column lines carry on. The portals in the house are the
-// menu: Apparel, Art work and 2nd hand open their collection and grow to
-// 1.5x on hover; Check out (the "cash out" text and the gate) opens the cart,
-// and on hover the gate rattles, as if someone were shaking it to get out.
-// When you are inside a category that has sub-categories, they are tossed
-// out in a loose scatter under its portal. The 3D globe on the left tower
-// goes home.
+// The shop header (every page except home), from Julia's sketch of 25 Nov.
+// Her grid (nätet-2.svg: horizon, perspective floor) fills the width, and her
+// house (husetheader.svg) stands far forward on the floor, in the middle,
+// its tall tower reaching up past the horizon. The 3D globe floats in the
+// sky above it and goes home. The portals are the menu: 1st hand, 2nd hand
+// and Art work open their collection and grow to 1.5x on hover; the two
+// "under construction" portals rock on hover; "settle your debt" (with the
+// basket) opens the cart and rattles on hover.
+//
+// When you are in a category with sub-categories, a strip folds out from the
+// floor's front edge towards you: the grid carries on down the front in a
+// row of cells, one sub-category in each. The product list's column lines
+// carry on below it.
 //
 // Everything is placed in the grid's units (its viewBox), so the header
 // scales with the width. The house is placed in the grid with HOUSE_X/Y and
-// HOUSE_S; the portals and the gate were lifted out of the house drawing as
-// separate pieces (in house units), so they can move.
+// HOUSE_S; the portals were lifted out of the house drawing as separate
+// pieces (in house units), so they can move.
 
-// The grid drawing: its width, and its height down to the floor's front edge.
-const GRID_W = 1900.34;
-const GRID_H = 600;
-// The house drawing, and where it stands in the grid: its ground line
-// (HOUSE_GROUND, house units) lies on the floor row at GROUND_ROW (grid units).
-const HOUSE_W = 2080.97;
-const HOUSE_H = 435.65;
-const HOUSE_S = 1.04;
-const HOUSE_GROUND = 367;
-const GROUND_ROW = 389;
-const HOUSE_X = -107;
-const HOUSE_Y = GROUND_ROW - HOUSE_GROUND * HOUSE_S;
-// The header shows the grid from a little above the globe down to the floor's
-// front edge.
-const CROP_TOP = -63;
-const HEADER_H = GRID_H - CROP_TOP;
+// The grid drawing: its width, the horizon, and the floor's front edge
+// (FLOOR_Y), where the fold-out strip starts.
+const GRID_W = 1890.86;
+const HORIZON_Y = 392;
+const FLOOR_Y = 777;
+// The fold-out strip: two rows of cells (Julia's lines at 777, 833 and 895)
+// with dividers where the floor's lines meet the front edge, carried on at
+// the same spacing (the three product column lines are among them).
+const STRIP_ROWS = [777, 833, 895];
+const STRIP_H = STRIP_ROWS[STRIP_ROWS.length - 1] - FLOOR_Y;
+const STRIP_CELLS = [66, 265, 489.6, 720, 937.9, 1163, 1388.4, 1612, 1836];
+// The house drawing, and where it stands: its ground line (HOUSE_GROUND,
+// house units) on the floor's front row, its tower's left edge at about a
+// quarter of the width.
+const HOUSE_W = 2783.78;
+const HOUSE_S = 0.4144;
+const HOUSE_GROUND = 1888;
+const HOUSE_X = 418.5;
+const HOUSE_Y = 765 - HOUSE_GROUND * HOUSE_S;
+// The header shows the grid from just above the tower's crown down to the
+// floor's front edge.
+const CROP_TOP = -20;
+const HEADER_H = FLOOR_Y - CROP_TOP;
 
 // House units to grid units.
 const hx = (v: number) => HOUSE_X + v * HOUSE_S;
@@ -62,51 +69,28 @@ type Portal = {
   h: number;
   handle?: string; // collection it opens
   cart?: boolean; // opens the cart instead
+  construction?: boolean; // not a link; rocks on hover
 };
 // Boxes in house units; they match the viewBox of each piece.
 const PORTALS: Portal[] = [
-  { key: "apparel", label: "Apparel", svg: apparelSvg, x: 425, y: 215, w: 165, h: 165, handle: "apparel" },
-  { key: "artwork", label: "Art work", svg: artworkSvg, x: 705, y: 220, w: 170, h: 160, handle: "artwork" },
-  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 1000, y: 210, w: 165, h: 170, handle: "2ndhand" },
-  // Check out: the "cash out" text stays in the house; the clickable area
-  // covers text and gate, and only the gate is a separate (rattling) piece.
-  { key: "checkout", label: "Check out (cart)", svg: gateSvg, x: 1800, y: 220, w: 125, h: 160, cart: true },
+  { key: "firsthand", label: "1st hand", svg: firsthandSvg, x: 660, y: 1420, w: 280, h: 490, handle: "apparel" },
+  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 1040, y: 1430, w: 250, h: 480, handle: "2ndhand" },
+  { key: "artwork", label: "Art work", svg: artworkSvg, x: 1395, y: 1395, w: 210, h: 515, handle: "artwork" },
+  { key: "uc1", label: "Under construction", svg: uc1Svg, x: 1675, y: 1395, w: 240, h: 520, construction: true },
+  { key: "uc2", label: "Under construction", svg: uc2Svg, x: 1945, y: 1395, w: 250, h: 520, construction: true },
+  { key: "debt", label: "Settle your debt (cart)", svg: debtSvg, x: 2205, y: 1510, w: 250, h: 410, cart: true },
 ];
-// Ports 4 and 5, "under construction" (house units). Not links; on hover the
-// portal rocks a little and its two banners sway, each on its own. The
-// banners were drawn on port 4 (box BANNER_W wide from x 1215); port 5 gets
-// the same banners, centred on its arch at bannerX.
-const BANNER_W = 185;
-const CONSTRUCTIONS = [
-  { key: "c4", svg: constructionSvg, x: 1215, y: 222, w: 185, h: 158, bannerX: 1215 },
-  { key: "c5", svg: construction2Svg, x: 1490, y: 222, w: 162, h: 158, bannerX: 1478.5 },
-];
+
 // While you are in a category, its portal stays big and the other portals
 // fade to this opacity.
 const OTHER_PORTAL_OPACITY = 0.5;
 
-// Clickable area for Check out (text + gate), house units.
-const CHECKOUT_HIT = { x: 1720, y: 220, w: 205, h: 160 };
-
-// The globe resting on the left tower's slanted top, in grid units. The box
-// is roomy so the letter ring around the globe is never cut off (its empty
-// top may stick out above the header).
-const GLOBE_BOX = { x: 74, y: -175, size: 402 };
-
-// Loose scatter for sub-categories under a portal: offsets from the portal's
-// centre (x) and from the ground line (y), in grid units, and a slight
-// tilt. Fixed values, so the scatter looks random but doesn't jump around.
-const SCATTER = [
-  { dx: -150, dy: 34, rot: -7 },
-  { dx: 70, dy: 30, rot: 5 },
-  { dx: -50, dy: 100, rot: 3 },
-  { dx: 175, dy: 92, rot: -4 },
-  { dx: -205, dy: 118, rot: 8 },
-];
+// The globe floating in the sky above the house, in grid units. The box is
+// roomy so the letter ring is never cut off.
+const GLOBE_BOX = { x: 790, y: -85, size: 385 };
 
 // The stars from the home page (dots and eight-point sparkles), faint, in the
 // sky above the horizon. A seeded scatter, so they are the same on every visit.
-const HORIZON_Y = 214; // the grid's horizon line, grid units
 const SKY_DOTS = 60;
 const SKY_SPARKLES = 10;
 const SKY_OPACITY = 0.6;
@@ -204,6 +188,8 @@ export function HouseHeader({ pathname }: { pathname: string }) {
 
   // Sub-categories of the category you are in (if it has any).
   const subs = currentCategory?.children ?? [];
+  const stripOpen = subs.length > 0;
+  const menuPortals = PORTALS.filter((p) => !p.construction);
 
   return (
     <>
@@ -221,7 +207,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
             <TowerGlobe />
           </span>
         </button>
-        {PORTALS.map((p) => {
+        {menuPortals.map((p) => {
           const isCurrent = currentCategory?.handle === p.handle;
           const faded = !!currentCategory && !isCurrent && !p.cart;
           const art = (
@@ -240,10 +226,10 @@ export function HouseHeader({ pathname }: { pathname: string }) {
                 onClick={openCart}
                 className="house-checkout relative flex-1 flex flex-col items-center outline-none"
               >
-                <span className="font-cormorant text-sm leading-none mb-1">
-                  cash out{totalQuantity > 0 ? ` (${totalQuantity})` : ""}
-                </span>
-                <span className="house-gate block w-[80%]">{art}</span>
+                <span className="house-gate block w-full">{art}</span>
+                {totalQuantity > 0 && (
+                  <span className="absolute top-0 right-0 font-cormorant text-xs leading-none">{totalQuantity}</span>
+                )}
               </button>
             );
           }
@@ -263,156 +249,150 @@ export function HouseHeader({ pathname }: { pathname: string }) {
       </div>
     </nav>
 
-    <header
-      className="house-header hidden sm:block relative z-20 w-full select-none"
-      style={{ aspectRatio: `${GRID_W} / ${HEADER_H}` }}
-    >
-      {/* Faint stars from the home page, in the sky. */}
-      <HeaderSky />
+    <header className="house-header hidden sm:block relative z-20 w-full select-none">
+      <div className="relative w-full" style={{ aspectRatio: `${GRID_W} / ${HEADER_H}` }}>
+        {/* Faint stars from the home page, in the sky. */}
+        <HeaderSky />
 
-      {/* The grid: sky with stars, horizon and floor. */}
-      <Svg
-        markup={gridSvg}
-        className="house-grid absolute left-0 w-full pointer-events-none"
-        style={{ top: pctY(0) }}
-      />
+        {/* The grid: horizon and floor (with its own stars). */}
+        <Svg markup={gridSvg} className="house-grid absolute inset-0 pointer-events-none" />
 
-      {/* The house (without the portals and gate, which are drawn on top). */}
-      <Svg
-        markup={houseSvg}
-        className="house-svg absolute pointer-events-none"
-        style={{ left: pctX(hx(0)), top: pctY(hy(0)), width: pctX(HOUSE_W * HOUSE_S) }}
-      />
+        {/* The house (without the portals, which are drawn on top). */}
+        <Svg
+          markup={houseSvg}
+          className="house-svg absolute pointer-events-none"
+          style={{ left: pctX(hx(0)), top: pctY(hy(0)), width: pctX(HOUSE_W * HOUSE_S) }}
+        />
 
-      {/* The 3D globe on the tower: click to go home. */}
-      <button
-        type="button"
-        aria-label="Stuck in Stuckholm, home"
-        onClick={() => navigate("/")}
-        className="absolute cursor-pointer"
-        style={{
-          left: pctX(GLOBE_BOX.x),
-          top: pctY(GLOBE_BOX.y),
-          width: pctX(GLOBE_BOX.size),
-          height: pctH(GLOBE_BOX.size),
-        }}
-      >
-        <TowerGlobe />
-      </button>
+        {/* The 3D globe floating above the house: click to go home. */}
+        <button
+          type="button"
+          aria-label="Stuck in Stuckholm, home"
+          onClick={() => navigate("/")}
+          className="absolute cursor-pointer"
+          style={{
+            left: pctX(GLOBE_BOX.x),
+            top: pctY(GLOBE_BOX.y),
+            width: pctX(GLOBE_BOX.size),
+            height: pctH(GLOBE_BOX.size),
+          }}
+        >
+          <TowerGlobe />
+        </button>
 
-      {/* Ports 4 and 5, under construction: rock and their banners sway on
-          hover. */}
-      {CONSTRUCTIONS.map((c) => {
-        const bannerStyle: React.CSSProperties = {
-          left: `${((c.bannerX - c.x) / c.w) * 100}%`,
-          width: `${(BANNER_W / c.w) * 100}%`,
-        };
-        return (
-          <div
-            key={c.key}
-            aria-hidden="true"
-            className="house-construction absolute transition-opacity duration-300"
-            style={{
-              left: pctX(hx(c.x)),
-              top: pctY(hy(c.y)),
-              width: pctX(c.w * HOUSE_S),
-              height: pctH(c.h * HOUSE_S),
-              opacity: currentCategory ? OTHER_PORTAL_OPACITY : 1,
-            }}
-          >
-            <Svg markup={c.svg} className="house-portal-art house-construction-arch absolute inset-0" />
-            <Svg markup={banner1Svg} className="house-portal-art house-banner1 absolute top-0 h-full" style={bannerStyle} />
-            <Svg markup={banner2Svg} className="house-portal-art house-banner2 absolute top-0 h-full" style={bannerStyle} />
-          </div>
-        );
-      })}
-
-      {/* The portals. */}
-      {PORTALS.map((p) => {
-        const style: React.CSSProperties = {
-          left: pctX(hx(p.x)),
-          top: pctY(hy(p.y)),
-          width: pctX(p.w * HOUSE_S),
-          height: pctH(p.h * HOUSE_S),
-        };
-        if (p.cart) {
-          const hit = CHECKOUT_HIT;
-          return (
-            <button
-              key={p.key}
-              type="button"
-              aria-label={p.label}
-              onClick={openCart}
-              className="house-checkout absolute block outline-none"
-              style={{ left: pctX(hx(hit.x)), top: pctY(hy(hit.y)), width: pctX(hit.w * HOUSE_S), height: pctH(hit.h * HOUSE_S) }}
-            >
-              <Svg
-                markup={p.svg}
-                className="house-portal-art house-gate absolute"
-                style={{
-                  left: `${((p.x - hit.x) / hit.w) * 100}%`,
-                  top: `${((p.y - hit.y) / hit.h) * 100}%`,
-                  width: `${(p.w / hit.w) * 100}%`,
-                  height: `${(p.h / hit.h) * 100}%`,
-                }}
-              />
-              {totalQuantity > 0 && (
-                <span className="absolute top-[18%] right-[8%] text-[10px] sm:text-xs tabular-nums text-black/70">
-                  {totalQuantity}
-                </span>
-              )}
-            </button>
-          );
-        }
-        // In this portal's category: it stays big. In another: it fades.
-        const isCurrent = currentCategory?.handle === p.handle;
-        const faded = !!currentCategory && !isCurrent;
-        return (
-          <Link
-            key={p.key}
-            to={`/collections/${p.handle}`}
-            aria-label={p.label}
-            aria-current={isCurrent ? "page" : undefined}
-            className={`house-portal absolute block origin-bottom transition-[transform,opacity] duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 hover:!opacity-100 outline-none ${isCurrent ? "scale-150 z-30" : ""}`}
-            style={{ ...style, opacity: faded ? OTHER_PORTAL_OPACITY : 1 }}
-          >
-            <Svg markup={p.svg} className="house-portal-art" />
-          </Link>
-        );
-      })}
-
-      {/* Sub-categories, tossed out under the current category's portal. */}
-      {PORTALS.map((p) => {
-        const cat = CATEGORIES.find((c) => c.handle === p.handle);
-        if (!cat?.children || currentCategory?.handle !== cat.handle) return null;
-        const centre = hx(p.x + p.w / 2);
-        return cat.children.map((child, i) => {
-          const s = SCATTER[i % SCATTER.length];
-          const active = routeHandle === child.handle;
+        {/* The portals. */}
+        {PORTALS.map((p) => {
+          const style: React.CSSProperties = {
+            left: pctX(hx(p.x)),
+            top: pctY(hy(p.y)),
+            width: pctX(p.w * HOUSE_S),
+            height: pctH(p.h * HOUSE_S),
+          };
+          if (p.construction) {
+            return (
+              <div
+                key={p.key}
+                aria-hidden="true"
+                className="house-construction absolute transition-opacity duration-300"
+                style={{ ...style, opacity: currentCategory ? OTHER_PORTAL_OPACITY : 1 }}
+              >
+                <Svg markup={p.svg} className="house-portal-art house-construction-arch absolute inset-0" />
+              </div>
+            );
+          }
+          if (p.cart) {
+            return (
+              <button
+                key={p.key}
+                type="button"
+                aria-label={p.label}
+                onClick={openCart}
+                className="house-checkout absolute block outline-none"
+                style={style}
+              >
+                <Svg markup={p.svg} className="house-portal-art house-gate absolute inset-0" />
+                {totalQuantity > 0 && (
+                  <span className="absolute top-[22%] left-1/2 -translate-x-1/2 font-cormorant text-xs sm:text-sm tabular-nums">
+                    {totalQuantity}
+                  </span>
+                )}
+              </button>
+            );
+          }
+          // In this portal's category: it stays big. In another: it fades.
+          const isCurrent = currentCategory?.handle === p.handle;
+          const faded = !!currentCategory && !isCurrent;
           return (
             <Link
-              key={child.handle}
-              to={`/collections/${child.handle}`}
-              aria-current={active ? "page" : undefined}
-              className={`house-sub absolute hidden sm:block whitespace-nowrap font-cormorant text-black leading-none animate-blur-fade-in hover:opacity-60 transition-opacity ${active ? "underline underline-offset-4" : ""}`}
-              style={{
-                left: pctX(centre + s.dx),
-                top: pctY(GROUND_ROW + s.dy),
-                transform: `translate(-50%, -50%) rotate(${s.rot}deg)`,
-              }}
+              key={p.key}
+              to={`/collections/${p.handle}`}
+              aria-label={p.label}
+              aria-current={isCurrent ? "page" : undefined}
+              className={`house-portal absolute block origin-bottom transition-[transform,opacity] duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 hover:!opacity-100 outline-none ${isCurrent ? "scale-150 z-30" : ""}`}
+              style={{ ...style, opacity: faded ? OTHER_PORTAL_OPACITY : 1 }}
             >
-              {child.label}
+              <Svg markup={p.svg} className="house-portal-art" />
             </Link>
           );
-        });
-      })}
+        })}
+      </div>
+
+      {/* The fold-out strip: in a category with sub-categories, the grid
+          folds down from the floor's front edge towards you, in a row of
+          cells, one sub-category in each. */}
+      <div
+        className="relative w-full transition-[padding] duration-500 ease-out"
+        style={{ paddingTop: stripOpen ? `${(STRIP_H / GRID_W) * 100}%` : 0 }}
+      >
+        <div
+          className={`house-strip absolute inset-0 origin-top transition-[transform,opacity] duration-500 ease-out ${stripOpen ? "house-strip-open" : ""}`}
+          aria-hidden={!stripOpen}
+        >
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            viewBox={`0 ${FLOOR_Y} ${GRID_W} ${STRIP_H}`}
+            preserveAspectRatio="none"
+          >
+            <g stroke="#000" strokeOpacity={0.2} strokeWidth={1} vectorEffect="non-scaling-stroke">
+              {STRIP_ROWS.map((y) => (
+                <line key={y} x1={0} x2={GRID_W} y1={y} y2={y} vectorEffect="non-scaling-stroke" />
+              ))}
+              {STRIP_CELLS.map((x) => (
+                <line key={x} x1={x} x2={x} y1={FLOOR_Y} y2={STRIP_ROWS[2]} vectorEffect="non-scaling-stroke" />
+              ))}
+            </g>
+          </svg>
+          {subs.map((child, i) => {
+            const left = STRIP_CELLS[i];
+            const right = STRIP_CELLS[i + 1] ?? GRID_W;
+            if (left === undefined) return null;
+            const active = routeHandle === child.handle;
+            return (
+              <Link
+                key={child.handle}
+                to={`/collections/${child.handle}`}
+                aria-current={active ? "page" : undefined}
+                tabIndex={stripOpen ? 0 : -1}
+                className="house-sub absolute flex items-center justify-center font-cormorant text-black leading-none hover:opacity-60 transition-opacity"
+                style={{
+                  left: pctX(left),
+                  width: pctX(right - left),
+                  top: 0,
+                  height: `${((STRIP_ROWS[1] - FLOOR_Y) / STRIP_H) * 100}%`,
+                }}
+              >
+                <span className={active ? "underline underline-offset-4 decoration-1" : ""}>{child.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </header>
 
-    {/* Phones: the house is small, so the sub-categories go in a loose,
-        slightly tilted row under it instead. */}
+    {/* Phones: the sub-categories in a row under the portals. */}
     {subs.length > 0 && (
       <nav className="sm:hidden relative z-20 w-full flex flex-wrap justify-center gap-x-5 gap-y-2 px-4 pt-3 pb-4">
-        {subs.map((child, i) => {
+        {subs.map((child) => {
           const active = routeHandle === child.handle;
           return (
             <Link
@@ -420,7 +400,6 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               to={`/collections/${child.handle}`}
               aria-current={active ? "page" : undefined}
               className={`font-cormorant text-black text-lg leading-none ${active ? "underline underline-offset-4" : ""}`}
-              style={{ transform: `rotate(${SCATTER[i % SCATTER.length].rot}deg) translateY(${(i % 2) * 6}px)` }}
             >
               {child.label}
             </Link>

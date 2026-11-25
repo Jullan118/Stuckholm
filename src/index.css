@@ -216,7 +216,17 @@ html.hero-light .home-ink {
   height: 100%;
 }
 .house-sub {
-  font-size: clamp(16px, 1.8vw, 32px);
+  font-size: clamp(14px, 1.6vw, 28px);
+}
+/* The fold-out strip under the floor: folded up (edge on, unseen) until a
+   category with sub-categories is open, then it swings down towards you. */
+.house-strip {
+  transform: perspective(900px) rotateX(-90deg);
+  opacity: 0;
+}
+.house-strip.house-strip-open {
+  transform: perspective(900px) rotateX(0deg);
+  opacity: 1;
 }
 /* Port 4, under construction: on hover the portal rocks a little and its
    two banners sway, out of step with each other. */
@@ -280,14 +290,14 @@ html.hero-light .home-ink {
   padding-left: 2.35%;
   padding-right: 2.62%;
   /* Column widths follow the column lines in Julia's grid drawing (the
-     header), so the lines run straight on from the floor: 2.35, 50.01 and
-     97.38% (phones), 2.35, 26.42, 50.01, 73.72 and 97.38% (wider). */
-  grid-template-columns: 47.66fr 47.37fr;
+     header), so the lines run straight on from the floor: 2.35, 49.6 and
+     97.38% (phones), 2.35, 25.89, 49.6, 73.43 and 97.38% (wider). */
+  grid-template-columns: 47.25fr 47.78fr;
   row-gap: 0;
 }
 @media (min-width: 768px) {
   .products-on-grid {
-    grid-template-columns: 24.07fr 23.59fr 23.71fr 23.66fr;
+    grid-template-columns: 23.54fr 23.71fr 23.83fr 23.95fr;
     row-gap: 0;
   }
 }

@@ -958,7 +958,7 @@ function GlobeCursor({
 }
 
 // The tower globe's forward tip (radians), independent of the home globe.
-const TOWER_GLOBE_PITCH = 0.4;
+const TOWER_GLOBE_PITCH = 0.3;
 
 // The small globe on the house's left tower (the shop header, see
 // HouseHeader). Same model as the big one on the home page, leaning to the
@@ -980,10 +980,9 @@ function TowerGlobeModel() {
     if (spinRef.current) spinRef.current.rotation.y -= delta * 0.06; // super slow: one turn in about 1 minute 45 s
   });
   return (
-    // Lean: about 60 degrees to the right, so the cross points right and
-    // up, as if the globe had rolled onto the slanted tower top; top
-    // tipped forward (towards the viewer).
-    <group rotation={[TOWER_GLOBE_PITCH, 0, -Math.PI * 0.42 + Math.PI / 12]}>
+    // Upright, cross on top, floating in the sky above the house; top
+    // tipped a little forward (towards the viewer).
+    <group rotation={[TOWER_GLOBE_PITCH, 0, 0]}>
       <group ref={spinRef}>
         <primitive object={blob} />
         <primitive object={letters} />
