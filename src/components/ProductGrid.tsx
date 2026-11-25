@@ -33,13 +33,16 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
         // Like Acne Studios: the whole cell (grid line to grid line) is one
         // link; the picture sits with a wide white margin inside it, name and
         // price run close to the cell's edges, and on hover the cell gets a
-        // thin black frame. A faint line under each cell separates the rows,
+        // thin black frame. The columns differ a little in width (they follow the
+// header grid's lines), so the pictures differ in height; the name and price
+// sit at the bottom of every cell, so they line up across a row, just above
+// its bottom line. A faint line under each cell separates the rows,
         // like the grid lines between the columns.
         <Link
           key={product.id}
           to={product.href}
           state={{ background: location }}
-          className="group relative block pb-3 sm:pb-4 border-b-[0.75px] border-black/20 outline-none"
+          className="group relative flex flex-col h-full pb-3 sm:pb-4 border-b-[0.75px] border-black/20 outline-none"
         >
           <div className="relative aspect-[4/5] overflow-hidden bg-white p-[5%]">
             {product.image ? (
@@ -55,7 +58,7 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
           </div>
           {/* Name on the left and price on the right, on one line; the price
               in light grey (RGB 204, 204, 204). Colour, if any, under the name. */}
-          <span className="block px-3 sm:px-4 text-base sm:text-xl leading-snug text-black">
+          <span className="block mt-auto px-3 sm:px-4 text-base sm:text-xl leading-snug text-black">
             <span className="flex items-baseline justify-between gap-3">
               <span className="min-w-0">{product.title}</span>
               <span className="shrink-0 whitespace-nowrap text-[rgb(204,204,204)]">{product.priceText}</span>
