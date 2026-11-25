@@ -26,7 +26,15 @@ export const CATEGORIES: Category[] = [
       { label: "Stuck Royale", handle: "stuck-royale" },
     ],
   },
-  { label: "Artwork", handle: "artwork" },
+  {
+    label: "Artwork",
+    handle: "artwork",
+    children: [
+      // "All" is the artwork collection itself.
+      { label: "All", handle: "artwork" },
+      { label: "Wicked problems", handle: "wicked-problems" },
+    ],
+  },
   {
     label: "2ndhand",
     handle: "2ndhand",
