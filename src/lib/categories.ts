@@ -43,6 +43,7 @@ export const CATEGORIES: Category[] = [
       { label: "All", handle: "2ndhand-all" },
       { label: "Accessories", handle: "accessories" },
       { label: "Cashmere Corner", handle: "cashmere-corner" },
+      { label: "Jackets", handle: "jackets" },
     ],
   },
 ];
