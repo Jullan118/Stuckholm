@@ -53,13 +53,15 @@ const STRIP_SHORT: [number, number][] = [
 // middle of each slot between these points.
 const STRIP_SLOTS = [66, 275, 489.63, 720, 937.93, 1163, 1388.43, 1612, 1836];
 // The house drawing, and where it stands: its ground line (HOUSE_GROUND,
-// house units) on the floor's front row, its tower's left edge at about a
+// house units) on the floor's second row from the front (GROUND_ROW), its tower's left edge at about a
 // quarter of the width.
 const HOUSE_W = 1284.75;
 const HOUSE_S = 0.9826;
 const HOUSE_GROUND = 739;
 const HOUSE_X = 296.6;
-const HOUSE_Y = 765 - HOUSE_GROUND * HOUSE_S;
+// The floor row the house stands on (the second row from the front).
+const GROUND_ROW = 717;
+const HOUSE_Y = GROUND_ROW - HOUSE_GROUND * HOUSE_S;
 // The header shows the grid from just above the tower's crown down to the
 // floor's front edge.
 const CROP_TOP = -20;
