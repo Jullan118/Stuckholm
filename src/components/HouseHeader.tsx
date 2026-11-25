@@ -18,7 +18,7 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 // its tall tower reaching up past the horizon. The 3D globe floats in the
 // sky above it and goes home. The portals are the menu: 1st hand, 2nd hand
 // and Art work open their collection and grow to 1.5x on hover; the two
-// "under construction" portals rock on hover; "settle your debt" (with the
+// "under construction" portals grow a little (1.25x) and rock on hover; "settle your debt" (with the
 // basket) opens the cart and rattles on hover.
 //
 // When you are in a category with sub-categories, a strip folds out from the
@@ -80,10 +80,6 @@ const PORTALS: Portal[] = [
   { key: "uc2", label: "Under construction", svg: uc2Svg, x: 1945, y: 1395, w: 250, h: 520, construction: true },
   { key: "debt", label: "Settle your debt (cart)", svg: debtSvg, x: 2205, y: 1510, w: 250, h: 410, cart: true },
 ];
-
-// While you are in a category, its portal stays big and the other portals
-// fade to this opacity.
-const OTHER_PORTAL_OPACITY = 0.5;
 
 // The globe floating in the sky above the house, in grid units. The box is
 // roomy so the letter ring is never cut off.
@@ -209,7 +205,6 @@ export function HouseHeader({ pathname }: { pathname: string }) {
         </button>
         {menuPortals.map((p) => {
           const isCurrent = currentCategory?.handle === p.handle;
-          const faded = !!currentCategory && !isCurrent && !p.cart;
           const art = (
             <Svg
               markup={p.svg}
@@ -239,8 +234,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               to={`/collections/${p.handle}`}
               aria-label={p.label}
               aria-current={isCurrent ? "page" : undefined}
-              className="relative flex-1 block transition-opacity duration-300 outline-none"
-              style={{ opacity: faded ? OTHER_PORTAL_OPACITY : 1 }}
+              className="relative flex-1 block outline-none"
             >
               {art}
             </Link>
@@ -293,8 +287,8 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               <div
                 key={p.key}
                 aria-hidden="true"
-                className="house-construction absolute transition-opacity duration-300"
-                style={{ ...style, opacity: currentCategory ? OTHER_PORTAL_OPACITY : 1 }}
+                className="house-construction absolute origin-bottom transition-transform duration-300 ease-out hover:scale-125 hover:z-30"
+                style={style}
               >
                 <Svg markup={p.svg} className="house-portal-art house-construction-arch absolute inset-0" />
               </div>
@@ -319,17 +313,16 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               </button>
             );
           }
-          // In this portal's category: it stays big. In another: it fades.
+          // In this portal's category: it stays big.
           const isCurrent = currentCategory?.handle === p.handle;
-          const faded = !!currentCategory && !isCurrent;
           return (
             <Link
               key={p.key}
               to={`/collections/${p.handle}`}
               aria-label={p.label}
               aria-current={isCurrent ? "page" : undefined}
-              className={`house-portal absolute block origin-bottom transition-[transform,opacity] duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 hover:!opacity-100 outline-none ${isCurrent ? "scale-150 z-30" : ""}`}
-              style={{ ...style, opacity: faded ? OTHER_PORTAL_OPACITY : 1 }}
+              className={`house-portal absolute block origin-bottom transition-transform duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 outline-none ${isCurrent ? "scale-150 z-30" : ""}`}
+              style={style}
             >
               <Svg markup={p.svg} className="house-portal-art" />
             </Link>
