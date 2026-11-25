@@ -198,8 +198,8 @@ html.hero-light .home-ink {
   width: 100%;
   height: auto;
 }
-/* The house's lines stay at least one screen pixel wide at any size, so they
-   read as solid black lines instead of thin grey ones. */
+/* The house's lines are one screen pixel wide at any size, so they read as
+   solid black lines, neither thin grey nor heavy. */
 .house-svg path,
 .house-svg line,
 .house-svg polygon,
@@ -209,6 +209,9 @@ html.hero-light .home-ink {
 .house-portal-art polygon,
 .house-portal-art polyline {
   vector-effect: non-scaling-stroke;
+  /* One screen pixel at any size (Julia's drawing uses 2 px lines, which
+     looked too heavy). */
+  stroke-width: 1px !important;
 }
 .house-portal-art,
 .house-portal-art svg {
