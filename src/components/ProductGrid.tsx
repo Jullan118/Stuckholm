@@ -12,8 +12,8 @@ import { isSoldOut } from "@/lib/commerce";
 // the page: every other line of the grid drawing meets the bottom edge at
 // these points (percent of the width), so four columns fit exactly between
 // them (two on phones, using every fourth line).
-const LINES_WIDE = [3.49, 25.89, 49.6, 73.43, 97.1];
-const LINES_NARROW = [3.49, 49.6, 97.1];
+const LINES_WIDE = [25.89, 49.6, 73.43];
+const LINES_NARROW = [49.6];
 
 export function ProductGrid({ products }: { products: ShopProduct[] }) {
   // Products open as a panel over this list (see ProductPanel).

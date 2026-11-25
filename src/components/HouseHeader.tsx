@@ -18,7 +18,7 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 // its tall tower reaching up past the horizon. The 3D globe floats in the
 // sky above it and goes home. The portals are the menu: 1st hand, 2nd hand
 // and Art work open their collection and grow to 1.5x on hover; the two
-// "under construction" portals grow a little (1.25x) and rock on hover; "settle your debt" (with the
+// "under construction" portals rock on hover (and grow only a little); "settle your debt" (with the
 // basket) opens the cart and rattles on hover.
 //
 // When you are in a category with sub-categories, a strip folds out from the
@@ -36,14 +36,22 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 const GRID_W = 1890.86;
 const HORIZON_Y = 392;
 const FLOOR_Y = 777;
-// The fold-out strip: two rows of cells (Julia's lines at 777, 833 and 895).
-// Its dividers are the product list's column lines (66, 489.63, 937.93,
-// 1388.43 and 1836, where the floor's lines meet the front edge) with one
-// more halfway across each column, so every line runs straight on into the
-// product list below.
+// The fold-out strip, as in Julia's sketch: three lines across (777, 833 and
+// 895, two rows) and the floor's lines folding straight down at its front
+// edge. Only the three column lines run on through the strip and down
+// between the products (STRIP_LONG); a few others drip down a short way and
+// stop at different heights (STRIP_SHORT, from her grid drawing).
 const STRIP_ROWS = [777, 833, 895];
 const STRIP_H = STRIP_ROWS[STRIP_ROWS.length - 1] - FLOOR_Y;
-const STRIP_CELLS = [66, 277.8, 489.63, 713.78, 937.93, 1163.18, 1388.43, 1612.2, 1836];
+const STRIP_LONG = [489.63, 937.93, 1388.43];
+const STRIP_SHORT: [number, number][] = [
+  [66, 868],
+  [275, 883],
+  [720, 860],
+];
+// Where the sub-category names stand in the first row, from the left: the
+// middle of each slot between these points.
+const STRIP_SLOTS = [66, 275, 489.63, 720, 937.93, 1163, 1388.43, 1612, 1836];
 // The house drawing, and where it stands: its ground line (HOUSE_GROUND,
 // house units) on the floor's front row, its tower's left edge at about a
 // quarter of the width.
@@ -289,7 +297,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               <div
                 key={p.key}
                 aria-hidden="true"
-                className="house-construction absolute origin-bottom transition-transform duration-300 ease-out hover:scale-125 hover:z-30"
+                className="house-construction absolute origin-bottom transition-transform duration-300 ease-out hover:scale-110 hover:z-30"
                 style={style}
               >
                 <Svg markup={p.svg} className="house-portal-art house-construction-arch absolute inset-0" />
@@ -333,8 +341,8 @@ export function HouseHeader({ pathname }: { pathname: string }) {
       </div>
 
       {/* The fold-out strip: in a category with sub-categories, the grid
-          folds down from the floor's front edge towards you, in a row of
-          cells, one sub-category in each. */}
+          folds down from the floor's front edge towards you, with the
+          sub-categories in a row in its first band. */}
       <div
         className="relative w-full transition-[padding] duration-500 ease-out"
         style={{ paddingTop: stripOpen ? `${(STRIP_H / GRID_W) * 100}%` : 0 }}
@@ -352,14 +360,17 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               {STRIP_ROWS.map((y) => (
                 <line key={y} x1={0} x2={GRID_W} y1={y} y2={y} vectorEffect="non-scaling-stroke" />
               ))}
-              {STRIP_CELLS.map((x) => (
+              {STRIP_LONG.map((x) => (
                 <line key={x} x1={x} x2={x} y1={FLOOR_Y} y2={STRIP_ROWS[2]} vectorEffect="non-scaling-stroke" />
+              ))}
+              {STRIP_SHORT.map(([x, y2]) => (
+                <line key={x} x1={x} x2={x} y1={FLOOR_Y} y2={y2} vectorEffect="non-scaling-stroke" />
               ))}
             </g>
           </svg>
           {subs.map((child, i) => {
-            const left = STRIP_CELLS[i];
-            const right = STRIP_CELLS[i + 1] ?? GRID_W;
+            const left = STRIP_SLOTS[i];
+            const right = STRIP_SLOTS[i + 1] ?? GRID_W;
             if (left === undefined) return null;
             const active = routeHandle === child.handle;
             return (
