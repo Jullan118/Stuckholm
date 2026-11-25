@@ -201,9 +201,9 @@ const HOVER_RADIUS = 0.85;
 // Sideways drag spins the globe around its vertical axis (no limit). Vertical
 // drag tilts it, but never past this angle, so it can't end up upside down.
 const PITCH_LIMIT = 0.9; // radians, about 50 degrees
-// Resting tilt: the globe's top leans slightly away from the viewer (about 17
-// degrees), so the letter ring sits a bit above the centre, as in the 22 Oct reference.
-const GLOBE_BASE_PITCH = -0.4; // radians; negative = top leans back
+// Resting tilt: the globe's top leans towards the viewer (about 23 degrees),
+// on top of the sideways lean.
+const GLOBE_BASE_PITCH = 0.4; // radians; positive = top leans forward, towards the screen
 const DRAG_SPEED = 0.0032; // radians per pixel of mouse travel
 
 // The globe and its letter ring share one drag group, so the ring turns with
@@ -957,6 +957,9 @@ function GlobeCursor({
   );
 }
 
+// The tower globe's forward tip (radians), independent of the home globe.
+const TOWER_GLOBE_PITCH = 0.4;
+
 // The small globe on the house's left tower (the shop header, see
 // HouseHeader). Same model as the big one on the home page, leaning to the
 // side and slowly spinning, on a transparent background.
@@ -979,9 +982,8 @@ function TowerGlobeModel() {
   return (
     // Lean: about 60 degrees to the right, so the cross points right and
     // up, as if the globe had rolled onto the slanted tower top; top
-    // tipped forward (towards the viewer), the opposite of the home page
-    // globe, which tips back.
-    <group rotation={[-GLOBE_BASE_PITCH, 0, -Math.PI * 0.42 + Math.PI / 12]}>
+    // tipped forward (towards the viewer).
+    <group rotation={[TOWER_GLOBE_PITCH, 0, -Math.PI * 0.42 + Math.PI / 12]}>
       <group ref={spinRef}>
         <primitive object={blob} />
         <primitive object={letters} />
