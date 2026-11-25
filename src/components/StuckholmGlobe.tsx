@@ -812,7 +812,7 @@ const SYMBOL_LINE = 1;
 const SYMBOL_OPACITY = 0.7;
 const ARROW_ANGLE = Math.atan2(223.83 - 12.2, 151.7 - 31.5);
 
-// The hand and "Enter" are white, like the arrow. Size of the pointing hand,
+// The hand is white, like the arrow. Size of the pointing hand,
 // in pixels wide. The fingertip sits at about 37 % across and 21 % down the
 // drawing, so that point is moved onto the mouse.
 const HAND_W = 35;
@@ -823,7 +823,7 @@ const ENTER_SHOWN = `translate(${-HAND_TIP_X}px, ${-HAND_TIP_Y}px) scale(1)`;
 const ENTER_HIDDEN = `translate(${-HAND_TIP_X}px, ${-HAND_TIP_Y}px) scale(0.85)`;
 
 // The mouse on the home page. Out in space it is an arrow that always points
-// at the globe; over the globe it turns into a pointing hand with "Enter". It is drawn
+// at the globe; over the globe it turns into a pointing hand. It is drawn
 // as a normal page element following the mouse (the real cursor is hidden
 // while it shows). On touch screens nothing is drawn: tapping the globe
 // enters directly.
@@ -909,8 +909,8 @@ function GlobeCursor({
           <line vectorEffect="non-scaling-stroke" x1="74.91" y1="194.52" x2="150.21" y2="220.1" />
         </svg>
       </div>
-      {/* Over the globe: "Enter", with a pointing hand with click rays under
-          it. The fingertip sits exactly on the mouse position. */}
+      {/* Over the globe: a pointing hand with click rays. The fingertip sits
+          exactly on the mouse position. */}
       <div
         ref={enterRef}
         className="absolute top-0 left-0 flex flex-col items-start text-white transition-[opacity,transform] duration-200"
@@ -920,14 +920,6 @@ function GlobeCursor({
           transformOrigin: `${HAND_TIP_X}px ${HAND_TIP_Y}px`,
         }}
       >
-        {/* "Enter" above the hand, centred on the fingertip, so it is clear
-            that clicking takes you in. */}
-        <span
-          className="absolute bottom-full mb-1 whitespace-nowrap text-base sm:text-lg leading-none"
-          style={{ left: HAND_TIP_X, transform: "translateX(-50%)" }}
-        >
-          Enter
-        </span>
         {/* Julia's own hand drawing (cklick.svg), drawn twice slightly offset. */}
         <svg
           width={HAND_W}
