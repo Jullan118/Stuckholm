@@ -576,8 +576,12 @@ function FitCamera() {
 // nothing lands on the net. Stars are tiny fixed-size dots and sparkles.
 const SKY_DISTANCE = 1500;
 const SKY_FAR = 5000; // camera far plane, so the sky isn't clipped
-const SKY_STAR_COUNT = 420;
-const SKY_SPARKLE_COUNT = 70;
+const SKY_STAR_COUNT = 480;
+const SKY_SPARKLE_COUNT = 80;
+// Height range of the sky stars (radians above the scene centre), spread
+// evenly from just above the grid's horizon to the top of the view.
+const SKY_EL_MIN = 0.0;
+const SKY_EL_MAX = 0.51;
 
 // Direction from the scene centre. -Z is into the scene, where the camera looks.
 function skyPoint(az: number, el: number) {
@@ -599,7 +603,7 @@ function SkyField({ progress }: { progress: number }) {
   const dotGeometry = React.useMemo(() => {
     const arr = new Float32Array(SKY_STAR_COUNT * 3);
     for (let i = 0; i < SKY_STAR_COUNT; i++) {
-      const p = skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45);
+      const p = skyPoint((Math.random() * 2 - 1) * 1.3, SKY_EL_MIN + Math.random() * (SKY_EL_MAX - SKY_EL_MIN));
       arr.set([p.x, p.y, p.z], i * 3);
     }
     return new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(arr, 3));
@@ -608,7 +612,7 @@ function SkyField({ progress }: { progress: number }) {
   const sparkles = React.useMemo(
     () =>
       Array.from({ length: SKY_SPARKLE_COUNT }, (_, i) => ({
-        pos: skyPoint((Math.random() * 2 - 1) * 1.3, 0.06 + Math.random() * 0.45),
+        pos: skyPoint((Math.random() * 2 - 1) * 1.3, SKY_EL_MIN + Math.random() * (SKY_EL_MAX - SKY_EL_MIN)),
         size: i < 50 ? 10 + Math.random() * 8 : 6 + Math.random() * 5,
       })),
     []
