@@ -32,7 +32,7 @@ export const CATEGORIES: Category[] = [
     children: [
       // "All" is the artwork collection itself.
       { label: "All", handle: "artwork" },
-      { label: "Wicked problems", handle: "wicked-problems" },
+      { label: "Wicked problems", handle: "wickedproblems" },
     ],
   },
   {
