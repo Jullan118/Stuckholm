@@ -17,7 +17,7 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 // house (huset.svg, 25 Nov) stands far forward on the floor, in the middle,
 // its tall tower reaching up past the horizon. The 3D globe floats in the
 // sky above it and goes home. The portals are the menu: 1st hand, 2nd hand
-// and Art work open their collection and grow to 1.5x on hover; the two
+// and Art work open their collection and grow to 1.25x on hover; the two
 // "under construction" portals rock on hover (and grow only a little); "settle your debt" (with the
 // basket) opens the cart and rattles on hover.
 //
@@ -333,7 +333,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               to={`/collections/${p.handle}`}
               aria-label={p.label}
               aria-current={isCurrent ? "page" : undefined}
-              className={`house-portal absolute block origin-bottom transition-transform duration-300 ease-out hover:scale-150 focus-visible:scale-150 hover:z-30 outline-none ${isCurrent ? "scale-150 z-30" : ""}`}
+              className={`house-portal absolute block origin-bottom transition-transform duration-300 ease-out hover:scale-125 focus-visible:scale-125 hover:z-30 outline-none ${isCurrent ? "scale-125 z-30" : ""}`}
               style={style}
             >
               <Svg markup={p.svg} className="house-portal-art" />
