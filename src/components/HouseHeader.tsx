@@ -14,7 +14,7 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 
 // The shop header (every page except home), from Julia's sketch of 25 Nov.
 // Her grid (nätet-2.svg: horizon, perspective floor) fills the width, and her
-// house (husetheader.svg) stands far forward on the floor, in the middle,
+// house (huset.svg, 25 Nov) stands far forward on the floor, in the middle,
 // its tall tower reaching up past the horizon. The 3D globe floats in the
 // sky above it and goes home. The portals are the menu: 1st hand, 2nd hand
 // and Art work open their collection and grow to 1.5x on hover; the two
@@ -55,10 +55,10 @@ const STRIP_SLOTS = [66, 275, 489.63, 720, 937.93, 1163, 1388.43, 1612, 1836];
 // The house drawing, and where it stands: its ground line (HOUSE_GROUND,
 // house units) on the floor's front row, its tower's left edge at about a
 // quarter of the width.
-const HOUSE_W = 2783.78;
-const HOUSE_S = 0.4144;
-const HOUSE_GROUND = 1888;
-const HOUSE_X = 418.5;
+const HOUSE_W = 1284.75;
+const HOUSE_S = 0.9826;
+const HOUSE_GROUND = 739;
+const HOUSE_X = 296.6;
 const HOUSE_Y = 765 - HOUSE_GROUND * HOUSE_S;
 // The header shows the grid from just above the tower's crown down to the
 // floor's front edge.
@@ -83,12 +83,12 @@ type Portal = {
 };
 // Boxes in house units; they match the viewBox of each piece.
 const PORTALS: Portal[] = [
-  { key: "firsthand", label: "1st hand", svg: firsthandSvg, x: 660, y: 1420, w: 280, h: 490, handle: "apparel" },
-  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 1040, y: 1430, w: 250, h: 480, handle: "2ndhand" },
-  { key: "artwork", label: "Art work", svg: artworkSvg, x: 1395, y: 1395, w: 210, h: 515, handle: "artwork" },
-  { key: "uc1", label: "Under construction", svg: uc1Svg, x: 1675, y: 1395, w: 240, h: 520, construction: true },
-  { key: "uc2", label: "Under construction", svg: uc2Svg, x: 1945, y: 1395, w: 250, h: 520, construction: true },
-  { key: "debt", label: "Settle your debt (cart)", svg: debtSvg, x: 2205, y: 1510, w: 250, h: 410, cart: true },
+  { key: "firsthand", label: "1st hand", svg: firsthandSvg, x: 405, y: 555, w: 115, h: 197, handle: "apparel" },
+  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 560, y: 555, w: 105, h: 197, handle: "2ndhand" },
+  { key: "artwork", label: "Art work", svg: artworkSvg, x: 700, y: 545, w: 103, h: 207, handle: "artwork" },
+  { key: "uc1", label: "Under construction", svg: uc1Svg, x: 823, y: 540, w: 95, h: 212, construction: true },
+  { key: "uc2", label: "Under construction", svg: uc2Svg, x: 932, y: 540, w: 98, h: 212, construction: true },
+  { key: "debt", label: "Settle your debt (cart)", svg: debtSvg, x: 1040, y: 590, w: 100, h: 162, cart: true },
 ];
 
 // The globe floating in the sky above the house, in grid units. The box is
