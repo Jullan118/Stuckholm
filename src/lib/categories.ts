@@ -37,7 +37,7 @@ export const CATEGORIES: Category[] = [
   },
   {
     label: "2ndhand",
-    handle: "2ndhand",
+    handle: "2nd-all", // /collections/2ndhand redirects here (App.tsx)
     children: [
       // In Julia's order. Handles are the Shopify collections' own
       // (the "2nd …" collections).

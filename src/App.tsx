@@ -51,6 +51,8 @@ function Shell() {
         <Routes location={shown}>
           <Route path="/" element={<Home />} />
           <Route path="/consume" element={<Navigate to="/collections/all" replace />} />
+          {/* The 2nd hand portal's page is the "All" collection of 2nd hand. */}
+          <Route path="/collections/2ndhand" element={<Navigate to="/collections/2nd-all" replace />} />
           <Route path="/collections/:handle" element={<Consume />} />
           <Route path="/in-stock" element={<Navigate to="/collections/all" replace />} />
           <Route path="/in-stock/:slug" element={<InStockProduct />} />

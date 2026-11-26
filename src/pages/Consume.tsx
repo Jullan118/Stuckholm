@@ -11,7 +11,7 @@ import { BlurredBackdrop } from "@/components/BlurredBackdrop";
 // The 2nd hand collections are shown in a random order instead of newest
 // first. The order is drawn once per visit (page load), so going back and
 // forth between collections while browsing doesn't reshuffle everything.
-const SECOND_HAND = CATEGORIES.find((c) => c.handle === "2ndhand");
+const SECOND_HAND = CATEGORIES.find((c) => c.label === "2ndhand");
 const SHUFFLED_HANDLES = new Set([
   "2ndhand",
   ...(SECOND_HAND?.children ?? []).map((c) => c.handle),

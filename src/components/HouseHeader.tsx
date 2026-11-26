@@ -80,7 +80,7 @@ type Portal = {
 // Boxes in house units; they match the viewBox of each piece.
 const PORTALS: Portal[] = [
   { key: "firsthand", label: "1st hand", svg: firsthandSvg, x: 405, y: 555, w: 115, h: 197, handle: "apparel" },
-  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 560, y: 555, w: 105, h: 197, handle: "2ndhand" },
+  { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 560, y: 555, w: 105, h: 197, handle: "2nd-all" },
   { key: "artwork", label: "Art work", svg: artworkSvg, x: 700, y: 545, w: 103, h: 207, handle: "artwork" },
   { key: "uc1", label: "Under construction", svg: uc1Svg, x: 823, y: 540, w: 95, h: 212, construction: true },
   { key: "uc2", label: "Under construction", svg: uc2Svg, x: 932, y: 540, w: 98, h: 212, construction: true },
