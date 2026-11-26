@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import houseSvg from "@/assets/house5/house.svg?raw";
 import gridSvg from "@/assets/house5/grid.svg?raw";
 import firsthandSvg from "@/assets/house5/firsthand.svg?raw";
@@ -9,6 +9,7 @@ import uc1Svg from "@/assets/house5/uc1.svg?raw";
 import uc2Svg from "@/assets/house5/uc2.svg?raw";
 import debtSvg from "@/assets/house5/debt.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
+import { parseSort, sortOptions, withSort, type SortKey } from "@/lib/sortProducts";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
 
@@ -172,6 +173,48 @@ function Svg({ markup, className, style }: { markup: string; className?: string;
 }
 
 const pctX = (v: number) => `${(v / GRID_W) * 100}%`;
+// The sort menu: shows the current choice, and a native drop-down (laid
+// invisibly over the whole cell) opens on click, so it works on every device.
+function SortMenu({
+  handle,
+  sort,
+  onChange,
+  className = "",
+  tabIndex,
+  style,
+}: {
+  handle: string;
+  sort: SortKey;
+  onChange: (s: SortKey) => void;
+  className?: string;
+  tabIndex?: number;
+  style?: React.CSSProperties;
+}) {
+  const options = sortOptions(handle);
+  const current = options.find((o) => o.key === sort) ?? options[0];
+  return (
+    <label style={style} className={`cursor-pointer hover:opacity-60 transition-opacity ${className.includes("absolute") ? "" : "relative"} ${className}`}>
+      <span className="pointer-events-none whitespace-nowrap">
+        {current.label}
+        <span aria-hidden className="ml-[0.3em] text-[0.7em] align-middle">▾</span>
+      </span>
+      <select
+        aria-label="Sort products"
+        tabIndex={tabIndex}
+        value={sort}
+        onChange={(e) => onChange(e.target.value as SortKey)}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+      >
+        {options.map((o) => (
+          <option key={o.key} value={o.key}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 // Vertical positions are given in grid units from the top of the grid.
 const pctY = (v: number) => `${((v - CROP_TOP) / HEADER_H) * 100}%`;
 const pctH = (v: number) => `${(v / HEADER_H) * 100}%`;
@@ -191,6 +234,17 @@ export function HouseHeader({ pathname }: { pathname: string }) {
   // Sub-categories of the category you are in (if it has any).
   const subs = currentCategory?.children ?? [];
   const stripOpen = subs.length > 0;
+
+  // Sort choice (in the address, ?sort=…). With a product panel open, the
+  // list's own address is in state.background.
+  const location = useLocation();
+  const listSearch =
+    (location.state as { background?: { search: string } } | null)?.background?.search ?? location.search;
+  const sort = parseSort(listSearch);
+  const keepSort = withSort(listSearch, sort);
+  const setSort = (next: SortKey) => {
+    if (routeHandle) navigate(`/collections/${routeHandle}${withSort(listSearch, next)}`, { replace: true });
+  };
   const menuPortals = PORTALS.filter((p) => !p.construction);
 
   return (
@@ -368,15 +422,17 @@ export function HouseHeader({ pathname }: { pathname: string }) {
             const cellsPerRow = STRIP_CELLS.length - 1;
             const perRow = subs.length > cellsPerRow ? cellsPerRow : Math.max(Math.ceil(subs.length / 2), Math.min(subs.length, 5));
             const row = Math.floor(i / perRow);
-            const col = i % perRow;
-            if (row > 1) return null;
+            // The first cell of the second row holds the sort menu, so names
+            // in that row start one cell further right.
+            const col = (i % perRow) + (row === 1 ? 1 : 0);
+            if (row > 1 || col >= cellsPerRow) return null;
             const left = STRIP_CELLS[col];
             const right = STRIP_CELLS[col + 1];
             const active = routeHandle === child.handle;
             return (
               <Link
                 key={child.handle}
-                to={`/collections/${child.handle}`}
+                to={`/collections/${child.handle}${keepSort}`}
                 aria-current={active ? "page" : undefined}
                 tabIndex={stripOpen ? 0 : -1}
                 className="house-sub absolute flex items-center justify-center font-cormorant text-black leading-none hover:opacity-60 transition-opacity"
@@ -391,6 +447,21 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               </Link>
             );
           })}
+          {stripOpen && routeHandle && (
+            <SortMenu
+              handle={routeHandle}
+              sort={sort}
+              onChange={setSort}
+              tabIndex={stripOpen ? 0 : -1}
+              className="house-sub absolute flex items-center justify-center font-cormorant text-black leading-none"
+              style={{
+                left: pctX(STRIP_CELLS[0]),
+                width: pctX(STRIP_CELLS[1] - STRIP_CELLS[0]),
+                top: `${((STRIP_ROWS[1] - FLOOR_Y) / STRIP_H) * 100}%`,
+                height: `${((STRIP_ROWS[2] - STRIP_ROWS[1]) / STRIP_H) * 100}%`,
+              }}
+            />
+          )}
         </div>
       </div>
     </header>
@@ -403,7 +474,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
           return (
             <Link
               key={child.handle}
-              to={`/collections/${child.handle}`}
+              to={`/collections/${child.handle}${keepSort}`}
               aria-current={active ? "page" : undefined}
               className={`font-cormorant text-black text-lg leading-none ${active ? "underline underline-offset-4" : ""}`}
             >
@@ -411,6 +482,14 @@ export function HouseHeader({ pathname }: { pathname: string }) {
             </Link>
           );
         })}
+        {routeHandle && (
+          <SortMenu
+            handle={routeHandle}
+            sort={sort}
+            onChange={setSort}
+            className="basis-full text-center font-cormorant text-black text-lg leading-none pt-1"
+          />
+        )}
       </nav>
     )}
     </>

@@ -45,6 +45,7 @@ export const PRODUCT_FIELDS = `
   description
   vendor
   tags
+  createdAt
   featuredImage { url altText }
   images(first: 10) { nodes { url altText } }
   options { name values }
@@ -69,6 +70,7 @@ export type ShopifyProduct = {
   description: string;
   vendor: string;
   tags: string[];
+  createdAt: string;
   featuredImage: { url: string; altText: string | null } | null;
   images: { nodes: { url: string; altText: string | null }[] };
   options: { name: string; values: string[] }[];

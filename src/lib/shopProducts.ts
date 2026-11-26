@@ -27,6 +27,8 @@ export type ShopProduct = CommerceProduct & {
   colour: string | null;
   condition: string | null;
   priceText: string; // lowest variant price, formatted ("350 kr")
+  minPrice: number | null; // lowest variant price, for sorting
+  createdAt: number; // when the product was created in Shopify (ms), for sorting
 };
 
 function tagValue(tags: string[], key: string): string | null {
@@ -93,6 +95,8 @@ export function productFromShopify(p: ShopifyProduct): ShopProduct {
         ],
     description: p.description,
     vendor: p.vendor,
+    minPrice: prices[0]?.amount ?? null,
+    createdAt: Date.parse(p.createdAt) || 0,
     images: images.length ? images : [image].filter(Boolean),
     isTrash,
     genderScale: genderScaleFrom(p.tags),
