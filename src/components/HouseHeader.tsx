@@ -36,25 +36,16 @@ import { TowerGlobe } from "@/components/StuckholmGlobe";
 const GRID_W = 1890.86;
 const HORIZON_Y = 392;
 const FLOOR_Y = 777;
-// The fold-out strip, as in Julia's sketch: three lines across (777, 833 and
-// 895, two rows) and the floor's lines folding straight down at its front
-// edge. Only the three column lines run on through the strip and down
-// between the products (STRIP_LONG); a few others drip down a short way and
-// stop at different heights (STRIP_SHORT, from her grid drawing).
+// The fold-out strip: three lines across (777, 833 and 895, two rows) and
+// the floor's lines folding straight down at its front edge, making cells.
+// The dividers are where the floor's lines meet the front edge; three of
+// them (STRIP_LONG) are the product list's column lines and run on down
+// between the products. One sub-category in each cell, filling the first
+// row and then the second.
 const STRIP_ROWS = [777, 833, 895];
 const STRIP_H = STRIP_ROWS[STRIP_ROWS.length - 1] - FLOOR_Y;
 const STRIP_LONG = [489.63, 937.93, 1388.43];
-const STRIP_SHORT: [number, number][] = [
-  [66, 868],
-  [275, 883],
-  [720, 860],
-];
-// Where the sub-category names stand: in the first band, from the left,
-// spread evenly between these edges; more than STRIP_PER_ROW names go on
-// into the second band.
-const STRIP_LEFT = 66;
-const STRIP_RIGHT = 1836;
-const STRIP_PER_ROW = 5;
+const STRIP_CELLS = [66, 277.8, 489.63, 713.78, 937.93, 1163.18, 1388.43, 1612.2, 1836];
 // The house drawing, and where it stands: its ground line (HOUSE_GROUND,
 // house units) on the floor's second row from the front (GROUND_ROW), its tower's left edge at about a
 // quarter of the width.
@@ -366,21 +357,21 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               {STRIP_ROWS.map((y) => (
                 <line key={y} x1={0} x2={GRID_W} y1={y} y2={y} vectorEffect="non-scaling-stroke" />
               ))}
-              {STRIP_LONG.map((x) => (
+              {STRIP_CELLS.map((x) => (
                 <line key={x} x1={x} x2={x} y1={FLOOR_Y} y2={STRIP_ROWS[2]} vectorEffect="non-scaling-stroke" />
-              ))}
-              {STRIP_SHORT.map(([x, y2]) => (
-                <line key={x} x1={x} x2={x} y1={FLOOR_Y} y2={y2} vectorEffect="non-scaling-stroke" />
               ))}
             </g>
           </svg>
           {subs.map((child, i) => {
-            const perRow = subs.length > STRIP_PER_ROW ? Math.ceil(subs.length / 2) : subs.length;
+            // Fill the first row, then the second; with many names, split
+            // them evenly over the two rows.
+            const cellsPerRow = STRIP_CELLS.length - 1;
+            const perRow = subs.length > cellsPerRow ? cellsPerRow : Math.max(Math.ceil(subs.length / 2), Math.min(subs.length, 5));
             const row = Math.floor(i / perRow);
             const col = i % perRow;
-            const slot = (STRIP_RIGHT - STRIP_LEFT) / Math.max(perRow, STRIP_PER_ROW);
-            const left = STRIP_LEFT + col * slot;
-            const right = left + slot;
+            if (row > 1) return null;
+            const left = STRIP_CELLS[col];
+            const right = STRIP_CELLS[col + 1];
             const active = routeHandle === child.handle;
             return (
               <Link
