@@ -8,32 +8,10 @@ import {
   type CommerceProduct,
 } from "@/lib/commerce";
 
-// One row of size boxes. The text starts at 18 px and shrinks (down to
-// 10 px) until every box fits on the row, so many sizes still fit.
-function FitRow({ children }: { children: React.ReactNode }) {
-  const ref = React.useRef<HTMLDivElement>(null);
-  React.useLayoutEffect(() => {
-    const row = ref.current;
-    if (!row) return;
-    const fit = () => {
-      let size = 18;
-      row.style.fontSize = `${size}px`;
-      while (row.scrollWidth > row.clientWidth + 0.5 && size > 10) {
-        size -= 0.5;
-        row.style.fontSize = `${size}px`;
-      }
-    };
-    fit();
-    document.fonts?.ready.then(fit);
-    const ro = new ResizeObserver(fit);
-    ro.observe(row);
-    return () => ro.disconnect();
-  }, [children]);
-  return (
-    <div ref={ref} className="flex gap-2 overflow-hidden">
-      {children}
-    </div>
-  );
+// One group of size boxes. The boxes keep the page's text size and wrap
+// onto more rows when they don't all fit on one.
+function SizeRow({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-wrap gap-2">{children}</div>;
 }
 
 // Size boxes (one row per product option) + full-width "Add to cart", shared
@@ -90,7 +68,7 @@ export function AddToCart({
     <div className="flex flex-col gap-3">
       {!hasOnlyDefaultVariant(product) &&
         product.options.map((option) => (
-          <FitRow key={option.name}>
+          <SizeRow key={option.name}>
             {option.values.map((value) => {
               const available = isOptionValueAvailable(product, selected, option.name, value);
               const picked = selected[option.name] === value;
@@ -105,7 +83,7 @@ export function AddToCart({
                     setSelected((s) => ({ ...s, [option.name]: value }));
                     setError(false);
                   }}
-                  className={`flex-auto h-12 px-[0.6em] whitespace-nowrap border transition-colors ${
+                  className={`flex-auto min-w-[3.5em] h-12 px-[0.8em] whitespace-nowrap border transition-colors ${
                     picked
                       ? "bg-black text-white border-black"
                       : available
@@ -117,7 +95,7 @@ export function AddToCart({
                 </button>
               );
             })}
-          </FitRow>
+          </SizeRow>
         ))}
 
       {error && (
