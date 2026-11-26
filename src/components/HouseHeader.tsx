@@ -9,7 +9,7 @@ import uc1Svg from "@/assets/house5/uc1.svg?raw";
 import uc2Svg from "@/assets/house5/uc2.svg?raw";
 import debtSvg from "@/assets/house5/debt.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
-import { isShuffled, parseSort, sortOptions, withSort, type SortKey } from "@/lib/sortProducts";
+import { hasFilter as collectionHasFilter, parseSort, sortOptions, withSort, type SortKey } from "@/lib/sortProducts";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
 
@@ -190,7 +190,7 @@ function SortMenu({
   tabIndex?: number;
   style?: React.CSSProperties;
 }) {
-  const options = sortOptions(handle);
+  const options = sortOptions();
   return (
     <label style={style} className={`cursor-pointer hover:opacity-60 transition-opacity ${className.includes("absolute") ? "" : "relative"} ${className}`}>
       <span className="pointer-events-none whitespace-nowrap">
@@ -241,7 +241,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
     (location.state as { background?: { search: string } } | null)?.background?.search ?? location.search;
   const sort = parseSort(listSearch);
   // The filter (sort) menu is only for the 2nd hand collections.
-  const hasFilter = !!routeHandle && isShuffled(routeHandle);
+  const hasFilter = !!routeHandle && collectionHasFilter(routeHandle);
   const keepSort = withSort(listSearch, sort);
   const setSort = (next: SortKey) => {
     if (routeHandle) navigate(`/collections/${routeHandle}${withSort(listSearch, next)}`, { replace: true });
