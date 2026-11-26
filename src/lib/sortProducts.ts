@@ -47,6 +47,8 @@ export function parseSort(search: string): SortKey {
 
 export function sortProducts(list: ShopProduct[], handle: string, sort: SortKey): ShopProduct[] {
   const out = [...list];
+  // Only the 2nd hand collections can be re-sorted; others keep Shopify's order.
+  if (!isShuffled(handle)) return out;
   // Products without a price go last in both price orders.
   const price = (p: ShopProduct, missing: number) => p.minPrice ?? missing;
   switch (sort) {

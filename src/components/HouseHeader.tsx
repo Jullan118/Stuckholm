@@ -9,7 +9,7 @@ import uc1Svg from "@/assets/house5/uc1.svg?raw";
 import uc2Svg from "@/assets/house5/uc2.svg?raw";
 import debtSvg from "@/assets/house5/debt.svg?raw";
 import { CATEGORIES } from "@/lib/categories";
-import { parseSort, sortOptions, withSort, type SortKey } from "@/lib/sortProducts";
+import { isShuffled, parseSort, sortOptions, withSort, type SortKey } from "@/lib/sortProducts";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
 
@@ -240,6 +240,8 @@ export function HouseHeader({ pathname }: { pathname: string }) {
   const listSearch =
     (location.state as { background?: { search: string } } | null)?.background?.search ?? location.search;
   const sort = parseSort(listSearch);
+  // The filter (sort) menu is only for the 2nd hand collections.
+  const hasFilter = !!routeHandle && isShuffled(routeHandle);
   const keepSort = withSort(listSearch, sort);
   const setSort = (next: SortKey) => {
     if (routeHandle) navigate(`/collections/${routeHandle}${withSort(listSearch, next)}`, { replace: true });
@@ -423,7 +425,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
             const row = Math.floor(i / perRow);
             // The first cell of the second row holds the sort menu, so names
             // in that row start one cell further right.
-            const col = (i % perRow) + (row === 1 ? 1 : 0);
+            const col = (i % perRow) + (row === 1 && hasFilter ? 1 : 0);
             if (row > 1 || col >= cellsPerRow) return null;
             const left = STRIP_CELLS[col];
             const right = STRIP_CELLS[col + 1];
@@ -446,7 +448,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
               </Link>
             );
           })}
-          {stripOpen && routeHandle && (
+          {stripOpen && hasFilter && routeHandle && (
             <SortMenu
               handle={routeHandle}
               sort={sort}
@@ -481,7 +483,7 @@ export function HouseHeader({ pathname }: { pathname: string }) {
             </Link>
           );
         })}
-        {routeHandle && (
+        {hasFilter && routeHandle && (
           <SortMenu
             handle={routeHandle}
             sort={sort}
