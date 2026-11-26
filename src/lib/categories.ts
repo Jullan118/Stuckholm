@@ -41,9 +41,18 @@ export const CATEGORIES: Category[] = [
     children: [
       // "all" is the built-in all-products collection, so this one gets its own handle.
       { label: "All", handle: "2ndhand-all" },
+      // In alphabetical order. Each handle is the one Shopify gives a
+      // collection with that title.
       { label: "Accessories", handle: "accessories" },
       { label: "Cashmere Corner", handle: "cashmere-corner" },
+      { label: "Dresses", handle: "dresses" },
+      { label: "Hoodies", handle: "hoodies" },
       { label: "Jackets", handle: "jackets" },
+      { label: "Shirts/Blouses", handle: "shirts-blouses" },
+      { label: "Shoes", handle: "shoes" },
+      { label: "Skirts", handle: "skirts" },
+      { label: "T-shirts", handle: "t-shirts" },
+      { label: "Trousers", handle: "trousers" },
     ],
   },
 ];

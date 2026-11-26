@@ -49,9 +49,12 @@ const STRIP_SHORT: [number, number][] = [
   [275, 883],
   [720, 860],
 ];
-// Where the sub-category names stand in the first row, from the left: the
-// middle of each slot between these points.
-const STRIP_SLOTS = [66, 275, 489.63, 720, 937.93, 1163, 1388.43, 1612, 1836];
+// Where the sub-category names stand: in the first band, from the left,
+// spread evenly between these edges; more than STRIP_PER_ROW names go on
+// into the second band.
+const STRIP_LEFT = 66;
+const STRIP_RIGHT = 1836;
+const STRIP_PER_ROW = 5;
 // The house drawing, and where it stands: its ground line (HOUSE_GROUND,
 // house units) on the floor's second row from the front (GROUND_ROW), its tower's left edge at about a
 // quarter of the width.
@@ -344,7 +347,8 @@ export function HouseHeader({ pathname }: { pathname: string }) {
 
       {/* The fold-out strip: in a category with sub-categories, the grid
           folds down from the floor's front edge towards you, with the
-          sub-categories in a row in its first band. */}
+          sub-categories in its first band (and the second, when there are
+          many). */}
       <div
         className="relative w-full transition-[padding] duration-500 ease-out"
         style={{ paddingTop: stripOpen ? `${(STRIP_H / GRID_W) * 100}%` : 0 }}
@@ -371,9 +375,12 @@ export function HouseHeader({ pathname }: { pathname: string }) {
             </g>
           </svg>
           {subs.map((child, i) => {
-            const left = STRIP_SLOTS[i];
-            const right = STRIP_SLOTS[i + 1] ?? GRID_W;
-            if (left === undefined) return null;
+            const perRow = subs.length > STRIP_PER_ROW ? Math.ceil(subs.length / 2) : subs.length;
+            const row = Math.floor(i / perRow);
+            const col = i % perRow;
+            const slot = (STRIP_RIGHT - STRIP_LEFT) / Math.max(perRow, STRIP_PER_ROW);
+            const left = STRIP_LEFT + col * slot;
+            const right = left + slot;
             const active = routeHandle === child.handle;
             return (
               <Link
@@ -385,8 +392,8 @@ export function HouseHeader({ pathname }: { pathname: string }) {
                 style={{
                   left: pctX(left),
                   width: pctX(right - left),
-                  top: 0,
-                  height: `${((STRIP_ROWS[1] - FLOOR_Y) / STRIP_H) * 100}%`,
+                  top: `${((STRIP_ROWS[row] - FLOOR_Y) / STRIP_H) * 100}%`,
+                  height: `${((STRIP_ROWS[row + 1] - STRIP_ROWS[row]) / STRIP_H) * 100}%`,
                 }}
               >
                 <span className={active ? "underline underline-offset-4 decoration-1" : ""}>{child.label}</span>
