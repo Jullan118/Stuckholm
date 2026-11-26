@@ -173,7 +173,7 @@ function Svg({ markup, className, style }: { markup: string; className?: string;
 }
 
 const pctX = (v: number) => `${(v / GRID_W) * 100}%`;
-// The sort menu: shows the current choice, and a native drop-down (laid
+// The sort menu: reads "Filter", and a native drop-down (laid
 // invisibly over the whole cell) opens on click, so it works on every device.
 function SortMenu({
   handle,
@@ -191,11 +191,10 @@ function SortMenu({
   style?: React.CSSProperties;
 }) {
   const options = sortOptions(handle);
-  const current = options.find((o) => o.key === sort) ?? options[0];
   return (
     <label style={style} className={`cursor-pointer hover:opacity-60 transition-opacity ${className.includes("absolute") ? "" : "relative"} ${className}`}>
       <span className="pointer-events-none whitespace-nowrap">
-        {current.label}
+        Filter
         <span aria-hidden className="ml-[0.3em] text-[0.7em] align-middle">▾</span>
       </span>
       <select
