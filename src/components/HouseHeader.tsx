@@ -8,7 +8,7 @@ import artworkSvg from "@/assets/house5/artwork.svg?raw";
 import uc1Svg from "@/assets/house5/uc1.svg?raw";
 import uc2Svg from "@/assets/house5/uc2.svg?raw";
 import debtSvg from "@/assets/house5/debt.svg?raw";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, FIRSTHAND_HANDLE } from "@/lib/categories";
 import { hasFilter as collectionHasFilter, parseSort, sortOptions, withSort, type SortKey } from "@/lib/sortProducts";
 import { useCart } from "@/lib/cart";
 import { TowerGlobe } from "@/components/StuckholmGlobe";
@@ -80,7 +80,7 @@ type Portal = {
 };
 // Boxes in house units; they match the viewBox of each piece.
 const PORTALS: Portal[] = [
-  { key: "firsthand", label: "1st hand", svg: firsthandSvg, x: 405, y: 555, w: 115, h: 197, handle: "apparel" },
+  { key: "firsthand", label: "1st hand", svg: firsthandSvg, x: 405, y: 555, w: 115, h: 197, handle: FIRSTHAND_HANDLE },
   { key: "secondhand", label: "2nd hand", svg: secondhandSvg, x: 560, y: 555, w: 105, h: 197, handle: "2nd-all" },
   { key: "artwork", label: "Art work", svg: artworkSvg, x: 700, y: 545, w: 103, h: 207, handle: "artwork" },
   { key: "uc1", label: "Under construction", svg: uc1Svg, x: 823, y: 540, w: 95, h: 212, construction: true },

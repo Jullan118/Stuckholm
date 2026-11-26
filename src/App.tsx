@@ -50,11 +50,14 @@ function Shell() {
 
         <Routes location={shown}>
           <Route path="/" element={<Home />} />
-          <Route path="/consume" element={<Navigate to="/collections/all" replace />} />
+          <Route path="/consume" element={<Navigate to="/collections/1sthand" replace />} />
           {/* The 2nd hand portal's page is the "All" collection of 2nd hand. */}
+          {/* The shop's entrance and the old apparel page are the 1st hand collection. */}
+          <Route path="/collections/all" element={<Navigate to="/collections/1sthand" replace />} />
+          <Route path="/collections/apparel" element={<Navigate to="/collections/1sthand" replace />} />
           <Route path="/collections/2ndhand" element={<Navigate to="/collections/2nd-all" replace />} />
           <Route path="/collections/:handle" element={<Consume />} />
-          <Route path="/in-stock" element={<Navigate to="/collections/all" replace />} />
+          <Route path="/in-stock" element={<Navigate to="/collections/1sthand" replace />} />
           <Route path="/in-stock/:slug" element={<InStockProduct />} />
           <Route path="/trash" element={<Trash />} />
           <Route path="/trash/:slug" element={<TrashProduct />} />

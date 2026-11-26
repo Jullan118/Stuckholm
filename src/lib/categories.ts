@@ -12,15 +12,18 @@ export type Category = {
 
 export const CONSUME_HANDLE = "all"; // Shopify's built-in "all products" collection
 
+// The 1st hand collection in Shopify. The home page opens it, and
+// /collections/all and the old /collections/apparel redirect here (App.tsx).
+export const FIRSTHAND_HANDLE = "1sthand";
+
 export const CATEGORIES: Category[] = [
   {
-    // "Collections" is the new name for Apparel; the Shopify collection is
-    // still called apparel.
+    // 1st hand (once called Apparel / Collections).
     label: "Collections",
-    handle: "apparel",
+    handle: FIRSTHAND_HANDLE,
     children: [
-      // "All" is the apparel collection itself.
-      { label: "All", handle: "apparel" },
+      // "All" is the 1st hand collection itself.
+      { label: "All", handle: FIRSTHAND_HANDLE },
       { label: "Descartes", handle: "descartes" },
       { label: "Stuckholm", handle: "stuckholm" },
       { label: "Stuck Royale", handle: "stuck-royale" },

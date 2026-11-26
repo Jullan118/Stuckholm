@@ -15,12 +15,12 @@ export function InStockProduct() {
         <h1 className="text-xl sm:text-2xl font-manrope font-light text-black mb-6">
           {state.status === "error" ? "Couldn't load this product" : "Not found"}
         </h1>
-        <Link to="/collections/all" className="text-black underline">
+        <Link to="/collections/1sthand" className="text-black underline">
           Back to Shop
         </Link>
       </div>
     );
   }
 
-  return <ShopProductPage product={state.data} backTo="/collections/all" backLabel="Back" />;
+  return <ShopProductPage product={state.data} backTo="/collections/1sthand" backLabel="Back" />;
 }

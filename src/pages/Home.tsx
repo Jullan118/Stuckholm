@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { StuckholmGlobe } from "@/components/StuckholmGlobe";
-import { CONSUME_HANDLE } from "@/lib/categories";
+import { FIRSTHAND_HANDLE } from "@/lib/categories";
 
 // How much extra scrolling (in viewport-heights) it takes for the sky
 // behind the globe to fully fade from the starry night down to white. The
@@ -102,7 +102,7 @@ export function Home() {
               "Enter" link in the top left corner). */}
           <StuckholmGlobe
             scrollProgress={progress}
-            onEnter={() => navigate(`/collections/${CONSUME_HANDLE}`)}
+            onEnter={() => navigate(`/collections/${FIRSTHAND_HANDLE}`)}
           />
         </div>
       </div>
