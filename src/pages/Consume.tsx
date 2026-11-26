@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useParams } from "react-router-dom";
 import { useCollectionProducts } from "@/lib/shopProducts";
 import { ProductGrid } from "@/components/ProductGrid";
@@ -14,9 +15,23 @@ export function Consume() {
   // fully blurred over the products; category pages show them on white.
   const isEntrance = handle === CONSUME_HANDLE;
 
+  // While the next collection loads, hold the page at the height it had, so
+  // the browser doesn't snap the scroll up when the list briefly empties.
+  const boxRef = React.useRef<HTMLDivElement>(null);
+  const lastHeight = React.useRef(0);
+  React.useLayoutEffect(() => {
+    if (state.status !== "loading" && boxRef.current) {
+      lastHeight.current = boxRef.current.offsetHeight;
+    }
+  });
+
   return (
     <>
-    <div className="relative z-10 w-full pt-0 pb-16 animate-blur-fade-in">
+    <div
+      ref={boxRef}
+      className="relative z-10 w-full pt-0 pb-16 animate-blur-fade-in"
+      style={state.status === "loading" && lastHeight.current ? { minHeight: lastHeight.current } : undefined}
+    >
       {state.status === "loading" && <p className="text-center text-black/50 text-xs">Loading…</p>}
       {state.status === "error" && (
         <p className="text-center text-black/50 text-xs">
