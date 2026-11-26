@@ -39,18 +39,17 @@ export const CATEGORIES: Category[] = [
     label: "2ndhand",
     handle: "2ndhand",
     children: [
-      // "all" is the built-in all-products collection, so this one gets its own handle.
-      { label: "All", handle: "2ndhand-all" },
-      // In Julia's order. Each handle is the one Shopify gives a collection
-      // with that title.
-      { label: "Tops", handle: "tops" },
-      { label: "Bottoms", handle: "bottoms" },
-      { label: "Sweatshirts", handle: "sweatshirts" },
-      { label: "Jackets", handle: "jackets" },
-      { label: "Dresses", handle: "dresses" },
-      { label: "Shoes", handle: "shoes" },
-      { label: "Cashmere Corner", handle: "cashmere-corner" },
-      { label: "Accessories", handle: "accessories" },
+      // In Julia's order. Handles are the Shopify collections' own
+      // (the "2nd …" collections).
+      { label: "All", handle: "2nd-all" },
+      { label: "Tops", handle: "2ndhand-tops" },
+      { label: "Bottoms", handle: "2ndhand-bottoms" },
+      { label: "Sweatshirts", handle: "2nd-sweatshirts" },
+      { label: "Jackets", handle: "2ndhand-jackets-1" },
+      { label: "Dresses", handle: "2nd-dresses" },
+      { label: "Shoes", handle: "2nd-shoes" },
+      { label: "Cashmere Corner", handle: "2ndhand-cashmere-corner" },
+      { label: "Accessories", handle: "2nd-accessories" },
     ],
   },
 ];
