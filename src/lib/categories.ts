@@ -44,15 +44,13 @@ export const CATEGORIES: Category[] = [
       // In alphabetical order. Each handle is the one Shopify gives a
       // collection with that title.
       { label: "Accessories", handle: "accessories" },
+      { label: "Bottoms", handle: "bottoms" },
       { label: "Cashmere Corner", handle: "cashmere-corner" },
       { label: "Dresses", handle: "dresses" },
       { label: "Hoodies", handle: "hoodies" },
       { label: "Jackets", handle: "jackets" },
-      { label: "Shirts/Blouses", handle: "shirts-blouses" },
       { label: "Shoes", handle: "shoes" },
-      { label: "Skirts", handle: "skirts" },
-      { label: "T-shirts", handle: "t-shirts" },
-      { label: "Trousers", handle: "trousers" },
+      { label: "Tops", handle: "tops" },
     ],
   },
 ];
