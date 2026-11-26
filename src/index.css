@@ -295,8 +295,8 @@ html.hero-light .home-ink {
   padding-left: 3.49%;
   padding-right: 2.9%;
   /* Column widths follow the column lines in Julia's grid drawing (the
-     header), so the lines run straight on from the floor: 49.6% (phones);
-     25.89, 49.6 and 73.43% (wider). No lines along the outer edges. */
+     header), so the lines run straight on from the floor: 3.49, 49.6 and
+     97.1% (phones); 3.49, 25.89, 49.6, 73.43 and 97.1% (wider). */
   grid-template-columns: 46.11fr 47.5fr;
   row-gap: 0;
 }
