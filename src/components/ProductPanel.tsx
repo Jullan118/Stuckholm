@@ -82,12 +82,12 @@ export function ProductPanel() {
           <CloseButton onClick={close} />
         </div>
         {state.status === "loading" && (
-          <div className="p-6 md:p-10 pt-20 md:pt-24">
+          <div className="p-6 md:p-10 pt-14 md:pt-[4.5rem]">
             <p className="text-black/50 text-sm">Loading…</p>
           </div>
         )}
         {(state.status === "error" || (state.status === "ready" && !state.data)) && (
-          <div className="p-6 md:p-10 pt-20 md:pt-24">
+          <div className="p-6 md:p-10 pt-14 md:pt-[4.5rem]">
             <p className="text-black">
               {state.status === "error" ? "Couldn't load this product." : "Not found."}
             </p>
@@ -104,7 +104,7 @@ function CloseButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="self-start text-sm uppercase tracking-[0.08em] text-black hover:opacity-60 transition-opacity"
+      className="self-start text-xs uppercase tracking-[0.08em] text-black hover:opacity-60 transition-opacity"
     >
       Close
     </button>
@@ -169,7 +169,7 @@ function PanelContent({ product }: { product: ShopProduct }) {
       {/* Left column, with a thin line to the pictures, like the grid lines
           on the product list. */}
       <div className="relative w-full md:w-[38%] lg:w-[32%] shrink-0 md:border-r-[0.75px] md:border-black/20">
-        <div className="md:sticky md:top-0 p-6 md:p-10 pt-20 md:pt-28 flex flex-col gap-6 text-left">
+        <div className="md:sticky md:top-0 p-6 md:p-10 pt-14 md:pt-[4.5rem] flex flex-col gap-6 text-left">
           <div className="flex flex-col gap-1">
             <h1 className="text-base sm:text-lg leading-snug text-black">{product.title}</h1>
             {product.priceText && (
