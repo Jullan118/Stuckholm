@@ -286,7 +286,9 @@ html.hero-light .home-ink {
   z-index: 10;
   top: 0;
   bottom: 0;
-  width: 0.75px;
+  /* Same as the strip's lines: 1px, black at 20%, centred on its x. */
+  width: 1px;
+  transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.2);
   pointer-events: none;
 }
