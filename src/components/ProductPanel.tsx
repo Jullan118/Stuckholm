@@ -124,7 +124,13 @@ function PanelContent({ product }: { product: ShopProduct }) {
       if (images.length === 0) return;
       const next = (i + images.length) % images.length;
       setActive(next);
-      thumbRefs.current[next]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+      // Bring the thumbnail into view in its own row only, never by moving
+      // the page (scrollIntoView would scroll the panel too).
+      const thumb = thumbRefs.current[next];
+      const row = thumb?.parentElement;
+      if (thumb && row && row.scrollWidth > row.clientWidth) {
+        row.scrollTo({ left: thumb.offsetLeft - (row.clientWidth - thumb.offsetWidth) / 2, behavior: "smooth" });
+      }
     },
     [images.length]
   );
@@ -180,31 +186,6 @@ function PanelContent({ product }: { product: ShopProduct }) {
           <AddToCart product={product} onVariantChange={showVariantImage} />
           <SizeGuide guide={product.sizeGuide} />
 
-          {/* All pictures as thumbnails, under Add to cart. */}
-          {images.length > 1 && (
-            <div>
-              <div className="flex flex-wrap gap-2 pt-1 pl-[3px]">
-              {images.map((src, i) => (
-                <button
-                  type="button"
-                  key={src + i}
-                  ref={(el) => {
-                    thumbRefs.current[i] = el;
-                  }}
-                  onClick={() => go(i)}
-                  aria-label={`Show picture ${i + 1}`}
-                  aria-current={i === active ? "true" : undefined}
-                  className={`shrink-0 w-14 h-[4.4rem] md:w-16 md:h-20 overflow-hidden transition-opacity ${
-                    i === active ? "opacity-100 outline outline-1 outline-black outline-offset-2" : "opacity-50 hover:opacity-100"
-                  }`}
-                >
-                  <img src={src} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
-              </div>
-            </div>
-          )}
-
           {meta.length > 0 && (
             <dl className="text-sm grid grid-cols-[auto_1fr] gap-x-6 gap-y-1">
               {meta.map(([label, value]) => (
@@ -220,8 +201,8 @@ function PanelContent({ product }: { product: ShopProduct }) {
       </div>
 
       {/* Right: a carousel. One big picture that always fits on the screen,
-          arrows to flip (the thumbnails are in the left column, under Add to
-          cart). Click the big picture to see it larger. */}
+          arrows to flip, and small thumbnails just under it. Click the big
+          picture to see it larger. */}
       <div className="relative w-full md:flex-1 md:sticky md:top-0 md:h-screen flex flex-col gap-3 px-6 pb-8 md:p-6 min-w-0">
         {images.length > 0 ? (
           <>
@@ -256,6 +237,28 @@ function PanelContent({ product }: { product: ShopProduct }) {
               )}
             </div>
 
+            {/* All pictures as small thumbnails, just under the big one. */}
+            {images.length > 1 && (
+              <div className="relative shrink-0 flex justify-center gap-2 overflow-x-auto py-1 px-[3px]">
+                {images.map((src, i) => (
+                  <button
+                    type="button"
+                    key={src + i}
+                    ref={(el) => {
+                      thumbRefs.current[i] = el;
+                    }}
+                    onClick={() => go(i)}
+                    aria-label={`Show picture ${i + 1}`}
+                    aria-current={i === active ? "true" : undefined}
+                    className={`shrink-0 w-10 h-[3.1rem] md:w-12 md:h-[3.75rem] overflow-hidden transition-opacity ${
+                      i === active ? "opacity-100 outline outline-1 outline-black outline-offset-2" : "opacity-50 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </>
         ) : (
           <div className="aspect-[4/5] w-full flex items-center justify-center text-black/50">Image</div>
