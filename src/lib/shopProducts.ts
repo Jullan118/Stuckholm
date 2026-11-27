@@ -16,6 +16,28 @@ import {
 import { DEFAULT_VARIANT_TITLE, formatMoney, type CommerceProduct, type Money } from "@/lib/commerce";
 import { GENDER_SCALE_MAX, GENDER_SCALE_MIN } from "@/lib/garments";
 
+// A size guide as the page shows it: a table (first row = headings), an
+// optional note under it and an optional drawing.
+export type SizeGuideData = { rows: string[][]; note: string | null; drawing: string | null };
+
+// The table is typed in Shopify as plain text, one row per line, cells
+// separated by tabs (pasted from a spreadsheet), "|", ";" or ",".
+function parseSizeGuide(
+  ref: NonNullable<NonNullable<ShopifyProduct["sizeGuide"]>["reference"]> | null
+): SizeGuideData | null {
+  if (!ref) return null;
+  const lines = (ref.table?.value ?? "")
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  const sep = ["\t", "|", ";", ","].find((s) => lines[0]?.includes(s));
+  const rows = lines.map((l) => (sep ? l.split(sep) : [l]).map((c) => c.trim()));
+  const note = ref.note?.value?.trim() || null;
+  const drawing = ref.drawing?.reference?.image?.url ?? null;
+  if (!rows.length && !note && !drawing) return null;
+  return { rows, note, drawing };
+}
+
 export type ShopProduct = CommerceProduct & {
   variantImages: Record<string, string>; // variant id -> image url
   description: string;
@@ -28,6 +50,7 @@ export type ShopProduct = CommerceProduct & {
   condition: string | null;
   priceText: string; // lowest variant price, formatted ("350 kr")
   minPrice: number | null; // lowest variant price, for sorting
+  sizeGuide: SizeGuideData | null;
   createdAt: number; // when the product was created in Shopify (ms), for sorting
 };
 
@@ -96,6 +119,7 @@ export function productFromShopify(p: ShopifyProduct): ShopProduct {
     description: p.description,
     vendor: p.vendor,
     minPrice: prices[0]?.amount ?? null,
+    sizeGuide: parseSizeGuide(p.sizeGuide?.reference ?? null),
     createdAt: Date.parse(p.createdAt) || 0,
     images: images.length ? images : [image].filter(Boolean),
     isTrash,

@@ -46,6 +46,17 @@ export const PRODUCT_FIELDS = `
   vendor
   tags
   createdAt
+  sizeGuide: metafield(namespace: "custom", key: "size_guide") {
+    reference {
+      ... on Metaobject {
+        table: field(key: "table") { value }
+        note: field(key: "note") { value }
+        drawing: field(key: "drawing") {
+          reference { ... on MediaImage { image { url } } }
+        }
+      }
+    }
+  }
   featuredImage { url altText }
   images(first: 10) { nodes { url altText } }
   options { name values }
@@ -71,6 +82,15 @@ export type ShopifyProduct = {
   vendor: string;
   tags: string[];
   createdAt: string;
+  // The product's size guide: a "Size guide" entry (metaobject) picked in
+  // the product's "Size guide" field in Shopify. See SizeGuide.tsx.
+  sizeGuide: {
+    reference: {
+      table: { value: string } | null;
+      note: { value: string } | null;
+      drawing: { reference: { image: { url: string } | null } | null } | null;
+    } | null;
+  } | null;
   featuredImage: { url: string; altText: string | null } | null;
   images: { nodes: { url: string; altText: string | null }[] };
   options: { name: string; values: string[] }[];

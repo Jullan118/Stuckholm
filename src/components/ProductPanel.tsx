@@ -1,4 +1,5 @@
 import * as React from "react";
+import { SizeGuide } from "@/components/SizeGuide";
 import { DriftingStars } from "@/components/DriftingStars";
 import { useNavigate, useParams } from "react-router-dom";
 import { AddToCart } from "@/components/AddToCart";
@@ -177,6 +178,7 @@ function PanelContent({ product }: { product: ShopProduct }) {
           )}
 
           <AddToCart product={product} onVariantChange={showVariantImage} />
+          <SizeGuide guide={product.sizeGuide} />
 
           {/* All pictures as thumbnails, under Add to cart. */}
           {images.length > 1 && (

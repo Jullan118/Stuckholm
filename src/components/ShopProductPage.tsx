@@ -1,4 +1,5 @@
 import * as React from "react";
+import { SizeGuide } from "@/components/SizeGuide";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { AddToCart } from "@/components/AddToCart";
@@ -156,6 +157,7 @@ export function ShopProductPage({
           </div>
 
           <AddToCart product={product} onVariantChange={showVariantImage} />
+          <SizeGuide guide={product.sizeGuide} />
 
           {product.description && (
             <p className="text-black/80 mt-4 whitespace-pre-line">{product.description}</p>
