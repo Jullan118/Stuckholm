@@ -144,8 +144,9 @@ html.hero-light .home-ink {
 }
 
 /* The blackletter display font, used for the wordmark in the header and for
-   the footer. The real font is CL Antique No 55 (Century Library). Until its
-   file is added to the site, UnifrakturMaguntia stands in for it. */
+   the footer: CL Antique No 55 (Century Library), loaded from the site
+   (assets/cl-antique-no55.woff2, @font-face in layout/theme.liquid).
+   UnifrakturMaguntia only shows while it loads. */
 .font-blackletter {
   font-family: "CL Antique No 55", "UnifrakturMaguntia", serif;
   letter-spacing: 0;
