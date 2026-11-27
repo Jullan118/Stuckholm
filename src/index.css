@@ -307,6 +307,19 @@ html.hero-light .home-ink {
   }
 }
 
+/* The columns differ a little in width, so a picture box as wide as its
+   cell would make the same picture bigger in the wider columns. Every
+   picture box is as wide as the narrowest column instead, centred in its
+   cell, so all pictures come out the same size. */
+.products-on-grid .grid-pic { margin-left: auto; margin-right: auto; width: 100%; }
+.products-on-grid > :nth-child(2n+2) .grid-pic { width: 97.07%; } /* 46.11 / 47.5 */
+@media (min-width: 768px) {
+  .products-on-grid > :nth-child(n) .grid-pic { width: 100%; }
+  .products-on-grid > :nth-child(4n+2) .grid-pic { width: 94.48%; } /* 22.4 / 23.71 */
+  .products-on-grid > :nth-child(4n+3) .grid-pic { width: 94.04%; } /* 22.4 / 23.82 */
+  .products-on-grid > :nth-child(4n+4) .grid-pic { width: 94.64%; } /* 22.4 / 23.67 */
+}
+
 /* Faint stars that drift a little and twinkle (DriftingStars). */
 .star-drift {
   transform-box: fill-box;

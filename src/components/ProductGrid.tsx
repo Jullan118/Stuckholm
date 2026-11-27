@@ -44,7 +44,7 @@ export function ProductGrid({ products }: { products: ShopProduct[] }) {
           state={{ background: location }}
           className="group relative flex flex-col h-full pb-3 sm:pb-4 border-b-[0.75px] border-black/20 outline-none"
         >
-          <div className="relative aspect-[4/5] overflow-hidden bg-white p-[5%]">
+          <div className="grid-pic relative aspect-[4/5] overflow-hidden bg-white p-[5%]">
             {product.image ? (
               <img src={product.image} alt={product.title} className="w-full h-full object-contain" />
             ) : (
